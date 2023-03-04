@@ -5,6 +5,6 @@ module cz.cvut.fel.pjv.arimaa {
     requires org.controlsfx.controls;
     requires org.kordamp.bootstrapfx.core;
 
-    opens cz.cvut.fel.pjv.arimaa to javafx.fxml;
-    exports cz.cvut.fel.pjv.arimaa;
+    opens cz.cvut.fel.pjv to javafx.fxml;
+    exports cz.cvut.fel.pjv;
 }

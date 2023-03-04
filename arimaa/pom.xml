@@ -69,7 +69,7 @@
                         <!-- Default configuration for running with: mvn clean javafx:run -->
                         <id>default-cli</id>
                         <configuration>
-                            <mainClass>cz.cvut.fel.pjv.arimaa/cz.cvut.fel.pjv.arimaa.HelloApplication</mainClass>
+                            <mainClass>cz.cvut.fel.pjv.arimaa/cz.cvut.fel.pjv.HelloApplication</mainClass>
                             <launcher>app</launcher>
                             <jlinkZipName>app</jlinkZipName>
                             <jlinkImageName>app</jlinkImageName>

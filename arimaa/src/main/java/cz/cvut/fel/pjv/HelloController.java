@@ -1,4 +1,4 @@
-package cz.cvut.fel.pjv.arimaa;
+package cz.cvut.fel.pjv;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;

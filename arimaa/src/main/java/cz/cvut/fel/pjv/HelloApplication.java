@@ -1,4 +1,4 @@
-package cz.cvut.fel.pjv.arimaa;
+package cz.cvut.fel.pjv;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
