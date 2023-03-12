@@ -36,7 +36,7 @@ public class Game {     // Caretaker for Originator and Memento list
      * Starting method for the Game. Creates Game window
      */
     public void startGame() {
-        // TODO draw window and it's components (board with Pieces, save button, go back and forward button)
+        // TODO draw window and it's components (board with Pieces, save, undo, resign and new button)
         JFrame gameFrame = new JFrame("Arimaa Game");
         gameFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         gameFrame.setMinimumSize(new Dimension(720, 720));
@@ -55,8 +55,6 @@ public class Game {     // Caretaker for Originator and Memento list
         tools.add(new JButton("Resign")); // TODO - give up game
         tools.addSeparator();
         tools.add(new JLabel("It works!!"));
-
-        //panel.add(new JLabel(""), BorderLayout.LINE_START);
 
         arimaaBoard.drawBoard(panel);
 

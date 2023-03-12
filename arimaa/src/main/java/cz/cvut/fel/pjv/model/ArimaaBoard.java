@@ -63,8 +63,7 @@ public class ArimaaBoard {      // might extend JPanel
 
     /**
      * Draw Board and Pieces on that arimaaBoard.
-     *
-     * @return
+     * @param panel panel that holds widgets in JFrame
      */
     public void drawBoard(JPanel panel) {
 
@@ -77,14 +76,8 @@ public class ArimaaBoard {      // might extend JPanel
         for (int i = 0; i < chessBoardSquares.length; i++) {
             for (int j = 0; j < chessBoardSquares[i].length; j++) {
                 JPanel button = new JPanel();
-                Spot spot = new Spot(i, j, TypeOfSpot.NORMAL);
+                Spot spot = new Spot(i, j, TypeOfSpot.NORMAL);      // TODO solve why Spot do not act like JPanel
                 button.setBorder(BorderFactory.createLineBorder(Color.GRAY));
-                //spot.setMargin(buttonMargin);
-                //button.setMargin(buttonMargin);
-                // our chess pieces are 64x64 px in size, so we'll
-                // 'fill this in' using a transparent icon...
-                // ImageIcon icon = new ImageIcon(new BufferedImage(64, 64, BufferedImage.TYPE_INT_ARGB));
-                // b.setIcon(icon);
                 if ( (i == 2 || i == 5) && (j == 2 || j == 5)) {
                     button.setBackground(Color.BLACK);
                     spot.setBackground(Color.BLACK);
