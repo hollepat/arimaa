@@ -2,25 +2,26 @@ package cz.cvut.fel.pjv.model;
 
 import cz.cvut.fel.pjv.pieces.Piece;
 
+import javax.accessibility.Accessible;
 import javax.swing.*;
+import java.awt.*;
 
 public class Spot extends JPanel {     // one square of the game board
 
 
     private final TypeOfSpot typeOfSpot;
-    private Piece piece;
+    private Piece piece = null;
     private int x;
-    private char y;
+    private int y;
 
     /**
      * Represents one spot on game board.
      *
-     * @param piece reference to piece on these coordination's, if no piece on spot --> null
      * @param x     {1,2,3,4,5,6,7,8}
      * @param y     {1,2,3,4,5,6,7,8} that respond to letters {a,b,c,d,e,f,g,h}
      */
-    public Spot(Piece piece, int x, char y, TypeOfSpot typeOfSpot) {
-        this.piece = piece;
+    public Spot(int x, int y, TypeOfSpot typeOfSpot) {
+        super(new FlowLayout(), true);
         this.x = x;
         this.y = y;
         this.typeOfSpot = typeOfSpot;
@@ -38,15 +39,12 @@ public class Spot extends JPanel {     // one square of the game board
         return x;
     }
 
-    public void setX(int x) {
-        this.x = x;
-    }
-
     public int getY() {
         return y;
     }
 
-    public void setY(char y) {
-        this.y = y;
+
+    public void drawSpot() {
+
     }
 }

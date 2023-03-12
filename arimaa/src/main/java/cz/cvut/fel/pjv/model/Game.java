@@ -1,16 +1,24 @@
 package cz.cvut.fel.pjv.model;
 
+import cz.cvut.fel.pjv.gui.App;
 import cz.cvut.fel.pjv.pieces.Piece;
 
+import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.LineBorder;
+import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.util.Stack;
+
+// https://stackoverflow.com/questions/21077322/create-a-chess-board-with-jpanel
+// how to move Pieces https://www.youtube.com/watch?v=LivX1XKpSQA
 
 public class Game {     // Caretaker for Originator and Memento list
 
     public static Piece currentPiece;
     public static String currentPlayer;
     private GameStatus gameStatus;
-
-    private ArimaaBoard chessBoard;        // is Originator and holds the current state
+    private ArimaaBoard arimaaBoard;        // is Originator and holds the current state
     private Stack<Memento> history;
 
     /**
@@ -21,12 +29,42 @@ public class Game {     // Caretaker for Originator and Memento list
         currentPiece = null;
         currentPlayer = "gold";
 
-        this.chessBoard = new ArimaaBoard();    // create board place and Pieces on the board
+        this.arimaaBoard = new ArimaaBoard();    // create board place and Pieces on the board
     }
 
-
+    /**
+     * Starting method for the Game. Creates Game window
+     */
     public void startGame() {
         // TODO draw window and it's components (board with Pieces, save button, go back and forward button)
+        JFrame gameFrame = new JFrame("Arimaa Game");
+        gameFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        gameFrame.setMinimumSize(new Dimension(720, 720));
+
+        // add Components
+
+        JPanel panel = new JPanel(new BorderLayout(3, 3));
+        panel.setBorder(new EmptyBorder(5, 5, 5, 5));
+        JToolBar tools = new JToolBar();
+
+        tools.setFloatable(false);
+        panel.add(tools, BorderLayout.PAGE_START);
+        tools.add(new JButton("New")); // TODO - create new game
+        tools.add(new JButton("Save")); // TODO - save game
+        tools.add(new JButton("Undo")); // TODO - go step back
+        tools.add(new JButton("Resign")); // TODO - give up game
+        tools.addSeparator();
+        tools.add(new JLabel("It works!!"));
+
+        //panel.add(new JLabel(""), BorderLayout.LINE_START);
+
+        arimaaBoard.drawBoard(panel);
+
+        gameFrame.add(panel);
+        App.setFrameCenter(gameFrame);
+        gameFrame.pack();
+        gameFrame.setVisible(true);
+
     }
 
     /**
@@ -41,7 +79,7 @@ public class Game {     // Caretaker for Originator and Memento list
      * Create new snapshot of game, after change of game.
      */
     public void makeMove() {
-        Memento m = chessBoard.save();
+        Memento m = arimaaBoard.save();
         history.push(m);
     }
 
@@ -50,7 +88,7 @@ public class Game {     // Caretaker for Originator and Memento list
      */
     public void undo() {
         Memento m = history.pop();
-        chessBoard.restore(m);
+        arimaaBoard.restore(m);
     }
 
     /**

@@ -9,6 +9,7 @@ abstract public class Piece {
     private int positionY;      // 1, 2, 3, 4, 5, 6, 7, 8
     private boolean alive;       // live = true, killed = false
     private Player player;
+    private String color;
 
     /**
      * Constructor for Piece

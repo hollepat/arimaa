@@ -15,7 +15,7 @@ public class App {
         Container container = frame.getContentPane();
         container.setLayout(new BoxLayout(container, BoxLayout.Y_AXIS));
 
-        JLabel gameName = new JLabel("Arimaa");
+        JLabel gameName = new JLabel("Welcome to Arimaa!");
 
         JButton newGameButton = new JButton("New Game");
         newGameButton.addActionListener(new ActionListener() {
@@ -23,8 +23,8 @@ public class App {
             public void actionPerformed(ActionEvent e) {
                 // TODO open new window setting up new game
                 // TODO close the main window
-                SetUpScreen setUpScreen = new SetUpScreen();
                 frame.dispose();
+                SetUpScreen setUpScreen = new SetUpScreen();
                 setUpScreen.start();
 
 
@@ -54,7 +54,11 @@ public class App {
 
     }
 
-    private void setFrameCenter(JFrame frame) {
+    /**
+     * Center JFrame to the middle of a screen.
+     * @param frame takes JFrame that is supposed to be put in center of screen
+     */
+    public static void setFrameCenter(JFrame frame) {
         Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
         frame.setLocation(dim.width/2-frame.getSize().width/2, dim.height/2-frame.getSize().height/2);
     }
