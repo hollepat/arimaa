@@ -2,6 +2,7 @@ package cz.cvut.fel.pjv.pieces;
 
 import cz.cvut.fel.pjv.model.Player;
 
+// images in svg https://commons.wikimedia.org/wiki/Category:Arimaa_pieces_(SVG_set_by_Risteall)
 abstract public class Piece {
 
     private char positionX;     // a, b, c, d, e, f, g, h

@@ -1,8 +1,6 @@
 package cz.cvut.fel.pjv.model;
 
-import cz.cvut.fel.pjv.controller.GameStatus;
 import cz.cvut.fel.pjv.pieces.Piece;
-import javafx.scene.layout.GridPane;
 
 import java.util.Stack;
 
@@ -12,19 +10,23 @@ public class Game {     // Caretaker for Originator and Memento list
     public static String currentPlayer;
     private GameStatus gameStatus;
 
-    private Board chessBoard;        // is Originator and holds the current state
+    private ArimaaBoard chessBoard;        // is Originator and holds the current state
     private Stack<Memento> history;
 
     /**
      * Constructor for Game
-     *
-     * @param chessBoard chessBoard GridPane rendering the board state
      */
-    public Game(GridPane chessBoard) {
-        this.chessBoard = new Board(chessBoard);
+    public Game() {
         this.gameStatus = GameStatus.ACTIVE;
         currentPiece = null;
         currentPlayer = "gold";
+
+        this.chessBoard = new ArimaaBoard();    // create board place and Pieces on the board
+    }
+
+
+    public void startGame() {
+        // TODO draw window and it's components (board with Pieces, save button, go back and forward button)
     }
 
     /**

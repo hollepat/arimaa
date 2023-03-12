@@ -1,28 +1,31 @@
 package cz.cvut.fel.pjv.model;
 
-import javafx.scene.layout.GridPane;
 
-public class Board {   // is Originator that holds it's current state
+import javax.swing.*;
+
+public class ArimaaBoard {
+    // is Originator that holds it's current state
+    // TODO draw state of board to GUI
 
     private State currentState;
     private PlayerGold gold;
     private PlayerSilver silver;
-    private GridPane chessBoard;
+    private Spot[][] chessBoard;
+
+
 
     /**
-     * Constructor for Board
-     *
-     * @param chessBoard chessBoard GridPane rendering the board state
+     * Constructor for Board.
      */
-    public Board(GridPane chessBoard) {
+    public ArimaaBoard() {
         this.currentState = new State();
         // TODO this.gold = gold;
         // TODO this.silver = silver;
-        this.chessBoard = chessBoard;
+        this.chessBoard = new Spot[8][8];
     }
 
     /**
-     * Save current State in Memento
+     * Save current State in Memento.
      *
      * @return Memento containing the State
      */
@@ -32,7 +35,7 @@ public class Board {   // is Originator that holds it's current state
     }
 
     /**
-     * Restore previous State from Memento at top of the Stack
+     * Restore previous State from Memento at top of the Stack.
      *
      * @param memento Memento containing the State chessBoard will change to
      */

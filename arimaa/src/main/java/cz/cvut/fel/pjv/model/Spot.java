@@ -2,7 +2,9 @@ package cz.cvut.fel.pjv.model;
 
 import cz.cvut.fel.pjv.pieces.Piece;
 
-public class Spot {     // one square of the game board
+import javax.swing.*;
+
+public class Spot extends JPanel {     // one square of the game board
 
 
     private final TypeOfSpot typeOfSpot;
@@ -15,7 +17,7 @@ public class Spot {     // one square of the game board
      *
      * @param piece reference to piece on these coordination's, if no piece on spot --> null
      * @param x     {1,2,3,4,5,6,7,8}
-     * @param y     {a,b,c,d,e,f,g,h}
+     * @param y     {1,2,3,4,5,6,7,8} that respond to letters {a,b,c,d,e,f,g,h}
      */
     public Spot(Piece piece, int x, char y, TypeOfSpot typeOfSpot) {
         this.piece = piece;
@@ -40,7 +42,7 @@ public class Spot {     // one square of the game board
         this.x = x;
     }
 
-    public char getY() {
+    public int getY() {
         return y;
     }
 
