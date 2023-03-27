@@ -15,7 +15,7 @@ public class Spot {
 
 
     private final TypeOfSpot typeOfSpot;
-    private Piece piece = null;
+    private Piece currentPiece = null;
     private int x;
     private int y;
 
@@ -32,11 +32,11 @@ public class Spot {
     }
 
     public Piece getPiece() {
-        return piece;
+        return this.currentPiece;
     }
 
     public void setPiece(Piece piece) {
-        this.piece = piece;
+        this.currentPiece = piece;
     }
 
     public int getX() {

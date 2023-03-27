@@ -12,7 +12,7 @@ public class BoardModel {
 
     private int BOARD_DIMENSION = 8;
 
-    private Piece[][] arimaaBoardArray = new Piece[8][8];
+    private Spot[][] arimaaBoardSpot = new Spot[8][8];
 
 
     public BoardModel() {
@@ -26,11 +26,11 @@ public class BoardModel {
      * @param y [1, 2, 3, 4, 5, 6, 7, 8]
      * @return  Piece
      */
-    public Piece getPiece(char x, int y) {
+    public Spot getSpot(char x, int y) {
         if (x < 'a' || x > 'h' || y < 1 || y > 8) {
             return null;
         } else {
-            return arimaaBoardArray[x - 'a'][y - 1];
+            return arimaaBoardSpot[x - 'a'][y - 1];
         }
     }
 
