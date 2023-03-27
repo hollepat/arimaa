@@ -11,7 +11,6 @@ public class Pieces {
 
     private static Pieces piecesInstance = new Pieces();
 
-
     private Pieces() {
         init();
     }

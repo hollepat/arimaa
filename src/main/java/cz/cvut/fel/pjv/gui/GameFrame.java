@@ -25,7 +25,6 @@ public class GameFrame extends JFrame {
      * Method to load window
      */
     public void loadUI() {
-        // TODO draw window and it's components (board with Pieces, save, undo, resign and new button)
         JFrame gameFrame = new JFrame("Arimaa Game");
         gameFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         gameFrame.setMinimumSize(new Dimension(720, 720));

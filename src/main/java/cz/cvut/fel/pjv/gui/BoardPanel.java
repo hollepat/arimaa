@@ -1,5 +1,6 @@
 package cz.cvut.fel.pjv.gui;
 
+import cz.cvut.fel.pjv.model.DragAndDropListener;
 import cz.cvut.fel.pjv.model.Game;
 import cz.cvut.fel.pjv.model.Spot;
 import cz.cvut.fel.pjv.model.TypeOfSpot;
@@ -47,11 +48,17 @@ public class BoardPanel extends JPanel {
         boardLayeredPane.setPreferredSize(new Dimension(PANEL_DIMENSION, PANEL_DIMENSION));
         boardLayeredPane.add(boardPane, JLayeredPane.DEFAULT_LAYER);
         boardLayeredPane.setVisible(true);
+
+        // add Listeners
+        DragAndDropListener pieceDragAndDropListener = new DragAndDropListener(this);
+        boardLayeredPane.addMouseListener(pieceDragAndDropListener);
+        boardLayeredPane.addMouseMotionListener(pieceDragAndDropListener);
+
         this.add(boardLayeredPane, BorderLayout.CENTER);
     }
 
     /**
-     * Create squares (JPanel) for BoardPanel.
+     * Create squares (JPanel) for BoardPanel and coordinates marks.
      */
     private void drawBoard() {
 
@@ -101,11 +108,11 @@ public class BoardPanel extends JPanel {
         boardPane.add(new JLabel(""), row, 9);
     }
 
-    private JPanel getSquarePanel(char i, int j) {
-        if (i < 'a' || i > 'h' || j < 1 || j > 8) {
+    private JPanel getSquarePanel(char x, int y) {
+        if (x < 'a' || x > 'h' || y < 1 || y > 8) {
             return null;
         } else {
-            return arimaaBoardSquares[i - 'a'][j-1];
+            return arimaaBoardSquares[x - 'a'][y-1];
         }
     }
 
@@ -190,14 +197,13 @@ public class BoardPanel extends JPanel {
      */
     public void preDrag(char sourceX, int sourceY, int dragX, int dragY) {
         System.out.println("pre-Drag");
-        // TODO Piece originPiece = BoardModel.getPiece(sourceX, sourceY);
-        Piece originPiece = null;
+        Piece originPiece = game.getBoardModel().getPiece(sourceX, sourceY);
         if (originPiece != null) {
-            getSquarePanel(sourceX, sourceY).getComponent(0).setVisible(false);
-            JLabel draggedPieceImageLabel = getImgAsJLabel(originPiece);
+            getSquarePanel(sourceX, sourceY).getComponent(0).setVisible(false); // Piece disappear form boardPane
+            JLabel draggedPieceImageLabel = getImgAsJLabel(originPiece);    // Create drag Piece in boardLayeredPane
             draggedPieceImageLabel.setLocation(dragX, dragY);
             draggedPieceImageLabel.setSize(SQUARE_DIMENSION, SQUARE_DIMENSION);
-            boardLayeredPane.add(draggedPieceImageLabel, JLayeredPane.DRAG_LAYER);
+            boardLayeredPane.add(draggedPieceImageLabel, JLayeredPane.DRAG_LAYER);  // drag Piece appear in boardLayeredPane
         }
     }
 

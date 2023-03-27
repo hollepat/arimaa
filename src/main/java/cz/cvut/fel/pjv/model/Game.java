@@ -1,31 +1,20 @@
 package cz.cvut.fel.pjv.model;
 
-import cz.cvut.fel.pjv.gui.App;
 import cz.cvut.fel.pjv.gui.BoardPanel;
 import cz.cvut.fel.pjv.gui.GameFrame;
 import cz.cvut.fel.pjv.pieces.Piece;
 
-import javax.imageio.ImageIO;
-import javax.swing.*;
-import javax.swing.border.EmptyBorder;
-import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import java.util.LinkedList;
 import java.util.Stack;
 
-// https://stackoverflow.com/questions/21077322/create-a-chess-board-with-jpanel
-// how to move Pieces https://www.youtube.com/watch?v=LivX1XKpSQA
-
-public class Game {     // Caretaker for Originator and Memento list
+public class Game {
 
     public static Piece currentPiece;
     public static String currentPlayer;
     private GameStatus gameStatus;
-    private ArimaaBoard arimaaBoard;        // is Originator and holds the current state
+    private State currentState;
     private Stack<Memento> history;
     private BoardPanel boardPanel;
+    private BoardModel boardModel;
     private GameFrame gameFrame;
 
     /**
@@ -35,11 +24,18 @@ public class Game {     // Caretaker for Originator and Memento list
         this.gameStatus = GameStatus.ACTIVE;
         currentPiece = null;
         currentPlayer = "gold";
-        initializeGUI();
+        initGUI();
+        initModel();
+
+
     }
 
-    private void initializeGUI() {
-        boardPanel = new BoardPanel();
+    private void initModel() {
+        boardModel = new BoardModel();
+    }
+
+    private void initGUI() {
+        boardPanel = new BoardPanel(this);
         gameFrame = new GameFrame(this);
 
     }
@@ -58,16 +54,16 @@ public class Game {     // Caretaker for Originator and Memento list
      * Create new snapshot of game, after change of game.
      */
     public void makeMove() {
-        Memento m = arimaaBoard.save();
-        history.push(m);
+        //Memento m = arimaaBoard.save();
+        //history.push(m);
     }
 
     /**
      * Go back in history of snapshots
      */
     public void undo() {
-        Memento m = history.pop();
-        arimaaBoard.restore(m);
+        //Memento m = history.pop();
+        //arimaaBoard.restore(m);
     }
 
     /**
@@ -89,12 +85,15 @@ public class Game {     // Caretaker for Originator and Memento list
 
     }
 
-
-    // ------ getters -----
+    // ----- Getters -----
 
 
     public BoardPanel getBoardPanel() {
         return boardPanel;
+    }
+
+    public BoardModel getBoardModel() {
+        return boardModel;
     }
 
     public static void main(String[] argv) {
