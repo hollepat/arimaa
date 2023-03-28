@@ -2,10 +2,6 @@ package cz.cvut.fel.pjv.model;
 
 import cz.cvut.fel.pjv.pieces.Piece;
 
-import javax.accessibility.Accessible;
-import javax.swing.*;
-import java.awt.*;
-import java.awt.dnd.DropTargetListener;
 
 /**
  *  one square of the game board --> abstract representation
@@ -16,8 +12,8 @@ public class Spot {
 
     private final TypeOfSpot typeOfSpot;
     private Piece currentPiece = null;
-    private int x;
-    private int y;
+    private final int x;
+    private final int y;
 
     /**
      * Represents one spot on game board.
@@ -47,5 +43,7 @@ public class Spot {
         return y;
     }
 
-
+    public TypeOfSpot getTypeOfSpot() {
+        return typeOfSpot;
+    }
 }

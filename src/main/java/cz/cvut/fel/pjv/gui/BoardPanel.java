@@ -11,10 +11,11 @@ import javax.swing.*;
 import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.util.Iterator;
+import java.util.Objects;
 
 public class BoardPanel extends JPanel {
 
-    private Game game;
+    private final Game game;
     private JLayeredPane boardLayeredPane;      // when we want to drag a Piece --> put Piece into boardLayerdPane --> move --> and put into boardPane again
     private JPanel boardPane;                   // panel that holds all static object
     public JPanel[][] arimaaBoardArray = new JPanel[8][8];
@@ -78,13 +79,10 @@ public class BoardPanel extends JPanel {
     private void fillNumberMarksAndSquares() {
         for (int i = 1; i < 9; i++) {
             for (int j = 0; j < 10; j++) {
-                switch (j) {
-                    case 0:     // first column
-                    case 9:     // last column
-                        boardPane.add(new JLabel("" + (i), SwingConstants.CENTER), i, j);
-                        break;
-                    default:
-                        boardPane.add(arimaaBoardArray[i-1][j-1], i, j);
+                switch (j) {     // first column
+                    case 0, 9 ->     // last column
+                            boardPane.add(new JLabel("" + (i), SwingConstants.CENTER), i, j);
+                    default -> boardPane.add(arimaaBoardArray[i - 1][j - 1], i, j);
                 }
             }
         }
@@ -101,11 +99,11 @@ public class BoardPanel extends JPanel {
         boardPane.add(new JLabel(""), row, 9);
     }
 
-    private JPanel getSquarePanel(char x, int y) {
+    private JPanel getSquarePanel(int y, char x) {
         if (x < 'a' || x > 'h' || y < 1 || y > 8) {
             return null;
         } else {
-            return arimaaBoardArray[x - 'a'][y-1];
+            return arimaaBoardArray[y-1][x - 'a'];
         }
     }
 
@@ -159,8 +157,6 @@ public class BoardPanel extends JPanel {
         arimaaBoardArray[6][4].add(getImgAsJLabel(silverElephantIterator.next()));
         arimaaBoardArray[1][3].add(getImgAsJLabel(goldElephantIterator.next()));
 
-
-
     }
 
     /**
@@ -169,11 +165,9 @@ public class BoardPanel extends JPanel {
      * @return JLabel containing ImageIcon() of piece
      */
     private JLabel getImgAsJLabel(Piece piece) {
-        Image pieceImage = new ImageIcon(getClass().getResource(piece.getImgPath())).getImage();
-        System.out.println(getClass().getResource(piece.getImgPath()));
+        Image pieceImage = new ImageIcon(Objects.requireNonNull(getClass().getResource(piece.getImgPath()))).getImage();
         pieceImage = pieceImage.getScaledInstance(SQUARE_DIMENSION, SQUARE_DIMENSION, Image.SCALE_SMOOTH);
-        JLabel pieceImageLabel = new JLabel(new ImageIcon(pieceImage));
-        return pieceImageLabel;
+        return new JLabel(new ImageIcon(pieceImage));
     }
 
 
@@ -192,7 +186,7 @@ public class BoardPanel extends JPanel {
         System.out.println("pre-Drag");
         Piece originPiece = game.getBoardModel().getSpot(sourceX, sourceY).getPiece();
         if (originPiece != null) {
-            getSquarePanel(sourceX, sourceY).getComponent(0).setVisible(false); // Piece disappear form boardPane
+            getSquarePanel(sourceY, sourceX).getComponent(0).setVisible(false); // Piece disappear form boardPane
             JLabel draggedPieceImageLabel = getImgAsJLabel(originPiece);    // Create drag Piece in boardLayeredPane
             draggedPieceImageLabel.setLocation(dragX, dragY);
             draggedPieceImageLabel.setSize(SQUARE_DIMENSION, SQUARE_DIMENSION);
