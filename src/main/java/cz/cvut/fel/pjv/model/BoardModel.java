@@ -8,7 +8,7 @@ import javax.swing.*;
 /**
  * Abstract representation of board. It handel, where each Piece is located on board
  */
-public class BoardModel {
+public class BoardModel {   // originator
 
     private int BOARD_DIMENSION = 8;
 
@@ -37,15 +37,20 @@ public class BoardModel {
     /**
      * Do move in BoardModel. Change position of Piece/Pieces.
      */
-    public void doMove() {
-
+    public Memento saveMove() {
+        // TODO implement
+        return null;
     }
 
     /**
      * Undo move in BoardModel. Change position of last moved Piece/Pieces.
      */
-    public void undoMove() {
+    public void restoreMove(Memento m) {
+        // TODO implement
+    }
 
+    public void writeToFile() {
+        // TODO write to file current state
     }
 
     private void initPieces() {

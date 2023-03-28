@@ -3,18 +3,14 @@ package cz.cvut.fel.pjv.model;
 
 public class Memento {      // snapshot of game
 
-    private final State state;
+    private final Move move;
 
-    public Memento(State state) {
-        this.state = state;
+    public Memento(Move move) {
+        this.move = move;
     }
 
-    public State getState() {
-
-        return null;
+    public Move getMove() {
+        return move;
     }
 
-    public void writeToFile() {
-        // write to file current state
-    }
 }

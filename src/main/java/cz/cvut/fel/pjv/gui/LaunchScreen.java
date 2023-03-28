@@ -35,9 +35,11 @@ public class LaunchScreen extends JFrame {
         loadGameButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // TODO find in folder system old game
-                // TODO run game
+                // TODO find in folder system file
+                // TODO Game game = new Game()
+                // TODO call function to recreate game
                 setVisible(false);
+                dispose();
             }
         });
 
@@ -55,6 +57,10 @@ public class LaunchScreen extends JFrame {
         this.pack();
         this.setVisible(true);
 
+    }
+
+    public static void main(String[] args) {
+        LaunchScreen launchScreen = new LaunchScreen();
     }
 
 }

@@ -6,15 +6,15 @@ import cz.cvut.fel.pjv.pieces.Piece;
 
 import java.util.Stack;
 
-public class Game {
+public class Game {     // Caretaker
 
     public static Piece currentPiece;
     public static String currentPlayer;
     private GameStatus gameStatus;
-    private State currentState;
+
     private Stack<Memento> history;
     private BoardPanel boardPanel;
-    private BoardModel boardModel;
+    private BoardModel boardModel;  // originator
     private GameFrame gameFrame;
 
     /**
@@ -43,47 +43,35 @@ public class Game {
 
     // ----- event logic -------
 
-    /**
-     * Control logic of game regarding choosing Pieces and handling action with them
-     */
-    private void eventHandler() {
 
+    /**
+     * Create a new snapshot containing Move.
+     */
+    public void doMove() {
+        Memento m = boardModel.saveMove();
+        history.push(m);
     }
 
     /**
-     * Create new snapshot of game, after change of game.
+     * Return last made Move.
      */
-    public void makeMove() {
-        //Memento m = arimaaBoard.save();
-        //history.push(m);
-    }
-
-    /**
-     * Go back in history of snapshots
-     */
-    public void undo() {
-        //Memento m = history.pop();
-        //arimaaBoard.restore(m);
+    public void undoMove() {
+        Memento m = history.pop();
+        boardModel.restoreMove(m);
     }
 
     /**
      * Save current snapshot of game to file.
      */
     public void saveToFile() {
-
+        // TODO save current game set to file
+        // location of pieces
     }
 
-    public void selectPiece() {
 
-    }
 
-    public void deselectPiece() {
 
-    }
 
-    public void killPiece() {
-
-    }
 
     // ----- Getters -----
 
