@@ -11,23 +11,71 @@ public class DragAndDropListener implements MouseListener, MouseMotionListener {
 
     private BoardPanel boardPanel;
 
+    private boolean isDragged = false;
+    private char sourceX;
+    private int sourceY;
+    private int offsetX;
+    private int offsetY;
+
     public DragAndDropListener(BoardPanel boardPanel) {
         this.boardPanel = boardPanel;
     }
 
-    @Override
-    public void mouseClicked(MouseEvent e) {
-        // TODO implement
-    }
-
+    /**
+     * On mousePressed store source position and calculate offset for dragging.
+     *
+     * @param e the event to be processed
+     */
     @Override
     public void mousePressed(MouseEvent e) {
         // TODO implement
+        sourceX = getColumnPosition(e);
+        sourceY = getRowPosition(e);
+        System.out.println("sourceX: " + sourceX + " sourceY: " + sourceY);
+
+        offsetX = e.getPoint().x - boardPanel.SQUARE_DIMENSION * (getColumnPosition(e) - 'a' + 1);
+        offsetY = e.getPoint().y - boardPanel.SQUARE_DIMENSION * (9 - getRowPosition(e));
+        System.out.println("draggedX: " + offsetX + " draggedY: " + offsetY);
     }
 
+    /**
+     * On mouseReleased submit Move for validity and remove from Drag Layer.
+     *
+     * @param e the event to be processed
+     */
     @Override
     public void mouseReleased(MouseEvent e) {
         // TODO implement
+        if (isDragged) {
+            boardPanel.postDrag();
+            boardPanel.submitMoveRequest(sourceX, sourceY, getColumnPosition(e), getRowPosition(e));
+        }
+        isDragged = false;
+    }
+
+    /**
+     * On mouseDragged keep changing position of Piece to mouse position.
+     *
+     * @param e the event to be processed
+     */
+    @Override
+    public void mouseDragged(MouseEvent e) {
+        // TODO implement
+        if (isDragged) {
+            boardPanel.drag(e.getPoint().x - offsetX, e.getPoint().y - offsetY);
+        } else {
+            boardPanel.preDrag(sourceX, sourceY, e.getPoint().x - offsetX, e.getPoint().y - offsetY);
+            isDragged = true;
+        }
+    }
+
+
+    private char getColumnPosition(MouseEvent e) {
+        return (char) ('a' - 1 + e.getPoint().x / boardPanel.SQUARE_DIMENSION);
+    }
+
+    private int getRowPosition(MouseEvent e) {
+        return 9 - e.getPoint().y / boardPanel.SQUARE_DIMENSION;
     }
 
     @Override
@@ -41,7 +89,9 @@ public class DragAndDropListener implements MouseListener, MouseMotionListener {
     }
 
     @Override
-    public void mouseDragged(MouseEvent e) {
+    public void mouseClicked(MouseEvent e) {
+        System.out.println("x: " + getColumnPosition(e) + "(" + e.getPoint().x + ")");
+        System.out.println("y: " + getRowPosition(e) + "(" + e.getPoint().y + ")");
 
     }
 

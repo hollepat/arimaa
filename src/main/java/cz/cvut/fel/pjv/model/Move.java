@@ -11,7 +11,6 @@ public class Move {
     private int sy;
     private char dx;
     private int dy;
-    private boolean valid;
 
     public Move(Piece piece, char sx, int sy, char dx, int dy) {
         this.piece = piece;
@@ -19,5 +18,21 @@ public class Move {
         this.sy = sy;
         this.dx = dx;
         this.dy = dy;
+    }
+
+    public char getSx() {
+        return sx;
+    }
+
+    public int getSy() {
+        return sy;
+    }
+
+    public char getDx() {
+        return dx;
+    }
+
+    public int getDy() {
+        return dy;
     }
 }

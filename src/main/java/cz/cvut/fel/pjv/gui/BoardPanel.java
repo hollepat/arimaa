@@ -2,6 +2,7 @@ package cz.cvut.fel.pjv.gui;
 
 import cz.cvut.fel.pjv.model.DragAndDropListener;
 import cz.cvut.fel.pjv.model.Game;
+import cz.cvut.fel.pjv.model.Move;
 import cz.cvut.fel.pjv.pieces.ColorPiece;
 import cz.cvut.fel.pjv.pieces.Piece;
 import cz.cvut.fel.pjv.pieces.Pieces;
@@ -20,7 +21,7 @@ public class BoardPanel extends JPanel {
     private JPanel boardPane;                   // panel that holds all static object
     public JPanel[][] arimaaBoardArray = new JPanel[8][8];
     private final String[] COLS = new String[] {"a","b","c","d","e","f","g","h"};
-    private final int SQUARE_DIMENSION = 50;
+    public final int SQUARE_DIMENSION = 60;
     private final int PANEL_DIMENSION = 600;
 
 
@@ -47,7 +48,6 @@ public class BoardPanel extends JPanel {
         DragAndDropListener pieceDragAndDropListener = new DragAndDropListener(this);
         boardLayeredPane.addMouseListener(pieceDragAndDropListener);
         boardLayeredPane.addMouseMotionListener(pieceDragAndDropListener);
-
         this.add(boardLayeredPane, BorderLayout.CENTER);
     }
 
@@ -55,11 +55,11 @@ public class BoardPanel extends JPanel {
      * Create squares (JPanel) for BoardPanel and coordinates marks.
      */
     private void drawBoard() {
-
         for (int i = 0; i < arimaaBoardArray.length; i++) {
             for (int j = 0; j < arimaaBoardArray[i].length; j++) {
                 JPanel square = new JPanel(new GridLayout(1, 1));       // Square Panels
                 square.setPreferredSize(new Dimension(SQUARE_DIMENSION, SQUARE_DIMENSION));
+                square.setSize(new Dimension(SQUARE_DIMENSION, SQUARE_DIMENSION));
                 square.setBorder(BorderFactory.createLineBorder(Color.GRAY));
                 if ((i == 2 || i == 5) && (j == 2 || j == 5)) {
                     square.setBackground(Color.BLACK);
@@ -76,12 +76,20 @@ public class BoardPanel extends JPanel {
 
     }
 
+    private JLabel createMarkLabel(String text) {
+        JLabel mark = new JLabel(text, SwingConstants.CENTER);
+        mark.setPreferredSize(new Dimension(SQUARE_DIMENSION, SQUARE_DIMENSION));
+        mark.setSize(new Dimension(SQUARE_DIMENSION, SQUARE_DIMENSION));
+        return mark;
+    }
+
     private void fillNumberMarksAndSquares() {
+
         for (int i = 1; i < 9; i++) {
             for (int j = 0; j < 10; j++) {
                 switch (j) {     // first column
                     case 0, 9 ->     // last column
-                            boardPane.add(new JLabel("" + (i), SwingConstants.CENTER), i, j);
+                         boardPane.add(createMarkLabel("" + i), i , j);
                     default -> boardPane.add(arimaaBoardArray[i - 1][j - 1], i, j);
                 }
             }
@@ -90,13 +98,13 @@ public class BoardPanel extends JPanel {
 
     private void fillAlphabetMarks(int row) {
         // fill the first col in row chess board
-        boardPane.add(new JLabel(""), row, 0);
+        boardPane.add(createMarkLabel(""), row, 0);
         // fill the row with "a b c d e f g h"
         for (int i = 0; i < 8; i++) {
-            boardPane.add(new JLabel(COLS[i], SwingConstants.CENTER), row, i+1);
+            boardPane.add(createMarkLabel(COLS[i]), row, i+1);
         }
         // fill the last col in row chess board
-        boardPane.add(new JLabel(""), row, 9);
+        boardPane.add(createMarkLabel(""), row, 9);
     }
 
     private JPanel getSquarePanel(int y, char x) {
@@ -108,7 +116,7 @@ public class BoardPanel extends JPanel {
     }
 
     /**
-     * Draw initial set of Pieces on board
+     * Draw initial set of Pieces on board.
      */
     private void createPieces() {
 
@@ -166,16 +174,48 @@ public class BoardPanel extends JPanel {
      */
     private JLabel getImgAsJLabel(Piece piece) {
         Image pieceImage = new ImageIcon(Objects.requireNonNull(getClass().getResource(piece.getImgPath()))).getImage();
-        pieceImage = pieceImage.getScaledInstance(SQUARE_DIMENSION, SQUARE_DIMENSION, Image.SCALE_SMOOTH);
+        pieceImage = pieceImage.getScaledInstance(SQUARE_DIMENSION-10, SQUARE_DIMENSION-10, Image.SCALE_SMOOTH);
         return new JLabel(new ImageIcon(pieceImage));
+    }
+
+    /**
+     * Submit Move to Game, regarding validity and execution.
+     *
+     * @param sourceX char coordinate of Piece
+     * @param sourceY int coordinate of Piece
+     * @param destinationX char coordinate of Piece
+     * @param destinationY int coordinate of Piece
+     */
+    public void submitMoveRequest(char sourceX, int sourceY, char destinationX, int destinationY) {
+        System.out.println("submitted move request");
+        if (getSquarePanel(sourceY, sourceX).getComponent(0) != null ) {
+            getSquarePanel(sourceY, sourceX).getComponent(0).setVisible(true);
+            game.moveRequest(sourceX, sourceY, destinationX, destinationY);
+        }
+    }
+
+    /**
+     * Move Piece from source to destination and sets it to visible. If move effects other Pieces do as well.
+     *
+     * @param move validated Move
+     */
+    public void makeMove(Move move) {
+        // TODO updates regarding game logic
+        JPanel sourceSquarePanel = getSquarePanel(move.getSy(), move.getSx());
+        JPanel destinationSquarePanel = getSquarePanel(move.getDy(), move.getDx());
+        destinationSquarePanel.removeAll();
+        destinationSquarePanel.add(sourceSquarePanel.getComponent(0));
+        destinationSquarePanel.repaint();
+        sourceSquarePanel.removeAll();
+        sourceSquarePanel.repaint();
     }
 
 
     // --------- Mechanism for drag and drop movement ---------
-    // TODO write mechanism that will drag and drop them in grid layout
 
     /**
-     * Take Piece from source and put it into JLayeredPane.
+     * Take pieceImageLabel (Piece) from source and put its copy into JLayeredPane. Original pieceImageLabel is
+     * still at source --> setVisible(false).
      *
      * @param sourceX char coordinate of Piece
      * @param sourceY int coordinate of Piece
@@ -183,10 +223,11 @@ public class BoardPanel extends JPanel {
      * @param dragY int coordinate of Piece in drag phase
      */
     public void preDrag(char sourceX, int sourceY, int dragX, int dragY) {
-        System.out.println("pre-Drag");
+        System.out.println("Piece picked!");
         Piece originPiece = game.getBoardModel().getSpot(sourceX, sourceY).getPiece();
+        System.out.println("Piece: " + originPiece.getImgPath());
         if (originPiece != null) {
-            getSquarePanel(sourceY, sourceX).getComponent(0).setVisible(false); // Piece disappear form boardPane
+            getSquarePanel(sourceY, sourceX).getComponent(0).setVisible(false); // Piece disappear form boardPane but is still there
             JLabel draggedPieceImageLabel = getImgAsJLabel(originPiece);    // Create drag Piece in boardLayeredPane
             draggedPieceImageLabel.setLocation(dragX, dragY);
             draggedPieceImageLabel.setSize(SQUARE_DIMENSION, SQUARE_DIMENSION);
@@ -195,17 +236,28 @@ public class BoardPanel extends JPanel {
     }
 
     /**
-     * Move pieceImageLabel (Piece) over window.
+     * Move pieceImageLabel (Piece) over BoardPanel.
+     *
+     * @param dragX char coordinate of Piece in drag phase
+     * @param dragY int coordinate of Piece in drag phase
      */
-    public void drag() {
-        // TODO implement
+    public void drag(int dragX, int dragY) {
+        System.out.println("Piece dragged!");
+        JLabel draggedPieceImageLabel = (JLabel) boardLayeredPane.getComponentsInLayer(JLayeredPane.DRAG_LAYER)[0];
+        if (draggedPieceImageLabel != null) {
+            draggedPieceImageLabel.setLocation(dragX, dragY);
+        }
     }
 
+
     /**
-     * Put pieceImageLabel (Piece) back to boardPane from boardLayeredPane.
+     * Remove pieceImageLabel (Piece) from JLayeredPane, when drag ends.
      */
     public void postDrag() {
-        // TODO implement
+        System.out.println("Piece droped!");
+        JLabel draggedPieceImageLabel = (JLabel) boardLayeredPane.getComponentsInLayer(JLayeredPane.DRAG_LAYER)[0];
+        boardLayeredPane.remove(draggedPieceImageLabel);
+        boardLayeredPane.repaint();
     }
 
 

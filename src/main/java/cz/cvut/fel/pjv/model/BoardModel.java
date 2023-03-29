@@ -30,6 +30,7 @@ public class BoardModel {
      * @return  Piece
      */
     public Spot getSpot(char x, int y) {
+        //System.out.println("x: " + x + " y: " + y);
         if (x < 'a' || x > 'h' || y < 1 || y > 8) {
             return null;
         } else {
@@ -39,9 +40,17 @@ public class BoardModel {
 
     /**
      * Do move in BoardModel. Change position of Piece/Pieces.
+     *
+     * @param move
      */
-    public void doMove() {
-
+    public void doMove(Move move) {
+        Spot originSquare = getSpot(move.getSx(), move.getSy());
+        Spot destinationSquare = getSpot(move.getDx(), move.getDy());
+        if (destinationSquare.getPiece() != null) {
+            // TODO movement logic
+        }
+        destinationSquare.setPiece(originSquare.getPiece());
+        originSquare.setPiece(null);
     }
 
     /**
@@ -65,25 +74,25 @@ public class BoardModel {
         Iterator<Piece> silverCatIterator = Pieces.getPieces(ColorPiece.SILVER, Type.CAT).iterator();
         Iterator<Piece> goldCatIterator = Pieces.getPieces(ColorPiece.GOLD, Type.CAT).iterator();
         getSpot('a',7).setPiece(silverCatIterator.next());
-        getSpot('g',7).setPiece(silverCatIterator.next());
+        getSpot('h',7).setPiece(silverCatIterator.next());
         getSpot('a',2).setPiece(goldCatIterator.next());
-        getSpot('g',2).setPiece(goldCatIterator.next());
+        getSpot('h',2).setPiece(goldCatIterator.next());
 
         // dog
         Iterator<Piece> silverDogIterator = Pieces.getPieces(ColorPiece.SILVER, Type.DOG).iterator();
         Iterator<Piece> goldDogIterator = Pieces.getPieces(ColorPiece.GOLD, Type.DOG).iterator();
         getSpot('b',7).setPiece(silverDogIterator.next());
-        getSpot('f',7).setPiece(silverDogIterator.next());
+        getSpot('g',7).setPiece(silverDogIterator.next());
         getSpot('b',2).setPiece(goldDogIterator.next());
-        getSpot('f',2).setPiece(goldDogIterator.next());
+        getSpot('g',2).setPiece(goldDogIterator.next());
 
         // horse
         Iterator<Piece> silverHorseIterator = Pieces.getPieces(ColorPiece.SILVER, Type.HORSE).iterator();
         Iterator<Piece> goldHorseIterator = Pieces.getPieces(ColorPiece.GOLD, Type.HORSE).iterator();
         getSpot('c', 7).setPiece(silverHorseIterator.next());
-        getSpot('d', 7).setPiece(silverHorseIterator.next());
+        getSpot('f', 7).setPiece(silverHorseIterator.next());
         getSpot('c', 2).setPiece(goldHorseIterator.next());
-        getSpot('d', 2).setPiece(goldHorseIterator.next());
+        getSpot('f', 2).setPiece(goldHorseIterator.next());
 
         // camel
         Iterator<Piece> silverCamelIterator = Pieces.getPieces(ColorPiece.SILVER, Type.CAMEL).iterator();
