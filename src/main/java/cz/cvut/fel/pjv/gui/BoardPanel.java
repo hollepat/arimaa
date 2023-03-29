@@ -2,31 +2,26 @@ package cz.cvut.fel.pjv.gui;
 
 import cz.cvut.fel.pjv.model.DragAndDropListener;
 import cz.cvut.fel.pjv.model.Game;
-import cz.cvut.fel.pjv.model.Spot;
-import cz.cvut.fel.pjv.model.TypeOfSpot;
+import cz.cvut.fel.pjv.model.Move;
 import cz.cvut.fel.pjv.pieces.ColorPiece;
 import cz.cvut.fel.pjv.pieces.Piece;
 import cz.cvut.fel.pjv.pieces.Pieces;
 import cz.cvut.fel.pjv.pieces.Type;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 import java.util.Iterator;
-import java.util.LinkedList;
+import java.util.Objects;
 
 public class BoardPanel extends JPanel {
 
-    private Game game;
+    private final Game game;
     private JLayeredPane boardLayeredPane;      // when we want to drag a Piece --> put Piece into boardLayerdPane --> move --> and put into boardPane again
     private JPanel boardPane;                   // panel that holds all static object
-    public JPanel[][] arimaaBoardSquares = new JPanel[8][8];
+    public JPanel[][] arimaaBoardArray = new JPanel[8][8];
     private final String[] COLS = new String[] {"a","b","c","d","e","f","g","h"};
-    private final int SQUARE_DIMENSION = 50;
+    public final int SQUARE_DIMENSION = 60;
     private final int PANEL_DIMENSION = 600;
 
 
@@ -53,7 +48,6 @@ public class BoardPanel extends JPanel {
         DragAndDropListener pieceDragAndDropListener = new DragAndDropListener(this);
         boardLayeredPane.addMouseListener(pieceDragAndDropListener);
         boardLayeredPane.addMouseMotionListener(pieceDragAndDropListener);
-
         this.add(boardLayeredPane, BorderLayout.CENTER);
     }
 
@@ -61,18 +55,18 @@ public class BoardPanel extends JPanel {
      * Create squares (JPanel) for BoardPanel and coordinates marks.
      */
     private void drawBoard() {
-
-        for (int i = 0; i < arimaaBoardSquares.length; i++) {
-            for (int j = 0; j < arimaaBoardSquares[i].length; j++) {
+        for (int i = 0; i < arimaaBoardArray.length; i++) {
+            for (int j = 0; j < arimaaBoardArray[i].length; j++) {
                 JPanel square = new JPanel(new GridLayout(1, 1));       // Square Panels
                 square.setPreferredSize(new Dimension(SQUARE_DIMENSION, SQUARE_DIMENSION));
+                square.setSize(new Dimension(SQUARE_DIMENSION, SQUARE_DIMENSION));
                 square.setBorder(BorderFactory.createLineBorder(Color.GRAY));
                 if ((i == 2 || i == 5) && (j == 2 || j == 5)) {
                     square.setBackground(Color.BLACK);
                 } else {
                     square.setBackground(Color.LIGHT_GRAY);
                 }
-                arimaaBoardSquares[i][j] = square;
+                arimaaBoardArray[i][j] = square;
             }
         }
 
@@ -82,16 +76,21 @@ public class BoardPanel extends JPanel {
 
     }
 
+    private JLabel createMarkLabel(String text) {
+        JLabel mark = new JLabel(text, SwingConstants.CENTER);
+        mark.setPreferredSize(new Dimension(SQUARE_DIMENSION, SQUARE_DIMENSION));
+        mark.setSize(new Dimension(SQUARE_DIMENSION, SQUARE_DIMENSION));
+        return mark;
+    }
+
     private void fillNumberMarksAndSquares() {
+
         for (int i = 1; i < 9; i++) {
             for (int j = 0; j < 10; j++) {
-                switch (j) {
-                    case 0:     // first column
-                    case 9:     // last column
-                        boardPane.add(new JLabel("" + (i), SwingConstants.CENTER), i, j);
-                        break;
-                    default:
-                        boardPane.add(arimaaBoardSquares[i-1][j-1], i, j);
+                switch (j) {     // first column
+                    case 0, 9 ->     // last column
+                         boardPane.add(createMarkLabel("" + i), i , j);
+                    default -> boardPane.add(arimaaBoardArray[i - 1][j - 1], i, j);
                 }
             }
         }
@@ -99,75 +98,72 @@ public class BoardPanel extends JPanel {
 
     private void fillAlphabetMarks(int row) {
         // fill the first col in row chess board
-        boardPane.add(new JLabel(""), row, 0);
+        boardPane.add(createMarkLabel(""), row, 0);
         // fill the row with "a b c d e f g h"
         for (int i = 0; i < 8; i++) {
-            boardPane.add(new JLabel(COLS[i], SwingConstants.CENTER), row, i+1);
+            boardPane.add(createMarkLabel(COLS[i]), row, i+1);
         }
         // fill the last col in row chess board
-        boardPane.add(new JLabel(""), row, 9);
+        boardPane.add(createMarkLabel(""), row, 9);
     }
 
-    private JPanel getSquarePanel(char x, int y) {
+    private JPanel getSquarePanel(int y, char x) {
         if (x < 'a' || x > 'h' || y < 1 || y > 8) {
             return null;
         } else {
-            return arimaaBoardSquares[x - 'a'][y-1];
+            return arimaaBoardArray[y-1][x - 'a'];
         }
     }
 
     /**
-     * Draw initial set of Pieces on board
+     * Draw initial set of Pieces on board.
      */
     private void createPieces() {
-        // TODO create instances of Pieces in gui
 
         // rabbit
         Iterator<Piece> silverRabbitsIterator = Pieces.getPieces(ColorPiece.SILVER, Type.RABBIT).iterator();
         Iterator<Piece> goldRabbitsIterator = Pieces.getPieces(ColorPiece.GOLD, Type.RABBIT).iterator();
         for (int col = 0; col < 8; col++) {
-            arimaaBoardSquares[7][col].add(getImgAsJLabel(silverRabbitsIterator.next()), 0, 0);   // add gold Piece
-            arimaaBoardSquares[0][col].add(getImgAsJLabel(goldRabbitsIterator.next()), 0, 0);   // add silver Piece
+            arimaaBoardArray[7][col].add(getImgAsJLabel(silverRabbitsIterator.next()), 0, 0);   // add gold Piece
+            arimaaBoardArray[0][col].add(getImgAsJLabel(goldRabbitsIterator.next()), 0, 0);   // add silver Piece
 
         }
 
         // cat
         Iterator<Piece> silverCatIterator = Pieces.getPieces(ColorPiece.SILVER, Type.CAT).iterator();
         Iterator<Piece> goldCatIterator = Pieces.getPieces(ColorPiece.GOLD, Type.CAT).iterator();
-        arimaaBoardSquares[6][0].add(getImgAsJLabel(silverCatIterator.next()));
-        arimaaBoardSquares[6][7].add(getImgAsJLabel(silverCatIterator.next()));
-        arimaaBoardSquares[1][0].add(getImgAsJLabel(goldCatIterator.next()));
-        arimaaBoardSquares[1][7].add(getImgAsJLabel(goldCatIterator.next()));
+        arimaaBoardArray[6][0].add(getImgAsJLabel(silverCatIterator.next()));
+        arimaaBoardArray[6][7].add(getImgAsJLabel(silverCatIterator.next()));
+        arimaaBoardArray[1][0].add(getImgAsJLabel(goldCatIterator.next()));
+        arimaaBoardArray[1][7].add(getImgAsJLabel(goldCatIterator.next()));
 
         // dog
         Iterator<Piece> silverDogIterator = Pieces.getPieces(ColorPiece.SILVER, Type.DOG).iterator();
         Iterator<Piece> goldDogIterator = Pieces.getPieces(ColorPiece.GOLD, Type.DOG).iterator();
-        arimaaBoardSquares[6][1].add(getImgAsJLabel(silverDogIterator.next()));
-        arimaaBoardSquares[6][6].add(getImgAsJLabel(silverDogIterator.next()));
-        arimaaBoardSquares[1][1].add(getImgAsJLabel(goldDogIterator.next()));
-        arimaaBoardSquares[1][6].add(getImgAsJLabel(goldDogIterator.next()));
+        arimaaBoardArray[6][1].add(getImgAsJLabel(silverDogIterator.next()));
+        arimaaBoardArray[6][6].add(getImgAsJLabel(silverDogIterator.next()));
+        arimaaBoardArray[1][1].add(getImgAsJLabel(goldDogIterator.next()));
+        arimaaBoardArray[1][6].add(getImgAsJLabel(goldDogIterator.next()));
 
         // horse
         Iterator<Piece> silverHorseIterator = Pieces.getPieces(ColorPiece.SILVER, Type.HORSE).iterator();
         Iterator<Piece> goldHorseIterator = Pieces.getPieces(ColorPiece.GOLD, Type.HORSE).iterator();
-        arimaaBoardSquares[6][2].add(getImgAsJLabel(silverHorseIterator.next()));
-        arimaaBoardSquares[6][5].add(getImgAsJLabel(silverHorseIterator.next()));
-        arimaaBoardSquares[1][2].add(getImgAsJLabel(goldHorseIterator.next()));
-        arimaaBoardSquares[1][5].add(getImgAsJLabel(goldHorseIterator.next()));
+        arimaaBoardArray[6][2].add(getImgAsJLabel(silverHorseIterator.next()));
+        arimaaBoardArray[6][5].add(getImgAsJLabel(silverHorseIterator.next()));
+        arimaaBoardArray[1][2].add(getImgAsJLabel(goldHorseIterator.next()));
+        arimaaBoardArray[1][5].add(getImgAsJLabel(goldHorseIterator.next()));
 
         // camel
         Iterator<Piece> silverCamelIterator = Pieces.getPieces(ColorPiece.SILVER, Type.CAMEL).iterator();
         Iterator<Piece> goldCamelIterator = Pieces.getPieces(ColorPiece.GOLD, Type.CAMEL).iterator();
-        arimaaBoardSquares[6][3].add(getImgAsJLabel(silverCamelIterator.next()));
-        arimaaBoardSquares[1][4].add(getImgAsJLabel(goldCamelIterator.next()));
+        arimaaBoardArray[6][3].add(getImgAsJLabel(silverCamelIterator.next()));
+        arimaaBoardArray[1][4].add(getImgAsJLabel(goldCamelIterator.next()));
 
         // elephant
         Iterator<Piece> silverElephantIterator = Pieces.getPieces(ColorPiece.SILVER, Type.ELEPHANT).iterator();
         Iterator<Piece> goldElephantIterator = Pieces.getPieces(ColorPiece.GOLD, Type.ELEPHANT).iterator();
-        arimaaBoardSquares[6][4].add(getImgAsJLabel(silverElephantIterator.next()));
-        arimaaBoardSquares[1][3].add(getImgAsJLabel(goldElephantIterator.next()));
-
-
+        arimaaBoardArray[6][4].add(getImgAsJLabel(silverElephantIterator.next()));
+        arimaaBoardArray[1][3].add(getImgAsJLabel(goldElephantIterator.next()));
 
     }
 
@@ -177,29 +173,61 @@ public class BoardPanel extends JPanel {
      * @return JLabel containing ImageIcon() of piece
      */
     private JLabel getImgAsJLabel(Piece piece) {
-        Image pieceImage = new ImageIcon(getClass().getResource(piece.getImgPath())).getImage();
-        System.out.println(getClass().getResource(piece.getImgPath()));
-        pieceImage = pieceImage.getScaledInstance(SQUARE_DIMENSION, SQUARE_DIMENSION, Image.SCALE_SMOOTH);
-        JLabel pieceImageLabel = new JLabel(new ImageIcon(pieceImage));
-        return pieceImageLabel;
+        Image pieceImage = new ImageIcon(Objects.requireNonNull(getClass().getResource(piece.getImgPath()))).getImage();
+        pieceImage = pieceImage.getScaledInstance(SQUARE_DIMENSION-10, SQUARE_DIMENSION-10, Image.SCALE_SMOOTH);
+        return new JLabel(new ImageIcon(pieceImage));
+    }
+
+    /**
+     * Submit Move to Game, regarding validity and execution.
+     *
+     * @param sourceX char coordinate of Piece
+     * @param sourceY int coordinate of Piece
+     * @param destinationX char coordinate of Piece
+     * @param destinationY int coordinate of Piece
+     */
+    public void submitMoveRequest(char sourceX, int sourceY, char destinationX, int destinationY) {
+        System.out.println("submitted move request");
+        if (getSquarePanel(sourceY, sourceX).getComponent(0) != null ) {
+            getSquarePanel(sourceY, sourceX).getComponent(0).setVisible(true);
+            game.moveRequest(sourceX, sourceY, destinationX, destinationY);
+        }
+    }
+
+    /**
+     * Move Piece from source to destination and sets it to visible. If move effects other Pieces do as well.
+     *
+     * @param move validated Move
+     */
+    public void makeMove(Move move) {
+        // TODO updates regarding game logic
+        JPanel sourceSquarePanel = getSquarePanel(move.getSy(), move.getSx());
+        JPanel destinationSquarePanel = getSquarePanel(move.getDy(), move.getDx());
+        destinationSquarePanel.removeAll();
+        destinationSquarePanel.add(sourceSquarePanel.getComponent(0));
+        destinationSquarePanel.repaint();
+        sourceSquarePanel.removeAll();
+        sourceSquarePanel.repaint();
     }
 
 
     // --------- Mechanism for drag and drop movement ---------
-    // TODO write mechanism that will drag and drop them in grid layout
 
     /**
-     * Take Piece from source and put it into JLayeredPane.
-     * @param sourceX
-     * @param sourceY
-     * @param dragX
-     * @param dragY
+     * Take pieceImageLabel (Piece) from source and put its copy into JLayeredPane. Original pieceImageLabel is
+     * still at source --> setVisible(false).
+     *
+     * @param sourceX char coordinate of Piece
+     * @param sourceY int coordinate of Piece
+     * @param dragX char coordinate of Piece in drag phase
+     * @param dragY int coordinate of Piece in drag phase
      */
     public void preDrag(char sourceX, int sourceY, int dragX, int dragY) {
-        System.out.println("pre-Drag");
-        Piece originPiece = game.getBoardModel().getPiece(sourceX, sourceY);
+        System.out.println("Piece picked!");
+        Piece originPiece = game.getBoardModel().getSpot(sourceX, sourceY).getPiece();
+        System.out.println("Piece: " + originPiece.getImgPath());
         if (originPiece != null) {
-            getSquarePanel(sourceX, sourceY).getComponent(0).setVisible(false); // Piece disappear form boardPane
+            getSquarePanel(sourceY, sourceX).getComponent(0).setVisible(false); // Piece disappear form boardPane but is still there
             JLabel draggedPieceImageLabel = getImgAsJLabel(originPiece);    // Create drag Piece in boardLayeredPane
             draggedPieceImageLabel.setLocation(dragX, dragY);
             draggedPieceImageLabel.setSize(SQUARE_DIMENSION, SQUARE_DIMENSION);
@@ -208,17 +236,28 @@ public class BoardPanel extends JPanel {
     }
 
     /**
-     * Move pieceImageLabel over window.
+     * Move pieceImageLabel (Piece) over BoardPanel.
+     *
+     * @param dragX char coordinate of Piece in drag phase
+     * @param dragY int coordinate of Piece in drag phase
      */
-    public void drag() {
-
+    public void drag(int dragX, int dragY) {
+        System.out.println("Piece dragged!");
+        JLabel draggedPieceImageLabel = (JLabel) boardLayeredPane.getComponentsInLayer(JLayeredPane.DRAG_LAYER)[0];
+        if (draggedPieceImageLabel != null) {
+            draggedPieceImageLabel.setLocation(dragX, dragY);
+        }
     }
 
+
     /**
-     * Put pieceImageLabel back to boardPane from boardLayeredPane.
+     * Remove pieceImageLabel (Piece) from JLayeredPane, when drag ends.
      */
     public void postDrag() {
-
+        System.out.println("Piece droped!");
+        JLabel draggedPieceImageLabel = (JLabel) boardLayeredPane.getComponentsInLayer(JLayeredPane.DRAG_LAYER)[0];
+        boardLayeredPane.remove(draggedPieceImageLabel);
+        boardLayeredPane.repaint();
     }
 
 
