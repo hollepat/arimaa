@@ -9,7 +9,7 @@ import java.awt.event.MouseMotionListener;
 public class DragAndDropListener implements MouseListener, MouseMotionListener {
 
 
-    private BoardPanel boardPanel;
+    private final BoardPanel boardPanel;
 
     private boolean isDragged = false;
     private char sourceX;
@@ -28,7 +28,6 @@ public class DragAndDropListener implements MouseListener, MouseMotionListener {
      */
     @Override
     public void mousePressed(MouseEvent e) {
-        // TODO implement
         sourceX = getColumnPosition(e);
         sourceY = getRowPosition(e);
         System.out.println("sourceX: " + sourceX + " sourceY: " + sourceY);
@@ -45,7 +44,6 @@ public class DragAndDropListener implements MouseListener, MouseMotionListener {
      */
     @Override
     public void mouseReleased(MouseEvent e) {
-        // TODO implement
         if (isDragged) {
             boardPanel.postDrag();
             boardPanel.submitMoveRequest(sourceX, sourceY, getColumnPosition(e), getRowPosition(e));
@@ -60,7 +58,6 @@ public class DragAndDropListener implements MouseListener, MouseMotionListener {
      */
     @Override
     public void mouseDragged(MouseEvent e) {
-        // TODO implement
         if (isDragged) {
             boardPanel.drag(e.getPoint().x - offsetX, e.getPoint().y - offsetY);
         } else {

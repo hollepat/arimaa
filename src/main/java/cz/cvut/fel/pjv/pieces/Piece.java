@@ -35,6 +35,10 @@ abstract public class Piece extends JLabel {
         this.type = type;
     }
 
+    public Type getType() {
+        return type;
+    }
+
     public abstract String getImgPath();
 
 

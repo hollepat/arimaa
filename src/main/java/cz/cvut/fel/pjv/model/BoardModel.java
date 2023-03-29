@@ -8,10 +8,7 @@ import cz.cvut.fel.pjv.pieces.Type;
 
 import java.util.Iterator;
 
-/**
- * Abstract representation of board. It handel, where each Piece is located on board
- */
-public class BoardModel {   // originator
+public class BoardModel {
 
     private final int BOARD_DIMENSION = 8;
 
@@ -41,7 +38,7 @@ public class BoardModel {   // originator
     /**
      * Do move in BoardModel. Change position of Piece/Pieces.
      *
-     * @param move
+     * @param move valid Move to execute in BoardModel
      */
     public void doMove(Move move) {
         Spot originSquare = getSpot(move.getSx(), move.getSy());
@@ -53,17 +50,26 @@ public class BoardModel {   // originator
         originSquare.setPiece(null);
     }
 
-
-    public Memento saveMove() {
-        // TODO implement
-        return null;
+    public void makeUndo(Move move) {
+        Spot originSquare = getSpot(move.getSx(), move.getSy());
+        Spot destinationSquare = getSpot(move.getSx(), move.getSy());
+        destinationSquare.setPiece(originSquare.getPiece());
+        originSquare.setPiece(null);
     }
 
     /**
-     * Undo move in BoardModel. Change position of last moved Piece/Pieces.
+     * Save current to file.
      */
-    public void restoreMove(Memento m) {
+    public void saveState() {
         // TODO implement
+    }
+
+    /**
+     * Load state of board from file.
+     */
+    public void loadState() {
+        // TODO implement
+
     }
 
     public void writeToFile() {
@@ -120,7 +126,6 @@ public class BoardModel {   // originator
     }
 
     private void initSquares() {
-        // TODO init each Square
         for (int i = 0; i < BOARD_DIMENSION; i++) {
             for (int j = 0; j < BOARD_DIMENSION; j++) {
                 if ((i == 2 || i == 5) && (j == 2 || j == 5)) {

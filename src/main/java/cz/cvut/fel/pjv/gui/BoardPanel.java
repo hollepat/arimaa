@@ -188,9 +188,13 @@ public class BoardPanel extends JPanel {
      */
     public void submitMoveRequest(char sourceX, int sourceY, char destinationX, int destinationY) {
         System.out.println("submitted move request");
-        if (getSquarePanel(sourceY, sourceX).getComponent(0) != null ) {
-            getSquarePanel(sourceY, sourceX).getComponent(0).setVisible(true);
+        try {
+            if (getSquarePanel(sourceY, sourceX) != null) {
+                getSquarePanel(sourceY, sourceX).getComponent(0).setVisible(true);
+            }
             game.moveRequest(sourceX, sourceY, destinationX, destinationY);
+        } catch (ArrayIndexOutOfBoundsException e) {
+            System.out.println("Move request was not submitted!");
         }
     }
 
@@ -210,6 +214,16 @@ public class BoardPanel extends JPanel {
         sourceSquarePanel.repaint();
     }
 
+    public void makeUndo(Move move) {
+        JPanel originSquarePanel = getSquarePanel(move.getSy(), move.getSx());
+        JPanel destinationSquarePanel = getSquarePanel( move.getDy(), move.getDx());
+        originSquarePanel.add(destinationSquarePanel.getComponent(0));
+        destinationSquarePanel.removeAll();
+        originSquarePanel.repaint();
+        destinationSquarePanel.repaint();
+
+    }
+
 
     // --------- Mechanism for drag and drop movement ---------
 
@@ -224,15 +238,17 @@ public class BoardPanel extends JPanel {
      */
     public void preDrag(char sourceX, int sourceY, int dragX, int dragY) {
         System.out.println("Piece picked!");
-        Piece originPiece = game.getBoardModel().getSpot(sourceX, sourceY).getPiece();
-        System.out.println("Piece: " + originPiece.getImgPath());
-        if (originPiece != null) {
-            getSquarePanel(sourceY, sourceX).getComponent(0).setVisible(false); // Piece disappear form boardPane but is still there
-            JLabel draggedPieceImageLabel = getImgAsJLabel(originPiece);    // Create drag Piece in boardLayeredPane
-            draggedPieceImageLabel.setLocation(dragX, dragY);
-            draggedPieceImageLabel.setSize(SQUARE_DIMENSION, SQUARE_DIMENSION);
-            boardLayeredPane.add(draggedPieceImageLabel, JLayeredPane.DRAG_LAYER);  // drag Piece appear in boardLayeredPane
+        if (game.getBoardModel().getSpot(sourceX, sourceY).getPiece() == null) {
+            System.out.println("On position x: " + dragX + " y: " + dragY + " is no Piece!");
+            return;
         }
+        Piece originPiece = game.getBoardModel().getSpot(sourceX, sourceY).getPiece();
+        System.out.println("Piece: " + originPiece.getType());
+        getSquarePanel(sourceY, sourceX).getComponent(0).setVisible(false); // Piece disappear form boardPane but is still there
+        JLabel draggedPieceImageLabel = getImgAsJLabel(originPiece);    // Create drag Piece in boardLayeredPane
+        draggedPieceImageLabel.setLocation(dragX, dragY);
+        draggedPieceImageLabel.setSize(SQUARE_DIMENSION, SQUARE_DIMENSION);
+        boardLayeredPane.add(draggedPieceImageLabel, JLayeredPane.DRAG_LAYER);  // drag Piece appear in boardLayeredPane
     }
 
     /**
@@ -242,11 +258,16 @@ public class BoardPanel extends JPanel {
      * @param dragY int coordinate of Piece in drag phase
      */
     public void drag(int dragX, int dragY) {
-        System.out.println("Piece dragged!");
-        JLabel draggedPieceImageLabel = (JLabel) boardLayeredPane.getComponentsInLayer(JLayeredPane.DRAG_LAYER)[0];
-        if (draggedPieceImageLabel != null) {
-            draggedPieceImageLabel.setLocation(dragX, dragY);
+        try {
+            System.out.println("Piece dragged!");
+            JLabel draggedPieceImageLabel = (JLabel) boardLayeredPane.getComponentsInLayer(JLayeredPane.DRAG_LAYER)[0];
+            if (draggedPieceImageLabel != null) {
+                draggedPieceImageLabel.setLocation(dragX, dragY);
+            }
+        } catch (Exception e) {
+            System.out.println("No Piece to drag!");
         }
+
     }
 
 
@@ -254,10 +275,14 @@ public class BoardPanel extends JPanel {
      * Remove pieceImageLabel (Piece) from JLayeredPane, when drag ends.
      */
     public void postDrag() {
-        System.out.println("Piece droped!");
-        JLabel draggedPieceImageLabel = (JLabel) boardLayeredPane.getComponentsInLayer(JLayeredPane.DRAG_LAYER)[0];
-        boardLayeredPane.remove(draggedPieceImageLabel);
-        boardLayeredPane.repaint();
+        try {
+            System.out.println("Piece dropped!");
+            JLabel draggedPieceImageLabel = (JLabel) boardLayeredPane.getComponentsInLayer(JLayeredPane.DRAG_LAYER)[0];
+            boardLayeredPane.remove(draggedPieceImageLabel);
+            boardLayeredPane.repaint();
+        } catch (Exception e) {
+            System.out.println("No Piece were dropped!");
+        }
     }
 
 

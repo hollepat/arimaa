@@ -4,15 +4,14 @@ import cz.cvut.fel.pjv.gui.BoardPanel;
 import cz.cvut.fel.pjv.gui.GameFrame;
 import cz.cvut.fel.pjv.pieces.Piece;
 
-import java.util.Stack;
 
-public class Game {     // Caretaker
+public class Game {
 
     public static Piece currentPiece;
     public static String currentPlayer;
     private GameStatus gameStatus;
 
-    private Stack<Memento> history;
+    private MoveLogger moveLogger;
     private BoardPanel boardPanel;
     private BoardModel boardModel;  // originator
     private GameFrame gameFrame;
@@ -32,6 +31,7 @@ public class Game {     // Caretaker
 
     private void initModel() {
         boardModel = new BoardModel();
+        moveLogger = new MoveLogger();
     }
 
     private void initGUI() {
@@ -41,24 +41,8 @@ public class Game {     // Caretaker
     }
 
 
-    // ----- event logic -------
 
 
-    /**
-     * Create a new snapshot containing Move.
-     */
-    public void doMove() {
-        Memento m = boardModel.saveMove();
-        history.push(m);
-    }
-
-    /**
-     * Return last made Move.
-     */
-    public void undoMove() {
-        Memento m = history.pop();
-        boardModel.restoreMove(m);
-    }
 
     /**
      * Check Move for validity.
@@ -71,6 +55,7 @@ public class Game {     // Caretaker
     public void moveRequest(char sourceX, int sourceY, char destinationX, int destinationY) {
         Move move = new Move(null, sourceX, sourceY, destinationX, destinationY);
         // if move valid
+        moveLogger.saveMove(move);
         execute(move);
     }
 
@@ -88,6 +73,15 @@ public class Game {     // Caretaker
     }
 
 
+    public void undoMove() {
+        Move lastMove = moveLogger.undoMove();
+        if (lastMove != null) {
+            // if valid move
+            boardPanel.makeUndo(lastMove);
+            boardModel.makeUndo(lastMove);
+        }
+    }
+
 
 
 
@@ -101,6 +95,10 @@ public class Game {     // Caretaker
 
     public BoardModel getBoardModel() {
         return boardModel;
+    }
+
+    public MoveLogger getMoveLogger() {
+        return moveLogger;
     }
 
     public static void main(String[] argv) {
