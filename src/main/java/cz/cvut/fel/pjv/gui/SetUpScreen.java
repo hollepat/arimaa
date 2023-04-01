@@ -11,6 +11,7 @@ public class SetUpScreen extends JFrame {
     private JButton backButton;
     private JRadioButton playerVsPlayerRadioButton;
     private JRadioButton playerVsPCRadioButton;
+    private JCheckBox logMessagesCheckBox;
 
     private JFrame launchFrame;
 
@@ -45,10 +46,11 @@ public class SetUpScreen extends JFrame {
                 onBack();
             }
         }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+
     }
 
     private void onCreate() {
-        Game game = new Game();
+        Game game = new Game(logMessagesCheckBox.isSelected());
         dispose();
     }
 

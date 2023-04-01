@@ -5,6 +5,7 @@ import cz.cvut.fel.pjv.gui.BoardPanel;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.util.logging.Level;
 
 public class DragAndDropListener implements MouseListener, MouseMotionListener {
 
@@ -30,11 +31,11 @@ public class DragAndDropListener implements MouseListener, MouseMotionListener {
     public void mousePressed(MouseEvent e) {
         sourceX = getColumnPosition(e);
         sourceY = getRowPosition(e);
-        System.out.println("sourceX: " + sourceX + " sourceY: " + sourceY);
+        Game.logger.log(Level.CONFIG, "sourceX: " + sourceX + " sourceY: " + sourceY);
 
         offsetX = e.getPoint().x - boardPanel.SQUARE_DIMENSION * (getColumnPosition(e) - 'a' + 1);
         offsetY = e.getPoint().y - boardPanel.SQUARE_DIMENSION * (9 - getRowPosition(e));
-        System.out.println("draggedX: " + offsetX + " draggedY: " + offsetY);
+        Game.logger.log(Level.CONFIG, "draggedX: " + offsetX + " draggedY: " + offsetY);
     }
 
     /**
@@ -87,8 +88,8 @@ public class DragAndDropListener implements MouseListener, MouseMotionListener {
 
     @Override
     public void mouseClicked(MouseEvent e) {
-        System.out.println("x: " + getColumnPosition(e) + "(" + e.getPoint().x + ")");
-        System.out.println("y: " + getRowPosition(e) + "(" + e.getPoint().y + ")");
+        Game.logger.log(Level.CONFIG, "x: " + getColumnPosition(e) + "(" + e.getPoint().x + ")");
+        Game.logger.log(Level.CONFIG, "y: " + getRowPosition(e) + "(" + e.getPoint().y + ")");
 
     }
 

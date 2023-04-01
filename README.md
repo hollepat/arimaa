@@ -9,5 +9,5 @@ Game __arimaa__.
 2. Add Game Logic
 3. Save Game --> write state of board to file and use function to recreate
 4. Player to Player/ PC to Player options
-5. Log messages
+
 
