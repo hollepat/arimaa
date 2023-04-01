@@ -13,6 +13,7 @@ import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.util.Iterator;
 import java.util.Objects;
+import java.util.logging.Level;
 
 public class BoardPanel extends JPanel {
 
@@ -187,14 +188,14 @@ public class BoardPanel extends JPanel {
      * @param destinationY int coordinate of Piece
      */
     public void submitMoveRequest(char sourceX, int sourceY, char destinationX, int destinationY) {
-        System.out.println("submitted move request");
+        Game.logger.log(Level.INFO, "Submit move request!");
         try {
             if (getSquarePanel(sourceY, sourceX) != null) {
                 getSquarePanel(sourceY, sourceX).getComponent(0).setVisible(true);
             }
             game.moveRequest(sourceX, sourceY, destinationX, destinationY);
         } catch (ArrayIndexOutOfBoundsException e) {
-            System.out.println("Move request was not submitted!");
+            Game.logger.log(Level.WARNING, "Move request was not submitted!");
         }
     }
 
@@ -237,13 +238,13 @@ public class BoardPanel extends JPanel {
      * @param dragY int coordinate of Piece in drag phase
      */
     public void preDrag(char sourceX, int sourceY, int dragX, int dragY) {
-        System.out.println("Piece picked!");
+        Game.logger.log(Level.INFO, "Piece picked!");
         if (game.getBoardModel().getSpot(sourceX, sourceY).getPiece() == null) {
-            System.out.println("On position x: " + dragX + " y: " + dragY + " is no Piece!");
+            Game.logger.log(Level.WARNING, "On position x: " + dragX + " y: " + dragY + " is no Piece!");
             return;
         }
         Piece originPiece = game.getBoardModel().getSpot(sourceX, sourceY).getPiece();
-        System.out.println("Piece: " + originPiece.getType());
+        Game.logger.log(Level.CONFIG, "Piece: " + originPiece.getType());
         getSquarePanel(sourceY, sourceX).getComponent(0).setVisible(false); // Piece disappear form boardPane but is still there
         JLabel draggedPieceImageLabel = getImgAsJLabel(originPiece);    // Create drag Piece in boardLayeredPane
         draggedPieceImageLabel.setLocation(dragX, dragY);
@@ -259,13 +260,13 @@ public class BoardPanel extends JPanel {
      */
     public void drag(int dragX, int dragY) {
         try {
-            System.out.println("Piece dragged!");
+            Game.logger.log(Level.INFO, "Piece is dragged!");
             JLabel draggedPieceImageLabel = (JLabel) boardLayeredPane.getComponentsInLayer(JLayeredPane.DRAG_LAYER)[0];
             if (draggedPieceImageLabel != null) {
                 draggedPieceImageLabel.setLocation(dragX, dragY);
             }
         } catch (Exception e) {
-            System.out.println("No Piece to drag!");
+            Game.logger.log(Level.WARNING, "No Piece to drag!");
         }
 
     }
@@ -276,12 +277,12 @@ public class BoardPanel extends JPanel {
      */
     public void postDrag() {
         try {
-            System.out.println("Piece dropped!");
+            Game.logger.log(Level.CONFIG, "Piece dropped!");
             JLabel draggedPieceImageLabel = (JLabel) boardLayeredPane.getComponentsInLayer(JLayeredPane.DRAG_LAYER)[0];
             boardLayeredPane.remove(draggedPieceImageLabel);
             boardLayeredPane.repaint();
         } catch (Exception e) {
-            System.out.println("No Piece were dropped!");
+            Game.logger.log(Level.WARNING, "No Piece were dropped!");
         }
     }
 

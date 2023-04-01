@@ -3,29 +3,33 @@ package cz.cvut.fel.pjv.model;
 import cz.cvut.fel.pjv.gui.BoardPanel;
 import cz.cvut.fel.pjv.gui.GameFrame;
 import cz.cvut.fel.pjv.pieces.Piece;
+import cz.cvut.fel.pjv.utilities.MyFormatter;
+
+import java.util.logging.*;
 
 
 public class Game {
 
-    public static Piece currentPiece;
-    public static String currentPlayer;
+    public String currentPlayer;
     private GameStatus gameStatus;
 
     private MoveLogger moveLogger;
     private BoardPanel boardPanel;
     private BoardModel boardModel;  // originator
     private GameFrame gameFrame;
+    private Boolean logging;
+    public static Logger logger = Logger.getLogger(Game.class.getName());;
 
     /**
      * Constructor for Game
      */
-    public Game() {
+    public Game(Boolean log) {
         this.gameStatus = GameStatus.ACTIVE;
-        currentPiece = null;
-        currentPlayer = "gold";
+        this.currentPlayer = "gold";        // always starts gold
+        this.logging = log;
         initGUI();
         initModel();
-
+        setUpLogger();
 
     }
 
@@ -40,7 +44,14 @@ public class Game {
 
     }
 
+    private void setUpLogger() {
+        if (this.logging) { logger.setLevel(Level.ALL); }
+        else { logger.setLevel(Level.OFF); }
 
+        Handler handler = new ConsoleHandler();
+        handler.setFormatter(new MyFormatter());
+        logger.addHandler(handler);
+    }
 
 
 
@@ -74,6 +85,7 @@ public class Game {
 
 
     public void undoMove() {
+
         Move lastMove = moveLogger.undoMove();
         if (lastMove != null) {
             // if valid move
@@ -102,7 +114,7 @@ public class Game {
     }
 
     public static void main(String[] argv) {
-        Game game = new Game();
+        Game game = new Game(true);
     }
 
 }
