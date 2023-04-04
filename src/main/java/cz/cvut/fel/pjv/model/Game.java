@@ -3,7 +3,6 @@ package cz.cvut.fel.pjv.model;
 import cz.cvut.fel.pjv.gui.BoardPanel;
 import cz.cvut.fel.pjv.gui.GameFrame;
 import cz.cvut.fel.pjv.pieces.ColorPiece;
-import cz.cvut.fel.pjv.pieces.Piece;
 import cz.cvut.fel.pjv.utilities.MyFormatter;
 
 import java.util.logging.*;
@@ -48,7 +47,7 @@ public class Game {
     private void initModel() {
         boardModel = new BoardModel();
         moveLogger = new MoveLogger();
-        gameValidator = new GameValidator(boardModel);
+        gameValidator = new GameValidator(boardModel, this);
 
     }
 
@@ -78,11 +77,12 @@ public class Game {
      * @param destinationY int coordinate of Piece
      */
     public void moveRequest(char sourceX, int sourceY, char destinationX, int destinationY) {
-        Move move = new Move(null, sourceX, sourceY, destinationX, destinationY);
+        Move move = new Move(boardModel.getSpot(sourceX, sourceY).getPiece(), sourceX, sourceY, destinationX, destinationY);
         if (gameValidator.validateMove(move)) {
             moveLogger.saveMove(move);
             execute(move);
         }
+        gameValidator.endMove(move);
     }
 
 
@@ -130,6 +130,14 @@ public class Game {
 
     public MoveLogger getMoveLogger() {
         return moveLogger;
+    }
+
+    public void setGameStatus(GameStatus gameStatus) {
+        this.gameStatus = gameStatus;
+    }
+
+    public GameStatus getGameStatus() {
+        return gameStatus;
     }
 
     public static void main(String[] argv) {

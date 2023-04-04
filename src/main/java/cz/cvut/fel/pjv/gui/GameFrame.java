@@ -1,10 +1,13 @@
 package cz.cvut.fel.pjv.gui;
 
 import cz.cvut.fel.pjv.model.Game;
+import cz.cvut.fel.pjv.model.GameStatus;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class GameFrame extends JFrame {
 
@@ -41,7 +44,11 @@ public class GameFrame extends JFrame {
         tools.add(undoButton);
         tools.add(new JButton("Resign")); // TODO - give up game
         tools.addSeparator();
-        tools.add(new JLabel("Let's Play!!"));
+
+        //JLabel infoText = new JLabel("Let's Play!!");
+        JButton infoText = new JButton("Let's Play!!");
+        infoText.setBorderPainted(false);
+        tools.add(infoText);
 
         containerPanel.add(game.getBoardPanel());
 

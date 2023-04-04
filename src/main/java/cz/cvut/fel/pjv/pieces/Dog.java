@@ -16,7 +16,7 @@ public class Dog extends Piece{
     }
 
     public Dog(ColorPiece color) {
-        super(color, Type.DOG);
+        super(color, PieceType.DOG);
     }
 
     @Override

@@ -17,7 +17,7 @@ public class Camel extends Piece{
     }
 
     public Camel(ColorPiece color) {
-        super(color, Type.CAMEL);
+        super(color, PieceType.CAMEL);
     }
 
     @Override

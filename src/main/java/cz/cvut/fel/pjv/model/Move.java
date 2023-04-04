@@ -35,4 +35,8 @@ public class Move {
     public int getDy() {
         return dy;
     }
+
+    public Piece getPiece() {
+        return piece;
+    }
 }

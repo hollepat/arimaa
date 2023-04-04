@@ -3,8 +3,8 @@ package cz.cvut.fel.pjv.model;
 
 import cz.cvut.fel.pjv.pieces.ColorPiece;
 import cz.cvut.fel.pjv.pieces.Piece;
+import cz.cvut.fel.pjv.pieces.PieceType;
 import cz.cvut.fel.pjv.pieces.Pieces;
-import cz.cvut.fel.pjv.pieces.Type;
 
 import java.util.Iterator;
 
@@ -78,8 +78,8 @@ public class BoardModel {
 
     private void initPieces() {
         // rabbit
-        Iterator<Piece> silverRabbitsIterator = Pieces.getPieces(ColorPiece.SILVER, Type.RABBIT).iterator();
-        Iterator<Piece> goldRabbitsIterator = Pieces.getPieces(ColorPiece.GOLD, Type.RABBIT).iterator();
+        Iterator<Piece> silverRabbitsIterator = Pieces.getPieces(ColorPiece.SILVER, PieceType.RABBIT).iterator();
+        Iterator<Piece> goldRabbitsIterator = Pieces.getPieces(ColorPiece.GOLD, PieceType.RABBIT).iterator();
         for (char col = 'a'; col <= 'h'; col++) {
             getSpot(col, 8).setPiece(silverRabbitsIterator.next());   // add gold Piece
             getSpot(col, 1).setPiece(goldRabbitsIterator.next());   // add silver Piece
@@ -87,38 +87,38 @@ public class BoardModel {
         }
 
         // cat
-        Iterator<Piece> silverCatIterator = Pieces.getPieces(ColorPiece.SILVER, Type.CAT).iterator();
-        Iterator<Piece> goldCatIterator = Pieces.getPieces(ColorPiece.GOLD, Type.CAT).iterator();
+        Iterator<Piece> silverCatIterator = Pieces.getPieces(ColorPiece.SILVER, PieceType.CAT).iterator();
+        Iterator<Piece> goldCatIterator = Pieces.getPieces(ColorPiece.GOLD, PieceType.CAT).iterator();
         getSpot('a',7).setPiece(silverCatIterator.next());
         getSpot('h',7).setPiece(silverCatIterator.next());
         getSpot('a',2).setPiece(goldCatIterator.next());
         getSpot('h',2).setPiece(goldCatIterator.next());
 
         // dog
-        Iterator<Piece> silverDogIterator = Pieces.getPieces(ColorPiece.SILVER, Type.DOG).iterator();
-        Iterator<Piece> goldDogIterator = Pieces.getPieces(ColorPiece.GOLD, Type.DOG).iterator();
+        Iterator<Piece> silverDogIterator = Pieces.getPieces(ColorPiece.SILVER, PieceType.DOG).iterator();
+        Iterator<Piece> goldDogIterator = Pieces.getPieces(ColorPiece.GOLD, PieceType.DOG).iterator();
         getSpot('b',7).setPiece(silverDogIterator.next());
         getSpot('g',7).setPiece(silverDogIterator.next());
         getSpot('b',2).setPiece(goldDogIterator.next());
         getSpot('g',2).setPiece(goldDogIterator.next());
 
         // horse
-        Iterator<Piece> silverHorseIterator = Pieces.getPieces(ColorPiece.SILVER, Type.HORSE).iterator();
-        Iterator<Piece> goldHorseIterator = Pieces.getPieces(ColorPiece.GOLD, Type.HORSE).iterator();
+        Iterator<Piece> silverHorseIterator = Pieces.getPieces(ColorPiece.SILVER, PieceType.HORSE).iterator();
+        Iterator<Piece> goldHorseIterator = Pieces.getPieces(ColorPiece.GOLD, PieceType.HORSE).iterator();
         getSpot('c', 7).setPiece(silverHorseIterator.next());
         getSpot('f', 7).setPiece(silverHorseIterator.next());
         getSpot('c', 2).setPiece(goldHorseIterator.next());
         getSpot('f', 2).setPiece(goldHorseIterator.next());
 
         // camel
-        Iterator<Piece> silverCamelIterator = Pieces.getPieces(ColorPiece.SILVER, Type.CAMEL).iterator();
-        Iterator<Piece> goldCamelIterator = Pieces.getPieces(ColorPiece.GOLD, Type.CAMEL).iterator();
+        Iterator<Piece> silverCamelIterator = Pieces.getPieces(ColorPiece.SILVER, PieceType.CAMEL).iterator();
+        Iterator<Piece> goldCamelIterator = Pieces.getPieces(ColorPiece.GOLD, PieceType.CAMEL).iterator();
         getSpot('d', 7).setPiece(silverCamelIterator.next());
         getSpot('e', 2).setPiece(goldCamelIterator.next());
 
         // elephant
-        Iterator<Piece> silverElephantIterator = Pieces.getPieces(ColorPiece.SILVER, Type.ELEPHANT).iterator();
-        Iterator<Piece> goldElephantIterator = Pieces.getPieces(ColorPiece.GOLD, Type.ELEPHANT).iterator();
+        Iterator<Piece> silverElephantIterator = Pieces.getPieces(ColorPiece.SILVER, PieceType.ELEPHANT).iterator();
+        Iterator<Piece> goldElephantIterator = Pieces.getPieces(ColorPiece.GOLD, PieceType.ELEPHANT).iterator();
         getSpot('e', 7).setPiece(silverElephantIterator.next());
         getSpot('d', 2).setPiece(goldElephantIterator.next());
 

@@ -5,8 +5,8 @@ import cz.cvut.fel.pjv.model.Game;
 import cz.cvut.fel.pjv.model.Move;
 import cz.cvut.fel.pjv.pieces.ColorPiece;
 import cz.cvut.fel.pjv.pieces.Piece;
+import cz.cvut.fel.pjv.pieces.PieceType;
 import cz.cvut.fel.pjv.pieces.Pieces;
-import cz.cvut.fel.pjv.pieces.Type;
 
 import javax.swing.*;
 import javax.swing.border.LineBorder;
@@ -122,8 +122,8 @@ public class BoardPanel extends JPanel {
     private void createPieces() {
 
         // rabbit
-        Iterator<Piece> silverRabbitsIterator = Pieces.getPieces(ColorPiece.SILVER, Type.RABBIT).iterator();
-        Iterator<Piece> goldRabbitsIterator = Pieces.getPieces(ColorPiece.GOLD, Type.RABBIT).iterator();
+        Iterator<Piece> silverRabbitsIterator = Pieces.getPieces(ColorPiece.SILVER, PieceType.RABBIT).iterator();
+        Iterator<Piece> goldRabbitsIterator = Pieces.getPieces(ColorPiece.GOLD, PieceType.RABBIT).iterator();
         for (int col = 0; col < 8; col++) {
             arimaaBoardArray[7][col].add(getImgAsJLabel(silverRabbitsIterator.next()), 0, 0);   // add gold Piece
             arimaaBoardArray[0][col].add(getImgAsJLabel(goldRabbitsIterator.next()), 0, 0);   // add silver Piece
@@ -131,38 +131,38 @@ public class BoardPanel extends JPanel {
         }
 
         // cat
-        Iterator<Piece> silverCatIterator = Pieces.getPieces(ColorPiece.SILVER, Type.CAT).iterator();
-        Iterator<Piece> goldCatIterator = Pieces.getPieces(ColorPiece.GOLD, Type.CAT).iterator();
+        Iterator<Piece> silverCatIterator = Pieces.getPieces(ColorPiece.SILVER, PieceType.CAT).iterator();
+        Iterator<Piece> goldCatIterator = Pieces.getPieces(ColorPiece.GOLD, PieceType.CAT).iterator();
         arimaaBoardArray[6][0].add(getImgAsJLabel(silverCatIterator.next()));
         arimaaBoardArray[6][7].add(getImgAsJLabel(silverCatIterator.next()));
         arimaaBoardArray[1][0].add(getImgAsJLabel(goldCatIterator.next()));
         arimaaBoardArray[1][7].add(getImgAsJLabel(goldCatIterator.next()));
 
         // dog
-        Iterator<Piece> silverDogIterator = Pieces.getPieces(ColorPiece.SILVER, Type.DOG).iterator();
-        Iterator<Piece> goldDogIterator = Pieces.getPieces(ColorPiece.GOLD, Type.DOG).iterator();
+        Iterator<Piece> silverDogIterator = Pieces.getPieces(ColorPiece.SILVER, PieceType.DOG).iterator();
+        Iterator<Piece> goldDogIterator = Pieces.getPieces(ColorPiece.GOLD, PieceType.DOG).iterator();
         arimaaBoardArray[6][1].add(getImgAsJLabel(silverDogIterator.next()));
         arimaaBoardArray[6][6].add(getImgAsJLabel(silverDogIterator.next()));
         arimaaBoardArray[1][1].add(getImgAsJLabel(goldDogIterator.next()));
         arimaaBoardArray[1][6].add(getImgAsJLabel(goldDogIterator.next()));
 
         // horse
-        Iterator<Piece> silverHorseIterator = Pieces.getPieces(ColorPiece.SILVER, Type.HORSE).iterator();
-        Iterator<Piece> goldHorseIterator = Pieces.getPieces(ColorPiece.GOLD, Type.HORSE).iterator();
+        Iterator<Piece> silverHorseIterator = Pieces.getPieces(ColorPiece.SILVER, PieceType.HORSE).iterator();
+        Iterator<Piece> goldHorseIterator = Pieces.getPieces(ColorPiece.GOLD, PieceType.HORSE).iterator();
         arimaaBoardArray[6][2].add(getImgAsJLabel(silverHorseIterator.next()));
         arimaaBoardArray[6][5].add(getImgAsJLabel(silverHorseIterator.next()));
         arimaaBoardArray[1][2].add(getImgAsJLabel(goldHorseIterator.next()));
         arimaaBoardArray[1][5].add(getImgAsJLabel(goldHorseIterator.next()));
 
         // camel
-        Iterator<Piece> silverCamelIterator = Pieces.getPieces(ColorPiece.SILVER, Type.CAMEL).iterator();
-        Iterator<Piece> goldCamelIterator = Pieces.getPieces(ColorPiece.GOLD, Type.CAMEL).iterator();
+        Iterator<Piece> silverCamelIterator = Pieces.getPieces(ColorPiece.SILVER, PieceType.CAMEL).iterator();
+        Iterator<Piece> goldCamelIterator = Pieces.getPieces(ColorPiece.GOLD, PieceType.CAMEL).iterator();
         arimaaBoardArray[6][3].add(getImgAsJLabel(silverCamelIterator.next()));
         arimaaBoardArray[1][4].add(getImgAsJLabel(goldCamelIterator.next()));
 
         // elephant
-        Iterator<Piece> silverElephantIterator = Pieces.getPieces(ColorPiece.SILVER, Type.ELEPHANT).iterator();
-        Iterator<Piece> goldElephantIterator = Pieces.getPieces(ColorPiece.GOLD, Type.ELEPHANT).iterator();
+        Iterator<Piece> silverElephantIterator = Pieces.getPieces(ColorPiece.SILVER, PieceType.ELEPHANT).iterator();
+        Iterator<Piece> goldElephantIterator = Pieces.getPieces(ColorPiece.GOLD, PieceType.ELEPHANT).iterator();
         arimaaBoardArray[6][4].add(getImgAsJLabel(silverElephantIterator.next()));
         arimaaBoardArray[1][3].add(getImgAsJLabel(goldElephantIterator.next()));
 

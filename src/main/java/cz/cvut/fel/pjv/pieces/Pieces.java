@@ -7,7 +7,7 @@ import java.util.Map;
 
 public class Pieces {
 
-    private static Map<ColorPiece, Map<Type, List<Piece>>> pieces;
+    private static Map<ColorPiece, Map<PieceType, List<Piece>>> pieces;
 
     private static Pieces piecesInstance = new Pieces();
 
@@ -15,15 +15,15 @@ public class Pieces {
         init();
     }
 
-    public static List<Piece> getPieces(ColorPiece color, Type type) {
-        return pieces.get(color).get(type);
+    public static List<Piece> getPieces(ColorPiece color, PieceType pieceType) {
+        return pieces.get(color).get(pieceType);
     }
 
     private static void init() {
-        pieces = new LinkedHashMap<ColorPiece, Map<Type, List<Piece>>>();
+        pieces = new LinkedHashMap<ColorPiece, Map<PieceType, List<Piece>>>();
 
-        Map<Type, List<Piece>> goldPieces = new LinkedHashMap<Type, List<Piece>>();
-        Map<Type, List<Piece>> silverPieces = new LinkedHashMap<Type, List<Piece>>();
+        Map<PieceType, List<Piece>> goldPieces = new LinkedHashMap<PieceType, List<Piece>>();
+        Map<PieceType, List<Piece>> silverPieces = new LinkedHashMap<PieceType, List<Piece>>();
 
         List<Piece> silverRabbits = new ArrayList<Piece>();
         List<Piece> goldRabbits = new ArrayList<Piece>();
@@ -63,19 +63,19 @@ public class Pieces {
             goldHorse.add(new Horse(ColorPiece.GOLD));
         }
 
-        silverPieces.put(Type.RABBIT, silverRabbits);
-        silverPieces.put(Type.CAT, silverCat);
-        silverPieces.put(Type.DOG, silverDog);
-        silverPieces.put(Type.HORSE, silverHorse);
-        silverPieces.put(Type.CAMEL, silverCamel);
-        silverPieces.put(Type.ELEPHANT, silverElephant);
+        silverPieces.put(PieceType.RABBIT, silverRabbits);
+        silverPieces.put(PieceType.CAT, silverCat);
+        silverPieces.put(PieceType.DOG, silverDog);
+        silverPieces.put(PieceType.HORSE, silverHorse);
+        silverPieces.put(PieceType.CAMEL, silverCamel);
+        silverPieces.put(PieceType.ELEPHANT, silverElephant);
 
-        goldPieces.put(Type.RABBIT, goldRabbits);
-        goldPieces.put(Type.CAT, goldCat);
-        goldPieces.put(Type.DOG, goldDog);
-        goldPieces.put(Type.HORSE, goldHorse);
-        goldPieces.put(Type.CAMEL, goldCamel);
-        goldPieces.put(Type.ELEPHANT, goldElephant);
+        goldPieces.put(PieceType.RABBIT, goldRabbits);
+        goldPieces.put(PieceType.CAT, goldCat);
+        goldPieces.put(PieceType.DOG, goldDog);
+        goldPieces.put(PieceType.HORSE, goldHorse);
+        goldPieces.put(PieceType.CAMEL, goldCamel);
+        goldPieces.put(PieceType.ELEPHANT, goldElephant);
 
 
         pieces.put(ColorPiece.SILVER, silverPieces);

@@ -17,7 +17,7 @@ public class Cat extends Piece{
     }
 
     public Cat(ColorPiece color) {
-        super(color, Type.CAT);
+        super(color, PieceType.CAT);
     }
 
     @Override

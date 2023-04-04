@@ -16,7 +16,7 @@ public class Horse extends Piece{
     }
 
     public Horse(ColorPiece color) {
-        super(color, Type.HORSE);
+        super(color, PieceType.HORSE);
     }
 
     @Override

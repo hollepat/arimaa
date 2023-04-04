@@ -9,10 +9,7 @@ abstract public class Piece extends JLabel {
     protected int positionY;      // 1, 2, 3, 4, 5, 6, 7, 8
     protected boolean alive;       // live = true, killed = false
     protected ColorPiece color;
-
-    protected Type type;
-
-
+    protected PieceType pieceType;
 
 
     /**
@@ -30,13 +27,17 @@ abstract public class Piece extends JLabel {
     }
 
 
-    public Piece(ColorPiece color, Type type) {
+    public Piece(ColorPiece color, PieceType pieceType) {
         this.color = color;
-        this.type = type;
+        this.pieceType = pieceType;
     }
 
-    public Type getType() {
-        return type;
+    public PieceType getType() {
+        return pieceType;
+    }
+
+    public ColorPiece getColor() {
+        return color;
     }
 
     public abstract String getImgPath();

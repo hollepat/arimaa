@@ -17,7 +17,7 @@ public class Elephant extends Piece{
     }
 
     public Elephant(ColorPiece color) {
-        super(color, Type.ELEPHANT);
+        super(color, PieceType.ELEPHANT);
     }
 
     @Override

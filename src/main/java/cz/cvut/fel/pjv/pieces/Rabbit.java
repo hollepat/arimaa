@@ -18,7 +18,7 @@ public class Rabbit extends Piece{
     }
 
     public Rabbit(ColorPiece color) {
-        super(color, Type.RABBIT);
+        super(color, PieceType.RABBIT);
     }
 
     @Override

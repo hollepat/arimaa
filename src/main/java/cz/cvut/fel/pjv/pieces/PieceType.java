@@ -1,6 +1,6 @@
 package cz.cvut.fel.pjv.pieces;
 
-public enum Type {
+public enum PieceType {
     RABBIT,
     ELEPHANT,
     DOG,
