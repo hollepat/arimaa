@@ -28,6 +28,7 @@ public class LaunchScreen extends JFrame {
                 SetUpScreen setUpScreen = new SetUpScreen();
                 setUpScreen.start();
                 setVisible(false);
+                dispose();
 
             }
         });

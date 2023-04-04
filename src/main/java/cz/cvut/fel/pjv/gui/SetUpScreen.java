@@ -55,6 +55,8 @@ public class SetUpScreen extends JFrame {
     }
 
     private void onBack() {
+        setVisible(false);
+        LaunchScreen launchScreen = new LaunchScreen();
         dispose();
     }
 
