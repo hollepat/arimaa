@@ -19,7 +19,7 @@ public class MoveLogger {
     }
 
     /**
-     * Undo first Move in Stack<Move>.
+     * Pop last Move from Stack<Move>.
      */
     public Move undoMove() {
         Move move = null;

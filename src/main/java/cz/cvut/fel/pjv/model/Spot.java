@@ -31,6 +31,10 @@ public class Spot {
         return this.currentPiece;
     }
 
+    public boolean isOccupied() {
+        return this.currentPiece != null;
+    }
+
     public void setPiece(Piece piece) {
         this.currentPiece = piece;
     }
