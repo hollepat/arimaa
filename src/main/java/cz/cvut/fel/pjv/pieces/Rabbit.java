@@ -11,7 +11,7 @@ public class Rabbit extends Piece{
      *
      * @param positionX the x location of Piece
      * @param positionY the y location of Piece
-     * @param alive     the state whether if alive or not
+     * @param alive the state whether if alive or not
      */
     public Rabbit(char positionX, int positionY, boolean alive, ColorPiece color) {
         super(positionX, positionY, alive, color);

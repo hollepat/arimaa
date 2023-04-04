@@ -1,8 +1,15 @@
 package cz.cvut.fel.pjv.pieces;
 
-import javax.swing.*;
+import cz.cvut.fel.pjv.model.Game;
+import cz.cvut.fel.pjv.model.Move;
 
-// images in svg https://commons.wikimedia.org/wiki/Category:Arimaa_pieces_(SVG_set_by_Risteall)
+import javax.swing.*;
+import java.util.logging.Level;
+
+import static cz.cvut.fel.pjv.pieces.ColorPiece.GOLD;
+import static cz.cvut.fel.pjv.pieces.ColorPiece.SILVER;
+
+
 abstract public class Piece extends JLabel {
 
     protected char positionX;     // a, b, c, d, e, f, g, h
@@ -14,10 +21,10 @@ abstract public class Piece extends JLabel {
 
     /**
      * Constructor for Piece
-     * @param positionX     the x coordinates of Piece
-     * @param positionY     the y coordinates of Piece
-     * @param alive         the state whether if alive or not
-     * @param color         color of the piece
+     * @param positionX the x coordinates of Piece
+     * @param positionY the y coordinates of Piece
+     * @param alive the state whether if alive or not
+     * @param color color of the piece
      */
     public Piece(char positionX, int positionY, boolean alive, ColorPiece color) {
         this.positionX = positionX;
@@ -26,10 +33,31 @@ abstract public class Piece extends JLabel {
         this.color = color;
     }
 
-
+    /**
+     * Constructor for Piece.
+     * @param color color of the piece
+     * @param pieceType sets one these types PieceType
+     */
     public Piece(ColorPiece color, PieceType pieceType) {
         this.color = color;
         this.pieceType = pieceType;
+    }
+
+    public boolean isValidMove(Move move) {
+        System.out.println(move.getPiece().getType());
+
+        if (move.getPiece().getType().equals(PieceType.RABBIT)) {
+            return isValidMoveForRabbit(move);
+        }
+        return true;
+    }
+
+    private boolean isValidMoveForRabbit(Move move) {
+        ColorPiece color = move.getPiece().getColor();
+        return switch (color) {
+            case GOLD -> move.getSy() <= move.getDy();
+            case SILVER -> move.getSy() >= move.getDy();
+        };
     }
 
     public PieceType getType() {

@@ -1,7 +1,7 @@
 package cz.cvut.fel.pjv.model;
 
 
-import cz.cvut.fel.pjv.pieces.Piece;
+import cz.cvut.fel.pjv.pieces.*;
 
 
 public class Move {

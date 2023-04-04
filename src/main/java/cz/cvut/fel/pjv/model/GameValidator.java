@@ -28,7 +28,19 @@ public class GameValidator {
             return false;
         }
 
-        // TODO check if current player can move this Piece
+        if (!move.getPiece().isValidMove(move)) {
+            Game.logger.log(Level.WARNING, "Rabbit cannot move backwards!");
+            return false;
+        }
+
+        // TODO check if current player can move this Piece based on currentPlayer and last moved Piece (drag or push enemy Piece)
+        // TODO Player has only 4 moves per turn, but has to make at least one
+
+        // TODO check if Piece is on trap spot and can be saved or is doomed!!! :(
+
+        // TODO Piece is frozen if is near stronger enemy Piece and not have next to itself friendly Piece
+
+
 
 
         return true;
@@ -46,6 +58,8 @@ public class GameValidator {
             Game.logger.log(Level.INFO, "Silver player wins!");
             return true;
         }
+
+        // TODO END GAME IF ONE PLAYER IS BLOCKED
 
         return false;
     }
