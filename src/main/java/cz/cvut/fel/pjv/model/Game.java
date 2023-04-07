@@ -10,8 +10,8 @@ import java.util.logging.*;
 
 public class Game {
 
-    public ColorPiece currentPlayer;
-
+    public Player currentPlayer;
+    public int movesInTurn = 0;
     private Player playerGold;
     private Player playerSilver;
 
@@ -39,9 +39,9 @@ public class Game {
     }
 
     private void initPlayers() {
-        this.playerGold = new Player();
-        this.playerSilver = new Player();
-        this.currentPlayer = ColorPiece.GOLD;   // starting Player
+        this.playerGold = new Player(ColorPiece.GOLD);
+        this.playerSilver = new Player(ColorPiece.SILVER);
+        this.currentPlayer = this.playerGold;   // starting Player
     }
 
     private void initModel() {
@@ -117,7 +117,7 @@ public class Game {
 
 
 
-    // ----- Getters -----
+    // ----- Getters and Setters -----
 
 
     public BoardPanel getBoardPanel() {
@@ -138,6 +138,14 @@ public class Game {
 
     public GameStatus getGameStatus() {
         return gameStatus;
+    }
+
+    public Player getPlayerGold() {
+        return playerGold;
+    }
+
+    public Player getPlayerSilver() {
+        return playerSilver;
     }
 
     public static void main(String[] argv) {

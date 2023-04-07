@@ -33,14 +33,24 @@ public class GameValidator {
             return false;
         }
 
+        if (move.getPiece().getColor() == game.currentPlayer.getColor() && !isMoveToNextSpot(move)) {   // move my Piece
+            // TODO check if move is by one Spot
+            return false;
+        }
+
+        if (move.getPiece().getColor() != game.currentPlayer.getColor()) {  // move opposite Piece
+            return false;
+            // TODO check if move is push or drag based on last move
+        }
+
         // TODO check if current player can move this Piece based on currentPlayer and last moved Piece (drag or push enemy Piece)
+
+
         // TODO Player has only 4 moves per turn, but has to make at least one
 
         // TODO check if Piece is on trap spot and can be saved or is doomed!!! :(
 
         // TODO Piece is frozen if is near stronger enemy Piece and not have next to itself friendly Piece
-
-
 
 
         return true;
@@ -62,6 +72,14 @@ public class GameValidator {
         // TODO END GAME IF ONE PLAYER IS BLOCKED
 
         return false;
+    }
+
+    private boolean isMoveToNextSpot(Move move) {
+        System.out.println(Math.abs(move.getSx() - move.getDx()));
+        if (Math.abs(move.getSy() - move.getDy()) > 1 || Math.abs(move.getSx() - move.getDx()) > 1) {
+            return false;
+        }
+        return true;
     }
 
 }
