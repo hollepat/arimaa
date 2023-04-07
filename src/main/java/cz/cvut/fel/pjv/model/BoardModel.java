@@ -51,10 +51,12 @@ public class BoardModel {
     }
 
     public void makeUndo(Move move) {
-        Spot originSquare = getSpot(move.getSx(), move.getSy());
-        Spot destinationSquare = getSpot(move.getSx(), move.getSy());
-        destinationSquare.setPiece(originSquare.getPiece());
-        originSquare.setPiece(null);
+        Spot originSpot = getSpot(move.getSx(), move.getSy());
+        Spot destinationSpot = getSpot(move.getDx(), move.getDy());
+        //destinationSquare.setPiece(originSquare.getPiece());
+        originSpot.setPiece(destinationSpot.getPiece());
+        //originSquare.setPiece(null);
+        destinationSpot.setPiece(null);
     }
 
     /**

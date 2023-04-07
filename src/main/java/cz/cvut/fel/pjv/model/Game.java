@@ -107,7 +107,6 @@ public class Game {
     public void undoMove() {
         Move lastMove = moveLogger.undoMove();
         if (lastMove != null) {
-            // TODO if valid move ???
             boardPanel.makeUndo(lastMove);
             boardModel.makeUndo(lastMove);
         }
