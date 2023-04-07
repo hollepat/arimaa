@@ -1,6 +1,7 @@
 package cz.cvut.fel.pjv.model;
 
 import java.util.Stack;
+import java.util.logging.Level;
 
 public class MoveLogger {
 
@@ -23,7 +24,7 @@ public class MoveLogger {
      */
     public Move undoMove() {
         Move move = null;
-        if (moveHistory.isEmpty()) { System.out.println("History of moves is empty!");
+        if (moveHistory.isEmpty()) { Game.logger.log(Level.WARNING,"History of moves is empty!");
         } else { move = moveHistory.pop(); }
         return move;
     }
