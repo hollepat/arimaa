@@ -14,6 +14,13 @@ public class GameValidator {
 
     public final int ZERO_MOVES = 0;
     public final int MAX_MOVES = 3;
+
+    /**
+     * Constructor.
+     *
+     * @param boardModel is model of Board
+     * @param game object using GameValidator to validate moves.
+     */
     public GameValidator(BoardModel boardModel, Game game) {
         this.boardModel = boardModel;
         this.game = game;

@@ -215,6 +215,11 @@ public class BoardPanel extends JPanel {
         sourceSquarePanel.repaint();
     }
 
+    /**
+     * Undo move in GUI.
+     *
+     * @param move from moveHistory
+     */
     public void makeUndo(Move move) {
         JPanel originSquarePanel = getSquarePanel(move.getSy(), move.getSx());
         JPanel destinationSquarePanel = getSquarePanel( move.getDy(), move.getDx());

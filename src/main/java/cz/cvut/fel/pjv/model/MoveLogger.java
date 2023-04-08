@@ -7,7 +7,9 @@ public class MoveLogger {
 
     private final Stack<Move> moveHistory;
 
-
+    /**
+     * Constructor.
+     */
     public MoveLogger() {
         this.moveHistory = new Stack<>();
     }
@@ -29,6 +31,9 @@ public class MoveLogger {
         return move;
     }
 
+    /**
+     * @return last move from Stack<Move>
+     */
     public Move getLastMove() {
         if (moveHistory.isEmpty()) { return null; }
         return moveHistory.peek();

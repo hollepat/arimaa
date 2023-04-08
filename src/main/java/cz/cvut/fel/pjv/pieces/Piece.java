@@ -40,6 +40,12 @@ abstract public class Piece extends JLabel {
         this.pieceType = pieceType;
     }
 
+    /**
+     * Checks if Piece can move like this.
+     *
+     * @param move to be validated
+     * @return true if move is valid by Piece
+     */
     public boolean isValidMove(Move move) {
         if (move.getPiece().getType().equals(PieceType.RABBIT)) {
             return isValidMoveForRabbit(move);

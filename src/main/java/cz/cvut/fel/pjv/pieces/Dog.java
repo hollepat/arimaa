@@ -9,9 +9,6 @@ public class Dog extends Piece{
      *
      * @param color of player, it belongs to
      */
-    public Dog(char positionX, int positionY, boolean alive, ColorPiece color) {
-        super(positionX, positionY, alive, color);
-    }
 
     public Dog(ColorPiece color) {
         super(color, PieceType.DOG);

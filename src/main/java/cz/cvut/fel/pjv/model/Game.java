@@ -141,6 +141,11 @@ public class Game {
         Game.logger.log(Level.INFO, "Current player is: " + currentPlayer.getColor());
     }
 
+    /**
+     * Change currentPlayer.
+     *
+     * @param player is new currentPlayer
+     */
     private void switchCurrentPlayer(Player player) {
         this.currentPlayer = player;
         gameFrame.changeMsg("Current player is: " + currentPlayer.getColor());

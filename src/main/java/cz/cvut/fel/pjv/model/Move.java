@@ -12,7 +12,7 @@ public class Move {
     private final char dx;
     private final int dy;
     private final Player player;
-    private final int moveNumInTurn;  // indicates in which of 1...4 moves this move played (one turn)
+    private final int moveNumInTurn;  // indicates in which of 1...4 moves was this move played (one turn)
 
     public Move(Piece piece, char sx, int sy, char dx, int dy, Player player, int moveNumInTurn) {
         this.piece = piece;

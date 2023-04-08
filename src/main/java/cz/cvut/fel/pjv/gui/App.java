@@ -12,7 +12,7 @@ public class App {
     }
 
     /**
-     * Center JFrame to the middle of a screen.
+     * Center JFrame to the middle of a screen when appears.
      * @param frame takes JFrame that is supposed to be put in center of screen
      */
     public static void setFrameCenter(JFrame frame) {

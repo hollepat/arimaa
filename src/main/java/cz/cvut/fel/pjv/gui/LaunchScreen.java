@@ -12,7 +12,7 @@ public class LaunchScreen extends JFrame {
         start();
     }
 
-    public void start() {
+    private void start() {
         this.setDefaultCloseOperation (JFrame.EXIT_ON_CLOSE);           // enable close button
         this.setMinimumSize(new Dimension(320, 240));      // set size of frame
 

@@ -2,8 +2,8 @@ package cz.cvut.fel.pjv.pieces;
 
 public class Elephant extends Piece{
 
-    private String pathSilver = "/pieces/elephant-silver.png";
-    private String pathGold = "/pieces/elephant-gold.png";
+    private final String pathSilver = "/pieces/elephant-silver.png";
+    private final String pathGold = "/pieces/elephant-gold.png";
 
     /**
      * Constructor for Piece
