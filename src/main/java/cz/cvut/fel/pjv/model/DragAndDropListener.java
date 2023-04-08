@@ -18,6 +18,11 @@ public class DragAndDropListener implements MouseListener, MouseMotionListener {
     private int offsetX;
     private int offsetY;
 
+    /**
+     * Constructor.
+     *
+     * @param boardPanel is panel that where MouseListener and MouseMotionListener handle events.
+     */
     public DragAndDropListener(BoardPanel boardPanel) {
         this.boardPanel = boardPanel;
     }

@@ -39,6 +39,8 @@ public class GameFrame extends JFrame {
         // --- Create Components
         JToolBar tools = new JToolBar();
         tools.setFloatable(false);
+        JButton newGame = new JButton("New");
+        JButton save = new JButton("Save");
         JButton undoButton = new JButton("Undo");
         undoButton.addActionListener(actionEvent -> {
             game.undoMove();
@@ -57,8 +59,8 @@ public class GameFrame extends JFrame {
 
         // --- Add Components ---
         add(tools, BorderLayout.NORTH);
-        tools.add(new JButton("New")); // TODO - create new game
-        tools.add(new JButton("Save")); // TODO - save game
+        tools.add(newGame); // TODO - create new game
+        tools.add(save); // TODO - save game
         tools.add(undoButton);
         tools.add(endTurn); // TODO - end turn of current player
         tools.addSeparator();
@@ -66,7 +68,11 @@ public class GameFrame extends JFrame {
 
     }
 
-
+    /**
+     * Change text in JButton infoText.
+     *
+     * @param str is new msg for infoText.
+     */
     public void changeMsg(String str) {
         infoText.setText(str);
     }

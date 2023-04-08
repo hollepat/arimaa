@@ -49,6 +49,11 @@ public class BoardModel {
         originSquare.setPiece(null);
     }
 
+    /**
+     * Undo last move in Model.
+     *
+     * @param move from moveHistory
+     */
     public void makeUndo(Move move) {
         Spot originSpot = getSpot(move.getSx(), move.getSy());
         Spot destinationSpot = getSpot(move.getDx(), move.getDy());
@@ -71,9 +76,6 @@ public class BoardModel {
 
     }
 
-    public void writeToFile() {
-        // TODO write to file current state
-    }
 
     private void initPieces() {
         // rabbit

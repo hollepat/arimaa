@@ -25,6 +25,6 @@ Pravidla. Ty nejzákladnější jsou (není to úplný výčet):
   přátelskou figurku
 - [ ] Zmražení figurky (v závislosti na síle figurky), figurka zlata je blízko silnější figurky stříbrné, tak je frozen
   pokud vedle sebe nemá přátelskou figurku
-- [ ] Ukončení hry při přechodu králíka přes celé pole
+- [x] Ukončení hry při přechodu králíka přes celé pole
 - [ ] Ukončení hry při zablokování jednoho hráče
 

@@ -2,8 +2,8 @@ package cz.cvut.fel.pjv.pieces;
 
 public class Camel extends Piece{
 
-    private String pathSilver = "/pieces/camel-silver.png";
-    private String pathGold = "/pieces/camel-gold.png";
+    private final String pathSilver = "/pieces/camel-silver.png";
+    private final String pathGold = "/pieces/camel-gold.png";
 
     /**
      * Constructor for Piece

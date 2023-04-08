@@ -14,6 +14,13 @@ public class GameValidator {
 
     public final int ZERO_MOVES = 0;
     public final int MAX_MOVES = 3;
+
+    /**
+     * Constructor.
+     *
+     * @param boardModel is model of Board
+     * @param game object using GameValidator to validate moves.
+     */
     public GameValidator(BoardModel boardModel, Game game) {
         this.boardModel = boardModel;
         this.game = game;
@@ -56,14 +63,21 @@ public class GameValidator {
             }
         }
 
-        // TODO Player has only 4 moves per turn, but has to make at least one
-
-        // TODO check if Piece is on trap spot and can be saved or is doomed!!! :(
-
+        // TODO check if Piece is on trap spot and can be saved or is doomed
         // TODO Piece is frozen if is near stronger enemy Piece and not have next to itself friendly Piece
 
         checkMovesInTurn();
         return true;
+    }
+
+    private boolean checkTrapPlaces() {
+        // TODO
+        return false;
+    }
+
+    private boolean isPieceFrozen() {
+        // TODO
+        return false;
     }
 
     private void checkMovesInTurn() {
