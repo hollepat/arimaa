@@ -1,19 +1,14 @@
 package cz.cvut.fel.pjv.gui;
 
 import cz.cvut.fel.pjv.model.Game;
-import cz.cvut.fel.pjv.model.GameStatus;
-import cz.cvut.fel.pjv.pieces.ColorPiece;
-
 import javax.swing.*;
-import javax.swing.border.EmptyBorder;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.logging.Level;
 
 public class GameFrame extends JFrame {
 
     private final Game game;
+    private JButton infoText;
 
     public GameFrame(Game game) {
         this.game = game;
@@ -24,29 +19,14 @@ public class GameFrame extends JFrame {
      * Method to load Game window.
      */
     public void loadUI() {
-        //JFrame gameFrame = new JFrame("Arimaa Game");
-        //gameFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        //gameFrame.setMinimumSize(new Dimension(720, 720));
         setTitle("Arimaa Game");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setMinimumSize(new Dimension(720, 720));
         setLayout(new BorderLayout(3, 3));
-        //setBounds(10, 10, 720, 720);
-
-        // add Components
-        // TODO change layout handling
-        //JPanel containerPanel = new JPanel(new BorderLayout(3, 3));
-        //containerPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 
         initToolBar();
-
-        //containerPanel.add(game.getBoardPanel());
         add(game.getBoardPanel(), BorderLayout.CENTER);
 
-        /*gameFrame.add(containerPanel);
-        App.setFrameCenter(gameFrame);
-        gameFrame.pack();
-        gameFrame.setVisible(true);*/
         App.setFrameCenter(this);
         setVisible(true);
         pack();
@@ -64,17 +44,15 @@ public class GameFrame extends JFrame {
             game.undoMove();
         });
         JButton endTurn = new JButton("End turn!");
-        endTurn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                switch (game.currentPlayer.getColor()) {
-                    case GOLD -> game.currentPlayer = game.getPlayerSilver();
-                    case SILVER -> game.currentPlayer = game.getPlayerGold();
-                    default -> Game.logger.log(Level.WARNING, "Current player is null!");
+        endTurn.addActionListener(e -> {
+                if (game.movesInTurn >= 1) {
+                    game.switchCurrentPlayer();
+                } else {
+                    Game.logger.log(Level.WARNING, "Your turn must have at least 1 move!");
                 }
             }
-        });
-        JButton infoText = new JButton("Let's Play!!");
+        );
+        infoText = new JButton("Current player is: GOLD");
         infoText.setBorderPainted(false);
 
         // --- Add Components ---
@@ -87,6 +65,13 @@ public class GameFrame extends JFrame {
         tools.add(infoText);
 
     }
+
+
+    public void changeMsg(String str) {
+        infoText.setText(str);
+    }
+
+
 
 
 }

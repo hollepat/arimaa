@@ -9,16 +9,11 @@ public class Rabbit extends Piece{
     /**
      * Constructor for Piece
      *
-     * @param positionX the x location of Piece
-     * @param positionY the y location of Piece
-     * @param alive the state whether if alive or not
+     * @param color of player, it belongs to
      */
-    public Rabbit(char positionX, int positionY, boolean alive, ColorPiece color) {
-        super(positionX, positionY, alive, color);
-    }
-
     public Rabbit(ColorPiece color) {
         super(color, PieceType.RABBIT);
+        pieceStrength = 1;
     }
 
     @Override

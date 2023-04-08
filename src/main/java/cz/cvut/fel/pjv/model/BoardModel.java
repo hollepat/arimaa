@@ -27,7 +27,6 @@ public class BoardModel {
      * @return  Piece
      */
     public Spot getSpot(char x, int y) {
-        //System.out.println("x: " + x + " y: " + y);
         if (x < 'a' || x > 'h' || y < 1 || y > 8) {
             return null;
         } else {
@@ -53,9 +52,7 @@ public class BoardModel {
     public void makeUndo(Move move) {
         Spot originSpot = getSpot(move.getSx(), move.getSy());
         Spot destinationSpot = getSpot(move.getDx(), move.getDy());
-        //destinationSquare.setPiece(originSquare.getPiece());
         originSpot.setPiece(destinationSpot.getPiece());
-        //originSquare.setPiece(null);
         destinationSpot.setPiece(null);
     }
 

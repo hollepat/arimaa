@@ -1,13 +1,9 @@
 package cz.cvut.fel.pjv.pieces;
 
-import cz.cvut.fel.pjv.model.Game;
 import cz.cvut.fel.pjv.model.Move;
 
 import javax.swing.*;
-import java.util.logging.Level;
 
-import static cz.cvut.fel.pjv.pieces.ColorPiece.GOLD;
-import static cz.cvut.fel.pjv.pieces.ColorPiece.SILVER;
 
 
 abstract public class Piece extends JLabel {
@@ -17,6 +13,7 @@ abstract public class Piece extends JLabel {
     protected boolean alive;       // live = true, killed = false
     protected ColorPiece color;
     protected PieceType pieceType;
+    protected int pieceStrength;
 
 
     /**
@@ -44,8 +41,6 @@ abstract public class Piece extends JLabel {
     }
 
     public boolean isValidMove(Move move) {
-        System.out.println(move.getPiece().getType());
-
         if (move.getPiece().getType().equals(PieceType.RABBIT)) {
             return isValidMoveForRabbit(move);
         }
@@ -71,7 +66,7 @@ abstract public class Piece extends JLabel {
     public abstract String getImgPath();
 
 
-
-
-
+    public int getPieceStrength() {
+        return pieceStrength;
+    }
 }

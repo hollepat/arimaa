@@ -28,4 +28,9 @@ public class MoveLogger {
         } else { move = moveHistory.pop(); }
         return move;
     }
+
+    public Move getLastMove() {
+        if (moveHistory.isEmpty()) { return null; }
+        return moveHistory.peek();
+    }
 }

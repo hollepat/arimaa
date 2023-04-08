@@ -260,7 +260,7 @@ public class BoardPanel extends JPanel {
      */
     public void drag(int dragX, int dragY) {
         try {
-            Game.logger.log(Level.INFO, "Piece is dragged!");
+            Game.logger.log(Level.CONFIG, "Piece is dragged!");
             JLabel draggedPieceImageLabel = (JLabel) boardLayeredPane.getComponentsInLayer(JLayeredPane.DRAG_LAYER)[0];
             if (draggedPieceImageLabel != null) {
                 draggedPieceImageLabel.setLocation(dragX, dragY);

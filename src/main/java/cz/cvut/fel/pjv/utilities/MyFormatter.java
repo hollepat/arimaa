@@ -32,6 +32,8 @@ public class MyFormatter extends Formatter {
             case "WARNING":
                 builder.append(ANSI_RED);
                 break;
+            default:
+                builder.append(ANSI_WHITE);
 
         }
 
