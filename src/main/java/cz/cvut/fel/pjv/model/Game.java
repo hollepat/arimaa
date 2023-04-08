@@ -5,6 +5,7 @@ import cz.cvut.fel.pjv.gui.GameFrame;
 import cz.cvut.fel.pjv.pieces.ColorPiece;
 import cz.cvut.fel.pjv.utilities.MyFormatter;
 
+import javax.swing.*;
 import java.util.logging.*;
 
 
@@ -14,16 +15,15 @@ public class Game {
     public int movesInTurn = 0;
     private Player playerGold;
     private Player playerSilver;
-
     private GameStatus gameStatus;
-
     private MoveLogger moveLogger;
     private BoardModel boardModel;  // originator
     private GameValidator gameValidator;
     private BoardPanel boardPanel;
     private GameFrame gameFrame;
     private Boolean logging;
-    public static Logger logger = Logger.getLogger(Game.class.getName());;
+    public static Logger logger = Logger.getLogger(Game.class.getName());
+    public boolean pushPromise = false;   // have to move stronger current Players Piece on source position of last move
 
     /**
      * Constructor for Game
@@ -77,17 +77,20 @@ public class Game {
      * @param destinationY int coordinate of Piece
      */
     public void moveRequest(char sourceX, int sourceY, char destinationX, int destinationY) {
-        Move move = new Move(boardModel.getSpot(sourceX, sourceY).getPiece(), sourceX, sourceY, destinationX, destinationY);
+        Move move = new Move(boardModel.getSpot(sourceX, sourceY).getPiece(), sourceX, sourceY, destinationX, destinationY, currentPlayer, this.movesInTurn);
         if (gameValidator.validateMove(move)) {
-            moveLogger.saveMove(move);
             execute(move);
+            moveLogger.saveMove(move);
         }
-        gameValidator.endMove(move);
+        if (gameValidator.endMove(move)) {
+            showWinnerDialog();
+        }
     }
 
 
+
     private void execute(Move move) {
-        // save Move
+        // TODO save Move
         boardModel.doMove(move);    // Update move in board model
         boardPanel.makeMove(move);  // Update move in board panel
 
@@ -110,14 +113,39 @@ public class Game {
             boardPanel.makeUndo(lastMove);
             boardModel.makeUndo(lastMove);
         }
+        this.movesInTurn = lastMove.getMoveNumInTurn();
+        switchCurrentPlayer(lastMove.getPlayer());
     }
 
 
 
+    private void showWinnerDialog() {
+        Move lastMove = moveLogger.getLastMove();
+        JOptionPane.showMessageDialog(null, "You win " + lastMove.getPlayer().getColor() + "!");
+    }
 
 
     // ----- Getters and Setters -----
 
+    /**
+     * Change currentPlayer to opposite one.
+     */
+    public void switchCurrentPlayer() {
+        switch (this.currentPlayer.getColor()) {
+            case GOLD -> this.currentPlayer = this.getPlayerSilver();
+            case SILVER -> this.currentPlayer = this.getPlayerGold();
+            default -> Game.logger.log(Level.WARNING, "Current player is null!");
+        }
+        this.movesInTurn = gameValidator.ZERO_MOVES;
+        gameFrame.changeMsg("Current player is: " + currentPlayer.getColor());
+        Game.logger.log(Level.INFO, "Current player is: " + currentPlayer.getColor());
+    }
+
+    private void switchCurrentPlayer(Player player) {
+        this.currentPlayer = player;
+        gameFrame.changeMsg("Current player is: " + currentPlayer.getColor());
+        Game.logger.log(Level.INFO, "Current player is: " + currentPlayer.getColor());
+    }
 
     public BoardPanel getBoardPanel() {
         return boardPanel;
