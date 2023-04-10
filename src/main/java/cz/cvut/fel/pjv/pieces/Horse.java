@@ -1,22 +1,17 @@
 package cz.cvut.fel.pjv.pieces;
 
 public class Horse extends Piece{
-    private String pathSilver = "/pieces/horse-silver.png";
-    private String pathGold = "/pieces/horse-gold.png";
+    private final String pathSilver = "/pieces/horse-silver.png";
+    private final String pathGold = "/pieces/horse-gold.png";
 
     /**
      * Constructor for Piece
      *
-     * @param positionX the x location of Piece
-     * @param positionY the y location of Piece
-     * @param alive     the state whether if alive or not
+     * @param color of player, it belongs to
      */
-    public Horse(char positionX, int positionY, boolean alive, ColorPiece color) {
-        super(positionX, positionY, alive, color);
-    }
-
     public Horse(ColorPiece color) {
-        super(color, Type.HORSE);
+        super(color, PieceType.HORSE);
+        pieceStrength = 4;
     }
 
     @Override

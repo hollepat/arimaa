@@ -7,16 +7,12 @@ public class Dog extends Piece{
     /**
      * Constructor for Piece
      *
-     * @param positionX the x location of Piece
-     * @param positionY the y location of Piece
-     * @param alive     the state whether if alive or not
+     * @param color of player, it belongs to
      */
-    public Dog(char positionX, int positionY, boolean alive, ColorPiece color) {
-        super(positionX, positionY, alive, color);
-    }
 
     public Dog(ColorPiece color) {
-        super(color, Type.DOG);
+        super(color, PieceType.DOG);
+        pieceStrength = 3;
     }
 
     @Override

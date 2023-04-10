@@ -1,12 +1,15 @@
 package cz.cvut.fel.pjv.model;
 
 import java.util.Stack;
+import java.util.logging.Level;
 
 public class MoveLogger {
 
     private final Stack<Move> moveHistory;
 
-
+    /**
+     * Constructor.
+     */
     public MoveLogger() {
         this.moveHistory = new Stack<>();
     }
@@ -19,12 +22,20 @@ public class MoveLogger {
     }
 
     /**
-     * Undo first Move in Stack<Move>.
+     * Pop last Move from Stack<Move>.
      */
     public Move undoMove() {
         Move move = null;
-        if (moveHistory.isEmpty()) { System.out.println("History of moves is empty!");
+        if (moveHistory.isEmpty()) { Game.logger.log(Level.WARNING,"History of moves is empty!");
         } else { move = moveHistory.pop(); }
         return move;
+    }
+
+    /**
+     * @return last move from Stack<Move>
+     */
+    public Move getLastMove() {
+        if (moveHistory.isEmpty()) { return null; }
+        return moveHistory.peek();
     }
 }

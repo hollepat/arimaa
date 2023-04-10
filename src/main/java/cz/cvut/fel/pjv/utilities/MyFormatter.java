@@ -18,6 +18,12 @@ public class MyFormatter extends Formatter {
     public static final String ANSI_CYAN = "\u001B[36m";
     public static final String ANSI_WHITE = "\u001B[37m";
 
+    /**
+     * Format printed message.
+     *
+     * @param record the log record to be formatted.
+     * @return msg
+     */
     @Override
     public String format(LogRecord record) {
         StringBuilder builder = new StringBuilder();
@@ -32,6 +38,8 @@ public class MyFormatter extends Formatter {
             case "WARNING":
                 builder.append(ANSI_RED);
                 break;
+            default:
+                builder.append(ANSI_WHITE);
 
         }
 

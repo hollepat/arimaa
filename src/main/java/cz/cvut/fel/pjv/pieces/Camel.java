@@ -2,22 +2,17 @@ package cz.cvut.fel.pjv.pieces;
 
 public class Camel extends Piece{
 
-    private String pathSilver = "/pieces/camel-silver.png";
-    private String pathGold = "/pieces/camel-gold.png";
+    private final String pathSilver = "/pieces/camel-silver.png";
+    private final String pathGold = "/pieces/camel-gold.png";
 
     /**
      * Constructor for Piece
      *
-     * @param positionX the x location of Piece
-     * @param positionY the y location of Piece
-     * @param alive     the state whether if alive or not
+     * @param color of player, it belongs to
      */
-    public Camel(char positionX, int positionY, boolean alive, ColorPiece color) {
-        super(positionX, positionY, alive, color);
-    }
-
     public Camel(ColorPiece color) {
-        super(color, Type.CAMEL);
+        super(color, PieceType.CAMEL);
+        pieceStrength = 5;
     }
 
     @Override
