@@ -2,10 +2,12 @@ package cz.cvut.fel.pjv.model;
 
 import cz.cvut.fel.pjv.gui.BoardPanel;
 import cz.cvut.fel.pjv.gui.GameFrame;
+import cz.cvut.fel.pjv.gui.TimerPanel;
 import cz.cvut.fel.pjv.pieces.ColorPiece;
 import cz.cvut.fel.pjv.utilities.MyFormatter;
 
 import javax.swing.*;
+import java.io.File;
 import java.util.logging.*;
 
 
@@ -13,6 +15,7 @@ public class Game {
 
     public Player currentPlayer;
     public int movesInTurn = 0;
+    private int timeLimit;
     private Player playerGold;
     private Player playerSilver;
     private GameStatus gameStatus;
@@ -20,27 +23,44 @@ public class Game {
     private BoardModel boardModel;  // originator
     private GameValidator gameValidator;
     private BoardPanel boardPanel;
+    private TimerPanel timerPanel;
     private GameFrame gameFrame;
     private Boolean logging;
+    private Boolean ownLayout;
     public static Logger logger = Logger.getLogger(Game.class.getName());
     public boolean pushPromise = false;   // have to move stronger current Players Piece on source position of last move
 
     /**
-     * Constructor for Game
+     * Constructor for new Game.
+     *
+     * @param log boolean to indicated if log messages should be on/off
+     * @param timeLimit is how much time Player has for his moves
+     * @param ownLayout boolean to indicated if Players want their own layout or preset
      */
-    public Game(Boolean log) {
+    public Game(Boolean log, int timeLimit, Boolean ownLayout) {
+        System.out.println("log = " + log + ", timeLimit = " + timeLimit);
         this.gameStatus = GameStatus.ACTIVE;
         this.logging = log;
+        this.timeLimit = timeLimit;
+        this.ownLayout = ownLayout;
         initPlayers();
-        initGUI();
         initModel();
+        initGUI();
         setUpLogger();
-
     }
 
+    /**
+     * Constructor for loaded Game.
+     * @param file
+     */
+    public Game(File file) {
+        // TODO init from file
+    }
+
+
     private void initPlayers() {
-        this.playerGold = new Player(ColorPiece.GOLD);
-        this.playerSilver = new Player(ColorPiece.SILVER);
+        this.playerGold = new Player(ColorPiece.GOLD, timerPanel,timeLimit);
+        this.playerSilver = new Player(ColorPiece.SILVER, timerPanel, timeLimit);
         this.currentPlayer = this.playerGold;   // starting Player
     }
 
@@ -52,6 +72,7 @@ public class Game {
     }
 
     private void initGUI() {
+        timerPanel = new TimerPanel(this);
         boardPanel = new BoardPanel(this);
         gameFrame = new GameFrame(this);
 
@@ -87,7 +108,12 @@ public class Game {
         }
     }
 
+    /**
+     * Handle move requests between player and PC.
+     */
+    public void moveRequestPC() {
 
+    }
 
     private void execute(Move move) {
         // TODO save Move
@@ -180,8 +206,12 @@ public class Game {
         return playerSilver;
     }
 
+    public TimerPanel getTimerPanel() {
+        return timerPanel;
+    }
+
     public static void main(String[] argv) {
-        Game game = new Game(true);
+        Game game = new Game(true, 10, false);
     }
 
 }

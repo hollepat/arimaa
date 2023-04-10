@@ -1,11 +1,17 @@
 package cz.cvut.fel.pjv.gui;
 
+import cz.cvut.fel.pjv.model.Game;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class LaunchScreen extends JFrame {
+
+    private JFileChooser fileChooser;
+    private JButton newGameButton;
+    private JButton loadGameButton;
 
     public LaunchScreen() {
         super("Arimaa");
@@ -21,7 +27,7 @@ public class LaunchScreen extends JFrame {
 
         JLabel gameName = new JLabel("Welcome to Arimaa!");
 
-        JButton newGameButton = new JButton("New Game");
+        newGameButton = new JButton("New Game");
         newGameButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -32,13 +38,13 @@ public class LaunchScreen extends JFrame {
 
             }
         });
-        JButton loadGameButton = new JButton("Load Game");
+        loadGameButton = new JButton("Load Game");
+        fileChooser = new JFileChooser("Load Game!");
         loadGameButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // TODO find in folder system file
-                // TODO Game game = new Game()
-                // TODO call function to recreate game
+                fileChooser.showOpenDialog(LaunchScreen.this);
+                Game game = new Game(null);
                 setVisible(false);
                 dispose();
             }

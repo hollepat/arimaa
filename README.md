@@ -5,11 +5,11 @@ Game __arimaa__.
 
 ### Todo
 
-1. Threads --> real time hours interactin with game
+1. Threads --> real time hours interaction with game
 2. Add Game Logic
 3. Save Game --> write state of board to file and use function to recreate
 4. Player to Player/ PC to Player options
-5. Set Position of Pieces
+5. Set Position of Pieces???
 
 ### Rules
 
@@ -21,7 +21,7 @@ Pravidla. Ty nejzákladnější jsou (není to úplný výčet):
 - [x] Je možné použít 1 až 4 tahy za kolo (mohu pohnout více figurkami -> celkem 4 posuny), alespoň jeden krok
 - [x] Silnější figurky mohou tlačit figurky protivníka (počítá se jako jeden tah) a jít na jejich políčko
 - [x] Silnější figurky mohou táhnout figurky protivníka (počítá se jako jeden tah) na políčko, kde byli
-- [ ] Mizení figurek na polích “past” - ty jsou 4, figurka na něm zmizí poku se na něm nachází a nemá kolem sebe
+- [ ] Mizení figurek na polích “past” - ty jsou 4, figurka na něm zmizí pokud se na něm nachází a nemá kolem sebe
   přátelskou figurku
 - [ ] Zmražení figurky (v závislosti na síle figurky), figurka zlata je blízko silnější figurky stříbrné, tak je frozen
   pokud vedle sebe nemá přátelskou figurku

@@ -112,7 +112,6 @@ public class GameValidator {
         return false;
     }
 
-
     private boolean isNextTo(char sx1, int sy1, char sx2, int sy2) {
         int moveHorizontal = Math.abs(sx1 - sx2);
         int moveVertical = Math.abs(sy1 - sy2);
@@ -177,6 +176,15 @@ public class GameValidator {
 
 
         return false;
+    }
+
+    /**
+     * Check if custom layout of Pieces is valid.
+     * @return boolean
+     */
+    public boolean checkValidLayout() {
+        // TODO implement
+        return true;
     }
 
 }

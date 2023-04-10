@@ -3,6 +3,8 @@ package cz.cvut.fel.pjv.gui;
 import cz.cvut.fel.pjv.model.Game;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.logging.Level;
 
 public class GameFrame extends JFrame {
@@ -26,6 +28,7 @@ public class GameFrame extends JFrame {
 
         initToolBar();
         add(game.getBoardPanel(), BorderLayout.CENTER);
+        //add(game.getTimerPanel(), BorderLayout.EAST);
 
         App.setFrameCenter(this);
         setVisible(true);
@@ -41,6 +44,12 @@ public class GameFrame extends JFrame {
         tools.setFloatable(false);
         JButton newGame = new JButton("New");
         JButton save = new JButton("Save");
+        save.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                game.saveToFile();
+            }
+        });
         JButton undoButton = new JButton("Undo");
         undoButton.addActionListener(actionEvent -> {
             game.undoMove();
@@ -54,6 +63,13 @@ public class GameFrame extends JFrame {
                 }
             }
         );
+        JButton setLayout = new JButton("Set Layout!");
+        setLayout.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // TODO
+            }
+        });
         infoText = new JButton("Current player is: GOLD");
         infoText.setBorderPainted(false);
 
@@ -62,7 +78,8 @@ public class GameFrame extends JFrame {
         tools.add(newGame); // TODO - create new game
         tools.add(save); // TODO - save game
         tools.add(undoButton);
-        tools.add(endTurn); // TODO - end turn of current player
+        tools.add(endTurn);
+        tools.add(setLayout);
         tools.addSeparator();
         tools.add(infoText);
 

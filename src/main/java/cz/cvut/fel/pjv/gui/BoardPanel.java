@@ -116,6 +116,11 @@ public class BoardPanel extends JPanel {
         }
     }
 
+    private void changePositionOfPieces() {
+        // TODO allow move Pieces over board as needed
+        // TODO on JButton check valid Layout and start normal game
+    }
+
     /**
      * Draw initial set of Pieces on board.
      */
