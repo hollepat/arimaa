@@ -7,6 +7,7 @@ import cz.cvut.fel.pjv.pieces.PieceType;
 import cz.cvut.fel.pjv.pieces.Pieces;
 
 import java.util.Iterator;
+import java.util.logging.Level;
 
 public class BoardModel {
 
@@ -18,6 +19,7 @@ public class BoardModel {
     public BoardModel() {
         initSquares();
         initPieces();
+        Game.logger.log(Level.CONFIG, "BoardModel was initiated.");
     }
 
     /**
@@ -42,9 +44,6 @@ public class BoardModel {
     public void doMove(Move move) {
         Spot originSquare = getSpot(move.getSx(), move.getSy());
         Spot destinationSquare = getSpot(move.getDx(), move.getDy());
-        if (destinationSquare.getPiece() != null) {
-            // TODO movement logic
-        }
         destinationSquare.setPiece(originSquare.getPiece());
         originSquare.setPiece(null);
     }

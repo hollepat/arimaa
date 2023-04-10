@@ -54,7 +54,7 @@ public class GameFrame extends JFrame {
         undoButton.addActionListener(actionEvent -> {
             game.undoMove();
         });
-        JButton endTurn = new JButton("End turn!");
+        JButton endTurn = new JButton("End turn");
         endTurn.addActionListener(e -> {
                 if (game.movesInTurn >= 1) {
                     game.switchCurrentPlayer();
@@ -63,7 +63,7 @@ public class GameFrame extends JFrame {
                 }
             }
         );
-        JButton setLayout = new JButton("Set Layout!");
+        JButton setLayout = new JButton("Set Layout");
         setLayout.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {

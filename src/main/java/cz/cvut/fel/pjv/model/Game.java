@@ -7,6 +7,7 @@ import cz.cvut.fel.pjv.pieces.ColorPiece;
 import cz.cvut.fel.pjv.utilities.MyFormatter;
 
 import javax.swing.*;
+import java.awt.font.GlyphMetrics;
 import java.io.File;
 import java.util.logging.*;
 
@@ -38,7 +39,7 @@ public class Game {
      * @param ownLayout boolean to indicated if Players want their own layout or preset
      */
     public Game(Boolean log, int timeLimit, Boolean ownLayout) {
-        System.out.println("log = " + log + ", timeLimit = " + timeLimit);
+        Game.logger.log(Level.CONFIG, "log = " + log + ", timeLimit = " + timeLimit);
         this.gameStatus = GameStatus.ACTIVE;
         this.logging = log;
         this.timeLimit = timeLimit;
@@ -79,12 +80,17 @@ public class Game {
     }
 
     private void setUpLogger() {
-        if (this.logging) { logger.setLevel(Level.ALL); }
+        Handler handler = new ConsoleHandler();
+
+        if (this.logging) {
+            logger.setLevel(Level.FINE);
+            handler.setLevel(Level.CONFIG);
+        }
         else { logger.setLevel(Level.OFF); }
 
-        Handler handler = new ConsoleHandler();
         handler.setFormatter(new MyFormatter());
         logger.addHandler(handler);
+        logger.setUseParentHandlers(false);
     }
 
 
@@ -138,9 +144,9 @@ public class Game {
         if (lastMove != null) {
             boardPanel.makeUndo(lastMove);
             boardModel.makeUndo(lastMove);
+            this.movesInTurn = lastMove.getMoveNumInTurn();
+            switchCurrentPlayer(lastMove.getPlayer());
         }
-        this.movesInTurn = lastMove.getMoveNumInTurn();
-        switchCurrentPlayer(lastMove.getPlayer());
     }
 
 

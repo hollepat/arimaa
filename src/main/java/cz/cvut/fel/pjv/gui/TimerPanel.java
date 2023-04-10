@@ -5,6 +5,7 @@ import cz.cvut.fel.pjv.model.Game;
 import javax.swing.*;
 import java.awt.*;
 import java.sql.Time;
+import java.util.logging.Level;
 
 public class TimerPanel extends JPanel {
 
@@ -19,6 +20,7 @@ public class TimerPanel extends JPanel {
         goldTime = Time.valueOf("00:00:00");
         silverTime = Time.valueOf("00:00:00");
         init();
+        Game.logger.log(Level.CONFIG, "Timer was initiated.");
     }
 
     private void init() {
