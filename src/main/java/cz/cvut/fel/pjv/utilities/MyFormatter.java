@@ -29,6 +29,9 @@ public class MyFormatter extends Formatter {
         StringBuilder builder = new StringBuilder();
 
         switch (record.getLevel().getName()) {
+            case "FINE":
+                builder.append(ANSI_YELLOW);
+                break;
             case "INFO":
                 builder.append(ANSI_BLUE);
                 break;

@@ -32,12 +32,13 @@ public class BoardModel {
         if (x < 'a' || x > 'h' || y < 1 || y > 8) {
             return null;
         } else {
-            return arimaaBoardSpot[y - 1][x - 'a'];
+            Game.logger.log(Level.FINE, "returning spot on position: " + x + " " + y);
+            return arimaaBoardSpot[y-1][x-'a'];
         }
     }
 
     /**
-     * Do move in BoardModel. Change position of Piece/Pieces.
+     * Do move in BoardModel. Change position of Piece in its class.
      *
      * @param move valid Move to execute in BoardModel
      */
@@ -46,18 +47,20 @@ public class BoardModel {
         Spot destinationSquare = getSpot(move.getDx(), move.getDy());
         destinationSquare.setPiece(originSquare.getPiece());
         originSquare.setPiece(null);
+
     }
 
     /**
-     * Undo last move in Model.
+     * Undo last move in Model. Change position of Piece in its class.
      *
      * @param move from moveHistory
      */
-    public void makeUndo(Move move) {
+    public void undoMove(Move move) {
         Spot originSpot = getSpot(move.getSx(), move.getSy());
         Spot destinationSpot = getSpot(move.getDx(), move.getDy());
         originSpot.setPiece(destinationSpot.getPiece());
         destinationSpot.setPiece(null);
+
     }
 
     /**
