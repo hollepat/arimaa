@@ -7,8 +7,8 @@ import cz.cvut.fel.pjv.pieces.ColorPiece;
 import cz.cvut.fel.pjv.utilities.MyFormatter;
 
 import javax.swing.*;
-import java.awt.font.GlyphMetrics;
 import java.io.File;
+import java.util.List;
 import java.util.logging.*;
 
 
@@ -16,6 +16,9 @@ public class Game {
 
     public Player currentPlayer;
     public int movesInTurn = 0;
+    public final int ZERO_MOVES = 0;
+    public final int MAX_MOVES = 3;
+
     private int timeLimit;
     private Player playerGold;
     private Player playerSilver;
@@ -39,7 +42,7 @@ public class Game {
      * @param ownLayout boolean to indicated if Players want their own layout or preset
      */
     public Game(Boolean log, int timeLimit, Boolean ownLayout) {
-        Game.logger.log(Level.CONFIG, "log = " + log + ", timeLimit = " + timeLimit);
+        logger.log(Level.CONFIG, "log = " + log + ", timeLimit = " + timeLimit + "ownLayout = " + ownLayout);
         this.gameStatus = GameStatus.ACTIVE;
         this.logging = log;
         this.timeLimit = timeLimit;
@@ -48,6 +51,7 @@ public class Game {
         initModel();
         initGUI();
         setUpLogger();
+
     }
 
     /**
@@ -80,17 +84,18 @@ public class Game {
     }
 
     private void setUpLogger() {
+        Level level = Level.CONFIG;
+        logger.setUseParentHandlers(false);
         Handler handler = new ConsoleHandler();
+        logger.addHandler(handler);
 
         if (this.logging) {
-            logger.setLevel(Level.FINE);
-            handler.setLevel(Level.CONFIG);
+            logger.setLevel(level);
+            handler.setLevel(level);
         }
         else { logger.setLevel(Level.OFF); }
 
         handler.setFormatter(new MyFormatter());
-        logger.addHandler(handler);
-        logger.setUseParentHandlers(false);
     }
 
 
@@ -104,13 +109,46 @@ public class Game {
      * @param destinationY int coordinate of Piece
      */
     public void moveRequest(char sourceX, int sourceY, char destinationX, int destinationY) {
-        Move move = new Move(boardModel.getSpot(sourceX, sourceY).getPiece(), sourceX, sourceY, destinationX, destinationY, currentPlayer, this.movesInTurn);
-        if (gameValidator.validateMove(move)) {
-            execute(move);
-            moveLogger.saveMove(move);
+        Move move = new Move(
+                boardModel.getSpot(sourceX, sourceY).getPiece(), sourceX, sourceY, destinationX, destinationY, currentPlayer, this.movesInTurn);
+        Game.logger.log(Level.CONFIG, "from " + sourceX + " " + sourceY);
+        List<Move> validMoves = gameValidator.generateValidMoves(
+                boardModel.getSpot(sourceX, sourceY).getPiece(), boardModel.getSpot(sourceX, sourceY), currentPlayer);
+
+        for (Move validMove : validMoves) {
+            if (move.getDy() == validMove.getDy() && move.getDx() == validMove.getDx()) {
+                move.pushPromise = validMove.pushPromise;
+                execute(move);
+                checkMovesInTurn();
+                moveLogger.saveMove(move);
+                Game.logger.log(Level.INFO,
+                    "Move executed! " +
+                    "Piece: " + validMove.getPiece().getType() + ", " + validMove.getPiece().getColor() +
+                    " moved from: " + validMove.getSx() + ", " + validMove.getSy() +
+                    " to: " + validMove.getDx() + ", " + validMove.getDy()
+                );
+            }
         }
+
+//        if (gameValidator.validateMove(move)) {
+//            execute(move);
+//            moveLogger.saveMove(move);
+//        }
         if (gameValidator.endMove(move)) {
             showWinnerDialog();
+        }
+    }
+
+    /**
+     * Check number of moves in turn and switch player if
+     * movesInTurn == MAX_MOVES. There can be only 1..4 moves in turn.
+     */
+    private void checkMovesInTurn() {
+        if (movesInTurn == MAX_MOVES) {
+            switchCurrentPlayer();
+            movesInTurn = ZERO_MOVES;
+        } else {
+            movesInTurn++;
         }
     }
 
@@ -143,7 +181,7 @@ public class Game {
         Move lastMove = moveLogger.undoMove();
         if (lastMove != null) {
             boardPanel.makeUndo(lastMove);
-            boardModel.makeUndo(lastMove);
+            boardModel.undoMove(lastMove);
             this.movesInTurn = lastMove.getMoveNumInTurn();
             switchCurrentPlayer(lastMove.getPlayer());
         }
@@ -168,7 +206,7 @@ public class Game {
             case SILVER -> this.currentPlayer = this.getPlayerGold();
             default -> Game.logger.log(Level.WARNING, "Current player is null!");
         }
-        this.movesInTurn = gameValidator.ZERO_MOVES;
+        this.movesInTurn = ZERO_MOVES;
         gameFrame.changeMsg("Current player is: " + currentPlayer.getColor());
         Game.logger.log(Level.INFO, "Current player is: " + currentPlayer.getColor());
     }
