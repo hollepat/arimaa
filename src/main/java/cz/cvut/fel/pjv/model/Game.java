@@ -128,13 +128,12 @@ public class Game {
             }
         }
 
+
         if (gameValidator.isTrapped(move)) {
-            // TODO kill it
             Game.logger.log(Level.INFO,
                     "Killing " + move.getPiece().toString() + " on " + move.getDx() + " " + move.getDy());
-            // todo remove from board and put to stack of killed
             boardModel.removePiece(move.getPiece(), move.getDx(), move.getDy());
-            // todo hide gui component from board
+            boardPanel.removePiece(move.getDx(), move.getDy());
         }
 
         if (gameValidator.endMove(move)) {
@@ -164,7 +163,6 @@ public class Game {
     }
 
     private void execute(Move move) {
-        // TODO save Move
         boardModel.doMove(move);    // Update move in board model
         boardPanel.makeMove(move);  // Update move in board panel
 
@@ -184,6 +182,7 @@ public class Game {
     public void undoMove() {
         Move lastMove = moveLogger.undoMove();
         if (lastMove != null) {
+            Game.logger.log(Level.INFO, "Undo move: " + lastMove.toString());
             boardPanel.makeUndo(lastMove);
             boardModel.undoMove(lastMove);
             this.movesInTurn = lastMove.getMoveNumInTurn();

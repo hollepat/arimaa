@@ -6,17 +6,16 @@ import cz.cvut.fel.pjv.pieces.Piece;
 import cz.cvut.fel.pjv.pieces.PieceType;
 import cz.cvut.fel.pjv.pieces.PieceSet;
 
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
+import java.util.Stack;
 import java.util.logging.Level;
 
 public class BoardModel {
 
     private final int BOARD_DIMENSION = 8;
 
-    private List<Piece> deadPieces;
-    private final Spot[][] arimaaBoardSpot = new Spot[8][8];
+    private Stack<Piece> deadPieces;
+    private final Spot[][] arimaaBoardSpots = new Spot[8][8];
 
 
     public BoardModel() {
@@ -35,7 +34,7 @@ public class BoardModel {
         if (x < 'a' || x > 'h' || y < 1 || y > 8) {
             return null;
         } else {
-            return arimaaBoardSpot[y-1][x-'a'];
+            return arimaaBoardSpots[y-1][x-'a'];
         }
     }
 
@@ -136,16 +135,16 @@ public class BoardModel {
         getSpot('e', 7).setPiece(silverElephantIterator.next());
         getSpot('d', 2).setPiece(goldElephantIterator.next());
 
-        deadPieces = new ArrayList<>();
+        deadPieces = new Stack<>();
     }
 
     private void initSquares() {
         for (int i = 0; i < BOARD_DIMENSION; i++) {
             for (int j = 0; j < BOARD_DIMENSION; j++) {
                 if ((i == 2 || i == 5) && (j == 2 || j == 5)) {
-                    arimaaBoardSpot[i][j] = new Spot(i, j, TypeOfSpot.TRAP);
+                    arimaaBoardSpots[i][j] = new Spot(i, j, TypeOfSpot.TRAP);
                 } else {
-                    arimaaBoardSpot[i][j] = new Spot(i, j, TypeOfSpot.NORMAL);
+                    arimaaBoardSpots[i][j] = new Spot(i, j, TypeOfSpot.NORMAL);
                 }
             }
         }
@@ -158,10 +157,10 @@ public class BoardModel {
         str.append("Board\n");
         for (int i = 0; i < BOARD_DIMENSION; i++) {
             for (int j = 0; j < BOARD_DIMENSION; j++) {
-                if (arimaaBoardSpot[i][j].getPiece() == null) {
+                if (arimaaBoardSpots[i][j].getPiece() == null) {
                     str.append(String.format("[%8s]", null));
                 } else {
-                    str.append(String.format("[%8s]", arimaaBoardSpot[i][j].getPiece().getType()));
+                    str.append(String.format("[%8s]", arimaaBoardSpots[i][j].getPiece().getType()));
                 }
             }
             str.append('\n');
