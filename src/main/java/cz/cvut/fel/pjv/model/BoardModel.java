@@ -35,7 +35,6 @@ public class BoardModel {
         if (x < 'a' || x > 'h' || y < 1 || y > 8) {
             return null;
         } else {
-            Game.logger.log(Level.FINE, "returning spot on position: " + x + " " + y);
             return arimaaBoardSpot[y-1][x-'a'];
         }
     }

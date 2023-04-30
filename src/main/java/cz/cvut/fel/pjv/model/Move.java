@@ -62,4 +62,11 @@ public class Move {
     public Player getPlayer() {
         return player;
     }
+
+    @Override
+    public String toString() {
+        return "Moved " + piece.toString() +
+                " from " + sx + " " + sy +
+                " to " + dx + " " + dy;
+    }
 }

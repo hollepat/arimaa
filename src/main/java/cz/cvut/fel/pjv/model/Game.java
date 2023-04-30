@@ -111,11 +111,9 @@ public class Game {
      * @param dy int coordinate of Piece
      */
     public void moveRequest(char sx, int sy, char dx, int dy) {
-        Move move = new Move(
-                boardModel.getSpot(sx, sy).getPiece(), sx, sy, dx, dy, currentPlayer, this.movesInTurn);
+        Move move = new Move(boardModel.getSpot(sx, sy).getPiece(), sx, sy, dx, dy, currentPlayer, this.movesInTurn);
         Game.logger.log(Level.CONFIG, "Request to move from " + sx + " " + sy + " to " + dx + " " + dy);
-        List<Move> validMoves = gameValidator.generateValidMoves(
-                boardModel.getSpot(sx, sy).getPiece(), boardModel.getSpot(sx, sy), currentPlayer);
+        List<Move> validMoves = gameValidator.generateValidMoves(boardModel.getSpot(sx, sy).getPiece(), boardModel.getSpot(sx, sy), currentPlayer);
 
         for (Move validMove : validMoves) {
             if (move.getDy() == validMove.getDy() && move.getDx() == validMove.getDx()) {
@@ -125,9 +123,7 @@ public class Game {
                 moveLogger.saveMove(move);
                 Game.logger.log(Level.INFO,
                     "Move executed! " +
-                    "Piece: " + validMove.getPiece().getType() + ", " + validMove.getPiece().getColor() +
-                    " moved from: " + validMove.getSx() + ", " + validMove.getSy() +
-                    " to: " + validMove.getDx() + ", " + validMove.getDy()
+                    move.toString()
                 );
             }
         }
@@ -194,8 +190,6 @@ public class Game {
             switchCurrentPlayer(lastMove.getPlayer());
         }
     }
-
-
 
     private void showWinnerDialog() {
         Move lastMove = moveLogger.getLastMove();
