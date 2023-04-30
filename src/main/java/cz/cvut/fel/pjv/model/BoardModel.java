@@ -47,7 +47,6 @@ public class BoardModel {
         Spot destinationSquare = getSpot(move.getDx(), move.getDy());
         destinationSquare.setPiece(originSquare.getPiece());
         originSquare.setPiece(null);
-
     }
 
     /**
@@ -60,7 +59,6 @@ public class BoardModel {
         Spot destinationSpot = getSpot(move.getDx(), move.getDy());
         originSpot.setPiece(destinationSpot.getPiece());
         destinationSpot.setPiece(null);
-
     }
 
     /**

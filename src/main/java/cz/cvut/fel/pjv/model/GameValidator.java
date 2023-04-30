@@ -86,6 +86,7 @@ public class GameValidator {
             return false;
         }
 
+
         if (game.pushPromise) {     // promise to move own piece into place after push
             if (!isPushedByPiece(move)) {
                 return false;

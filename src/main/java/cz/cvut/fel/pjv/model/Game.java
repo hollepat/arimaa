@@ -51,7 +51,6 @@ public class Game {
         initModel();
         initGUI();
         setUpLogger();
-
     }
 
     /**
@@ -96,6 +95,8 @@ public class Game {
         else { logger.setLevel(Level.OFF); }
 
         handler.setFormatter(new MyFormatter());
+        logger.addHandler(handler);
+        logger.setUseParentHandlers(false);
     }
 
 
@@ -182,6 +183,8 @@ public class Game {
             switchCurrentPlayer(lastMove.getPlayer());
         }
     }
+
+
 
     private void showWinnerDialog() {
         Move lastMove = moveLogger.getLastMove();
