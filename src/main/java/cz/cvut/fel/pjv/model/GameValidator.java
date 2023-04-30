@@ -33,7 +33,7 @@ public class GameValidator {
      * @return List of valid moves for Piece
      */
     public List<Move> generateValidMoves(Piece pctbm, Spot spot, Player player) {
-        Game.logger.log(Level.CONFIG, "spot = " + spot.getX() + " " + spot.getY());
+        Game.logger.log(Level.INFO, "Generating moves for piece on " + spot.getX() + " " + spot.getY());
 
         List<Move> moves = new ArrayList<>();
         if (spot.getX() != 'h') {
@@ -103,19 +103,23 @@ public class GameValidator {
 
         // TODO Piece is frozen if is near stronger enemy Piece and not have next to itself friendly Piece
 
-        // TODO check if Piece is on trap spot and can be saved or is doomed
-        if (isTrapped(move)) {
-
-        }
         return true;
     }
 
-    private boolean isTrapped(Move move) {
-        if ((move.getDx() == 2 || move.getDx() == 5) && (move.getDy() == 2 || move.getDy() == 5)) {
-            // TODO has around any friend piece
-
+    /**
+     * Returns true if piece is on trap spot and cannot be safe by friendly Piece. Will be killed.
+     *
+     * @param move of piece on trap spot
+     * @return true if it is being killed
+     */
+    public boolean isTrapped(Move move) {
+        if ((move.getDx() == 'c' || move.getDx() == 'f') && (move.getDy() == 3 || move.getDy() == 6)) {
+            Game.logger.log(Level.CONFIG, move.getPiece().toString() + " is on trap spot!");
+            if (!isFriendlyAround(move)) {
+                Game.logger.log(Level.CONFIG, move.getPiece().toString() + " is trapped!");
+                return true;
+            } else { Game.logger.log(Level.CONFIG, move.getPiece().toString() + " is saved!"); }
         }
-
         return false;
     }
 
@@ -172,6 +176,30 @@ public class GameValidator {
         if (isStronger(boardModel.getSpot(move.getSx(), move.getSy()+1).getPiece() , move.getPiece())) { return true; }
         if (isStronger(boardModel.getSpot((char)((int)move.getSx() + 1), move.getSy()).getPiece() , move.getPiece())) { return true; }
         if (isStronger(boardModel.getSpot((char)((int)move.getSx() - 1), move.getSy()).getPiece() , move.getPiece())) { return true; }
+        return false;
+    }
+
+    private boolean isFriendlyAround(Move move) {
+        try {
+            if (boardModel.getSpot(move.getDx(), move.getDy()-1).getPiece().getColor() == move.getPiece().getColor()) { return true; }
+        } catch (NullPointerException e) {
+            Game.logger.log(Level.FINE, e.getMessage());
+        }
+        try {
+            if (boardModel.getSpot(move.getDx(), move.getDy()+1).getPiece().getColor() == move.getPiece().getColor()) { return true; }
+        } catch (NullPointerException e) {
+            Game.logger.log(Level.FINE, e.getMessage());
+        }
+        try {
+            if (boardModel.getSpot(addX(move.getDx(), 1), move.getDy()).getPiece().getColor()  == move.getPiece().getColor()) { return true; }
+        } catch (NullPointerException e) {
+            Game.logger.log(Level.FINE, e.getMessage());
+        }
+        try {
+            if (boardModel.getSpot(addX(move.getDx(), - 1), move.getDy()).getPiece().getColor()  == move.getPiece().getColor()) { return true; }
+        } catch (NullPointerException e) {
+            Game.logger.log(Level.FINE, e.getMessage());
+        }
         return false;
     }
 

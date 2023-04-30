@@ -32,6 +32,8 @@ public class Game {
     private Boolean logging;
     private Boolean ownLayout;
     public static Logger logger = Logger.getLogger(Game.class.getName());
+    public static final Level level = Level.FINE;
+
     public boolean pushPromise = false;   // have to move stronger current Players Piece on source position of last move
 
     /**
@@ -83,7 +85,6 @@ public class Game {
     }
 
     private void setUpLogger() {
-        Level level = Level.CONFIG;
         logger.setUseParentHandlers(false);
         Handler handler = new ConsoleHandler();
         logger.addHandler(handler);
@@ -104,17 +105,17 @@ public class Game {
     /**
      * Check Move for validity.
      *
-     * @param sourceX char coordinate of Piece
-     * @param sourceY int coordinate of Piece
-     * @param destinationX char coordinate of Piece
-     * @param destinationY int coordinate of Piece
+     * @param sx char coordinate of Piece
+     * @param sy int coordinate of Piece
+     * @param dx char coordinate of Piece
+     * @param dy int coordinate of Piece
      */
-    public void moveRequest(char sourceX, int sourceY, char destinationX, int destinationY) {
+    public void moveRequest(char sx, int sy, char dx, int dy) {
         Move move = new Move(
-                boardModel.getSpot(sourceX, sourceY).getPiece(), sourceX, sourceY, destinationX, destinationY, currentPlayer, this.movesInTurn);
-        Game.logger.log(Level.CONFIG, "from " + sourceX + " " + sourceY);
+                boardModel.getSpot(sx, sy).getPiece(), sx, sy, dx, dy, currentPlayer, this.movesInTurn);
+        Game.logger.log(Level.CONFIG, "Request to move from " + sx + " " + sy + " to " + dx + " " + dy);
         List<Move> validMoves = gameValidator.generateValidMoves(
-                boardModel.getSpot(sourceX, sourceY).getPiece(), boardModel.getSpot(sourceX, sourceY), currentPlayer);
+                boardModel.getSpot(sx, sy).getPiece(), boardModel.getSpot(sx, sy), currentPlayer);
 
         for (Move validMove : validMoves) {
             if (move.getDy() == validMove.getDy() && move.getDx() == validMove.getDx()) {
@@ -131,7 +132,15 @@ public class Game {
             }
         }
 
+        // TODO check if Piece is on trap spot and can be saved or is doomed
+        if (gameValidator.isTrapped(move)) {
+            Game.logger.log(Level.INFO,
+                    "Killing " + move.getPiece().toString() + " on " + move.getDx() + " " + move.getDy());
+            // TODO kill it
+        }
+
         if (gameValidator.endMove(move)) {
+            Game.logger.log(Level.INFO, "End of game!");
             showWinnerDialog();
         }
     }

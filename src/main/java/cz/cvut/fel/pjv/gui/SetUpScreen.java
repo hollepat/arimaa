@@ -25,6 +25,7 @@ public class SetUpScreen extends JFrame {
         getRootPane().setDefaultButton(createButton);
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 
+        logMessagesCheckBox.setSelected(true);
         spinnerTimer.setEnabled(false);
         setListeners();
 

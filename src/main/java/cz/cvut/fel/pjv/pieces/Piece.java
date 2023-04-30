@@ -55,4 +55,10 @@ abstract public class Piece extends JLabel {
     public int getPieceStrength() {
         return pieceStrength;
     }
+
+    @Override
+    public String toString() {
+        return pieceType +
+                ", " + color;
+    }
 }
