@@ -5,13 +5,13 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-public class Pieces {
+public class PieceSet {
 
     private static Map<ColorPiece, Map<PieceType, List<Piece>>> pieces;
 
-    private static Pieces piecesInstance = new Pieces();
+    private static PieceSet pieceSetInstance = new PieceSet();
 
-    private Pieces() {
+    private PieceSet() {
         init();
     }
 

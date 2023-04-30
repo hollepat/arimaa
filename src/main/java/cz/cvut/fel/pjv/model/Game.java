@@ -57,7 +57,7 @@ public class Game {
 
     /**
      * Constructor for loaded Game.
-     * @param file
+     * @param file containing move log from previous game
      */
     public Game(File file) {
         // TODO init from file
@@ -132,11 +132,13 @@ public class Game {
             }
         }
 
-        // TODO check if Piece is on trap spot and can be saved or is doomed
         if (gameValidator.isTrapped(move)) {
+            // TODO kill it
             Game.logger.log(Level.INFO,
                     "Killing " + move.getPiece().toString() + " on " + move.getDx() + " " + move.getDy());
-            // TODO kill it
+            // todo remove from board and put to stack of killed
+            boardModel.removePiece(move.getPiece(), move.getDx(), move.getDy());
+            // todo hide gui component from board
         }
 
         if (gameValidator.endMove(move)) {
@@ -260,8 +262,5 @@ public class Game {
         return timerPanel;
     }
 
-    public static void main(String[] argv) {
-        Game game = new Game(true, 10, false);
-    }
 
 }

@@ -4,7 +4,6 @@ import cz.cvut.fel.pjv.pieces.ColorPiece;
 import cz.cvut.fel.pjv.pieces.Piece;
 import cz.cvut.fel.pjv.pieces.PieceType;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -12,7 +11,7 @@ import java.util.logging.Level;
 public class GameValidator {
 
 
-    private BoardModel boardModel;
+    private final BoardModel boardModel;
     private final Game game;
 
     /**
@@ -95,9 +94,7 @@ public class GameValidator {
 
         if (move.getPiece().getColor() != game.currentPlayer.getColor()) {  // move opposite Piece
             if (!isDraggedByPiece(move)) {      // is enemy piece dragged?
-                if (!isPushedByPiece(move)) {   // if not --> has to be pushed
-                    return false;
-                }
+                return isPushedByPiece(move);   // if not --> has to be pushed
             }
         }
 
@@ -231,9 +228,10 @@ public class GameValidator {
             }
             if (isStrongerAround(move)) {
                 Game.logger.log(Level.CONFIG,
-                    "Created push promise!\n" +
-                        "(In next move you have to drag your piece on spot of enemy piece you dragged before)\n" +
-                         "(your piece has to be stronger than enemy ones)");
+                        """
+                                Created push promise!
+                                (In next move you have to drag your piece on spot of enemy piece you dragged before)
+                                (your piece has to be stronger than enemy ones)""");
                 move.pushPromise = true;
                 return true;
             }

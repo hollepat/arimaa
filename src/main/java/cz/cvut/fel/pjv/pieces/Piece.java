@@ -8,7 +8,6 @@ import javax.swing.*;
 
 abstract public class Piece extends JLabel {
 
-    protected boolean alive;       // live = true, killed = false
     protected ColorPiece color;
     protected PieceType pieceType;
     protected int pieceStrength;
