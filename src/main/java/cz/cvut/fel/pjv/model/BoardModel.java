@@ -7,6 +7,7 @@ import cz.cvut.fel.pjv.pieces.PieceType;
 import cz.cvut.fel.pjv.pieces.PieceSet;
 
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Stack;
 import java.util.logging.Level;
 
@@ -60,6 +61,16 @@ public class BoardModel {
         Spot destinationSpot = getSpot(move.getDx(), move.getDy());
         originSpot.setPiece(move.getPiece());
         destinationSpot.setPiece(null);
+
+        // bring back killed pieces
+        for (Map.Entry<String, Piece> entry : move.getKilledPieces().entrySet()) {
+            if (entry.getValue() != move.getPiece()) {
+                Spot square = getSpot(entry.getKey().charAt(0), Integer.parseInt(String.valueOf(entry.getKey().charAt(1))));
+                square.setPiece(entry.getValue());
+            }
+        }
+
+        System.out.println(toString());
     }
 
     /**
@@ -155,10 +166,10 @@ public class BoardModel {
         // note! - StringBuilder is not thread safe
         StringBuilder str = new StringBuilder();
         str.append("Board\n");
-        for (int i = 0; i < BOARD_DIMENSION; i++) {
+        for (int i = BOARD_DIMENSION-1; i > -1; i--) {
             for (int j = 0; j < BOARD_DIMENSION; j++) {
                 if (arimaaBoardSpots[i][j].getPiece() == null) {
-                    str.append(String.format("[%8s]", null));
+                    str.append(String.format("[%8s]", " "));
                 } else {
                     str.append(String.format("[%8s]", arimaaBoardSpots[i][j].getPiece().getType()));
                 }

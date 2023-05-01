@@ -3,6 +3,9 @@ package cz.cvut.fel.pjv.model;
 
 import cz.cvut.fel.pjv.pieces.*;
 
+import java.util.HashMap;
+import java.util.Map;
+
 
 public class Move {
 
@@ -13,8 +16,8 @@ public class Move {
     private final int dy;
     private final Player player;
     private int moveNumInTurn;  // indicates in which of 1...4 moves was this move played (one turn)
+    private Map<String, Piece> killedPieces;
     public boolean pushPromise = false;
-    private String arimaaAnotation;
 
     public Move(Piece piece, char sx, int sy, char dx, int dy, Player player, int moveNumInTurn) {
         this.piece = piece;
@@ -24,6 +27,7 @@ public class Move {
         this.dy = dy;
         this.player = player;
         this.moveNumInTurn = moveNumInTurn;
+        killedPieces = new HashMap<>();
     }
 
     public Move(Piece piece, char sx, int sy, char dx, int dy, Player player) {
@@ -61,6 +65,14 @@ public class Move {
 
     public Player getPlayer() {
         return player;
+    }
+
+    public Map<String, Piece> getKilledPieces() {
+        return killedPieces;
+    }
+
+    public void addKilledPiece(String string, Piece piece) {
+        this.killedPieces.put(string, piece);
     }
 
     @Override

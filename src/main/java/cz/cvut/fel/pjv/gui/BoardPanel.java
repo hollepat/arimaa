@@ -3,6 +3,7 @@ package cz.cvut.fel.pjv.gui;
 import cz.cvut.fel.pjv.model.DragAndDropListener;
 import cz.cvut.fel.pjv.model.Game;
 import cz.cvut.fel.pjv.model.Move;
+import cz.cvut.fel.pjv.model.Spot;
 import cz.cvut.fel.pjv.pieces.ColorPiece;
 import cz.cvut.fel.pjv.pieces.Piece;
 import cz.cvut.fel.pjv.pieces.PieceType;
@@ -12,6 +13,7 @@ import javax.swing.*;
 import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Stack;
 import java.util.logging.Level;
@@ -131,6 +133,15 @@ public class BoardPanel extends JPanel {
         destinationSquarePanel.removeAll();
         destinationSquarePanel.repaint();
         sourceSquarePanel.repaint();
+
+        // bring back killed pieces
+        for (Map.Entry<String, Piece> entry : move.getKilledPieces().entrySet()) {
+            if (entry.getValue() != move.getPiece()) {
+                JPanel square = getSquarePanel(Integer.parseInt(String.valueOf(entry.getKey().charAt(1))), entry.getKey().charAt(0));
+                square.add(getImgAsJLabel(entry.getValue()));
+                square.repaint();
+            }
+        }
 
         SwingUtilities.updateComponentTreeUI(boardPane);    // problem - square got repainted in next move
     }

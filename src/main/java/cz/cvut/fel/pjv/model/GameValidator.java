@@ -4,6 +4,7 @@ import cz.cvut.fel.pjv.pieces.ColorPiece;
 import cz.cvut.fel.pjv.pieces.Piece;
 import cz.cvut.fel.pjv.pieces.PieceType;
 
+import java.beans.Introspector;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -85,8 +86,8 @@ public class GameValidator {
             return false;
         }
 
-
-        if (game.pushPromise) {     // promise to move own piece into place after push
+        Move previousMove = game.getMoveLogger().getLastMove();
+        if (previousMove != null && previousMove.pushPromise) {     // promise to move own piece into place after push
             if (!isPushedByPiece(move)) {
                 return false;
             }
@@ -103,22 +104,35 @@ public class GameValidator {
         return true;
     }
 
-    /**
-     * Returns true if piece is on trap spot and cannot be safe by friendly Piece. Will be killed.
-     *
-     * @param move of piece on trap spot
-     * @return true if it is being killed
-     */
-    public boolean isTrapped(Move move) {
-        if ((move.getDx() == 'c' || move.getDx() == 'f') && (move.getDy() == 3 || move.getDy() == 6)) {
-            Game.logger.log(Level.CONFIG, move.getPiece().toString() + " is on trap spot!");
-            if (!isFriendlyAround(move)) {
-                Game.logger.log(Level.CONFIG, move.getPiece().toString() + " is trapped!");
-                return true;
-            } else { Game.logger.log(Level.CONFIG, move.getPiece().toString() + " is saved!"); }
-        }
-        return false;
+    public void checkTrapped(Move move){
+
+        try {
+            if (!isFriendlyAround('c', 3)) {
+                Game.logger.log(Level.CONFIG, boardModel.getSpot('c', 3).getPiece().toString() + " is trapped!");
+                move.addKilledPiece('c' + Integer.toString(3), boardModel.getSpot('c', 3).getPiece());
+            }
+        } catch (NullPointerException e) {}
+        try {
+            if (!isFriendlyAround('c', 6)) {
+                Game.logger.log(Level.CONFIG, boardModel.getSpot('c', 6).getPiece().toString() + " is trapped!");
+                move.addKilledPiece('c' + Integer.toString(6), boardModel.getSpot('c', 6).getPiece());
+            }
+        } catch (NullPointerException e) {}
+        try {
+            if (!isFriendlyAround('f', 3)) {
+                Game.logger.log(Level.CONFIG, boardModel.getSpot('f', 3).getPiece().toString() + " is trapped!");
+                move.addKilledPiece('f' + Integer.toString(3), boardModel.getSpot('f', 3).getPiece());
+            }
+        } catch (NullPointerException e) {}
+        try {
+            if (!isFriendlyAround('f', 6)) {
+                Game.logger.log(Level.CONFIG, boardModel.getSpot('f', 6).getPiece().toString() + " is trapped!");
+                move.addKilledPiece('f' + Integer.toString(6), boardModel.getSpot('f', 6).getPiece());
+            }
+        } catch (NullPointerException e) {}
+
     }
+
 
     private boolean isPieceFrozen() {
         // TODO
@@ -176,24 +190,37 @@ public class GameValidator {
         return false;
     }
 
-    private boolean isFriendlyAround(Move move) {
+    private boolean isFriendlyAround(char x, int y) {
+        Piece piece = boardModel.getSpot(x, y).getPiece();
         try {
-            if (boardModel.getSpot(move.getDx(), move.getDy()-1).getPiece().getColor() == move.getPiece().getColor()) { return true; }
+            if (boardModel.getSpot(x, y-1).getPiece().getColor() == piece.getColor()) {
+                Game.logger.log(Level.CONFIG, piece.toString() + " is saved!");
+                return true;
+            }
         } catch (NullPointerException e) {
             Game.logger.log(Level.FINE, e.getMessage());
         }
         try {
-            if (boardModel.getSpot(move.getDx(), move.getDy()+1).getPiece().getColor() == move.getPiece().getColor()) { return true; }
+            if (boardModel.getSpot(x, y+1).getPiece().getColor() == piece.getColor()) {
+                Game.logger.log(Level.CONFIG, piece.toString() + " is saved!");
+                return true;
+            }
         } catch (NullPointerException e) {
             Game.logger.log(Level.FINE, e.getMessage());
         }
         try {
-            if (boardModel.getSpot(addX(move.getDx(), 1), move.getDy()).getPiece().getColor()  == move.getPiece().getColor()) { return true; }
+            if (boardModel.getSpot(addX(x, 1), y).getPiece().getColor()  == piece.getColor()) {
+                Game.logger.log(Level.CONFIG, piece.toString() + " is saved!");
+                return true;
+            }
         } catch (NullPointerException e) {
             Game.logger.log(Level.FINE, e.getMessage());
         }
         try {
-            if (boardModel.getSpot(addX(move.getDx(), - 1), move.getDy()).getPiece().getColor()  == move.getPiece().getColor()) { return true; }
+            if (boardModel.getSpot(addX(x, - 1), y).getPiece().getColor()  == piece.getColor()) {
+                Game.logger.log(Level.CONFIG, piece.toString() + " is saved!");
+                return true;
+            }
         } catch (NullPointerException e) {
             Game.logger.log(Level.FINE, e.getMessage());
         }

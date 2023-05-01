@@ -4,11 +4,13 @@ import cz.cvut.fel.pjv.gui.BoardPanel;
 import cz.cvut.fel.pjv.gui.GameFrame;
 import cz.cvut.fel.pjv.gui.TimerPanel;
 import cz.cvut.fel.pjv.pieces.ColorPiece;
+import cz.cvut.fel.pjv.pieces.Piece;
 import cz.cvut.fel.pjv.utilities.MyFormatter;
 
 import javax.swing.*;
 import java.io.File;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.*;
 
 
@@ -33,8 +35,6 @@ public class Game {
     private Boolean ownLayout;
     public static Logger logger = Logger.getLogger(Game.class.getName());
     public static final Level level = Level.FINE;
-
-    public boolean pushPromise = false;   // have to move stronger current Players Piece on source position of last move
 
     /**
      * Constructor for new Game.
@@ -115,6 +115,7 @@ public class Game {
         Game.logger.log(Level.CONFIG, "Request to move from " + sx + " " + sy + " to " + dx + " " + dy);
         List<Move> validMoves = gameValidator.generateValidMoves(boardModel.getSpot(sx, sy).getPiece(), boardModel.getSpot(sx, sy), currentPlayer);
 
+        // check valid move
         for (Move validMove : validMoves) {
             if (move.getDy() == validMove.getDy() && move.getDx() == validMove.getDx()) {
                 move.pushPromise = validMove.pushPromise;
@@ -128,14 +129,16 @@ public class Game {
             }
         }
 
-
-        if (gameValidator.isTrapped(move)) {
-            Game.logger.log(Level.INFO,
-                    "Killing " + move.getPiece().toString() + " on " + move.getDx() + " " + move.getDy());
-            boardModel.removePiece(move.getPiece(), move.getDx(), move.getDy());
-            boardPanel.removePiece(move.getDx(), move.getDy());
+        // check traps
+        gameValidator.checkTrapped(move);
+        for (Map.Entry<String, Piece> entry : move.getKilledPieces().entrySet()) {
+            Game.logger.log(Level.INFO, "Killing " + entry.getValue().toString() + " on " + entry.getKey());
+            boardModel.removePiece(entry.getValue(), entry.getKey().charAt(0), Integer.parseInt(String.valueOf(entry.getKey().charAt(1))));
+            boardPanel.removePiece(entry.getKey().charAt(0), Integer.parseInt(String.valueOf(entry.getKey().charAt(1))));
         }
+        System.out.println(boardModel.toString());
 
+        // check end game
         if (gameValidator.endMove(move)) {
             Game.logger.log(Level.INFO, "End of game!");
             showWinnerDialog();
@@ -239,10 +242,6 @@ public class Game {
         this.gameStatus = gameStatus;
     }
 
-    public GameStatus getGameStatus() {
-        return gameStatus;
-    }
-
     public Player getPlayerGold() {
         return playerGold;
     }
@@ -251,9 +250,6 @@ public class Game {
         return playerSilver;
     }
 
-    public TimerPanel getTimerPanel() {
-        return timerPanel;
-    }
 
 
 }
