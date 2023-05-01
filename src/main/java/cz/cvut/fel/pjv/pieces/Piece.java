@@ -11,6 +11,7 @@ abstract public class Piece extends JLabel {
     protected ColorPiece color;
     protected PieceType pieceType;
     protected int pieceStrength;
+    protected boolean alive;
 
 
     /**
@@ -21,6 +22,7 @@ abstract public class Piece extends JLabel {
     public Piece(ColorPiece color, PieceType pieceType) {
         this.color = color;
         this.pieceType = pieceType;
+        this.alive = true;
     }
 
     /**
@@ -53,6 +55,12 @@ abstract public class Piece extends JLabel {
     public abstract String getImgPath();
     public int getPieceStrength() {
         return pieceStrength;
+    }
+    public boolean isAlive() {
+        return alive;
+    }
+    public void setAlive(boolean alive) {
+        this.alive = alive;
     }
 
     @Override

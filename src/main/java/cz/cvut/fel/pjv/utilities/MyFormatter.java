@@ -58,6 +58,10 @@ public class MyFormatter extends Formatter {
         builder.append(record.getSourceClassName());
         builder.append("]");
 
+        builder.append(" [");
+        builder.append(record.getSourceMethodName());
+        builder.append("]");
+
         builder.append(ANSI_WHITE);
         builder.append(" - ");
         builder.append(record.getMessage());

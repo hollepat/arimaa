@@ -12,6 +12,7 @@ import java.io.File;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.*;
+import java.util.stream.Collectors;
 
 
 public class Game {
@@ -34,7 +35,7 @@ public class Game {
     private Boolean logging;
     private Boolean ownLayout;
     public static Logger logger = Logger.getLogger(Game.class.getName());
-    public static final Level level = Level.FINE;
+    public static final Level level = Level.CONFIG;
 
     /**
      * Constructor for new Game.
@@ -87,6 +88,7 @@ public class Game {
     private void setUpLogger() {
         logger.setUseParentHandlers(false);
         Handler handler = new ConsoleHandler();
+        handler.setFormatter(new MyFormatter());
         logger.addHandler(handler);
 
         if (this.logging) {
@@ -94,10 +96,6 @@ public class Game {
             handler.setLevel(level);
         }
         else { logger.setLevel(Level.OFF); }
-
-        handler.setFormatter(new MyFormatter());
-        logger.addHandler(handler);
-        logger.setUseParentHandlers(false);
     }
 
 
@@ -116,18 +114,20 @@ public class Game {
         List<Move> validMoves = gameValidator.generateValidMoves(boardModel.getSpot(sx, sy).getPiece(), boardModel.getSpot(sx, sy), currentPlayer);
 
         // check valid move
-        for (Move validMove : validMoves) {
-            if (move.getDy() == validMove.getDy() && move.getDx() == validMove.getDx()) {
-                move.pushPromise = validMove.pushPromise;
-                execute(move);
-                checkMovesInTurn();
-                moveLogger.saveMove(move);
-                Game.logger.log(Level.INFO,
-                    "Move executed! " +
-                    move.toString()
-                );
-            }
+        validMoves = validMoves.stream().filter(move1 -> move.getDy() == move1.getDy() && move.getDx() == move1.getDx()).collect(Collectors.toList());
+        if (!validMoves.isEmpty()) {
+            move.pushPromise = validMoves.get(0).pushPromise;
+            execute(move);
+            checkMovesInTurn();
+            moveLogger.saveMove(move);
+            Game.logger.log(Level.INFO,
+                    "Move executed by " + currentPlayer.getColor() + "! " +
+                            move.toString()
+            );
+        } else { // undo also push move (previous) if promised move rejected
+            if (moveLogger.getLastMove().pushPromise) { undoMove(); }
         }
+
 
         // check traps
         gameValidator.checkTrapped(move);
@@ -136,7 +136,7 @@ public class Game {
             boardModel.removePiece(entry.getValue(), entry.getKey().charAt(0), Integer.parseInt(String.valueOf(entry.getKey().charAt(1))));
             boardPanel.removePiece(entry.getKey().charAt(0), Integer.parseInt(String.valueOf(entry.getKey().charAt(1))));
         }
-        System.out.println(boardModel.toString());
+        Game.logger.log(Level.CONFIG, boardModel.toString());
 
         // check end game
         if (gameValidator.endMove(move)) {

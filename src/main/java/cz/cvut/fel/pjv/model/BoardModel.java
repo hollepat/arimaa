@@ -15,7 +15,6 @@ public class BoardModel {
 
     private final int BOARD_DIMENSION = 8;
 
-    private Stack<Piece> deadPieces;
     private final Spot[][] arimaaBoardSpots = new Spot[8][8];
 
 
@@ -70,7 +69,6 @@ public class BoardModel {
             }
         }
 
-        System.out.println(toString());
     }
 
     /**
@@ -95,10 +93,14 @@ public class BoardModel {
      * @param y row coordinate of piece
      */
     public void removePiece(Piece piece, char x, int y) {
-        deadPieces.add(piece);
+        piece.setAlive(false);
         Spot spot = getSpot(x, y);
         spot.setPiece(null);
     }
+
+    // -----------------------------------------------------
+    // ------------- Create Board and Pieces ---------------
+    // -----------------------------------------------------
 
     private void initPieces() {
 
@@ -146,7 +148,6 @@ public class BoardModel {
         getSpot('e', 7).setPiece(silverElephantIterator.next());
         getSpot('d', 2).setPiece(goldElephantIterator.next());
 
-        deadPieces = new Stack<>();
     }
 
     private void initSquares() {
@@ -165,7 +166,7 @@ public class BoardModel {
     public String toString() {
         // note! - StringBuilder is not thread safe
         StringBuilder str = new StringBuilder();
-        str.append("Board\n");
+        str.append('\n');
         for (int i = BOARD_DIMENSION-1; i > -1; i--) {
             for (int j = 0; j < BOARD_DIMENSION; j++) {
                 if (arimaaBoardSpots[i][j].getPiece() == null) {

@@ -21,10 +21,10 @@ Pravidla. Ty nejzákladnější jsou (není to úplný výčet):
 - [x] Je možné použít 1 až 4 tahy za kolo (mohu pohnout více figurkami -> celkem 4 posuny), alespoň jeden krok
 - [x] Silnější figurky mohou tlačit figurky protivníka (počítá se jako jeden tah) a jít na jejich políčko
 - [x] Silnější figurky mohou táhnout figurky protivníka (počítá se jako jeden tah) na políčko, kde byli
-- [ ] Mizení figurek na polích “past” - ty jsou 4, figurka na něm zmizí pokud se na něm nachází a nemá kolem sebe
+- [x] Mizení figurek na polích “past” - ty jsou 4, figurka na něm zmizí pokud se na něm nachází a nemá kolem sebe
   přátelskou figurku
 - [ ] Zmražení figurky (v závislosti na síle figurky), figurka zlata je blízko silnější figurky stříbrné, tak je frozen
   pokud vedle sebe nemá přátelskou figurku
 - [x] Ukončení hry při přechodu králíka přes celé pole
-- [ ] Ukončení hry při zablokování jednoho hráče
+- [x] Ukončení hry při zablokování jednoho hráče
 

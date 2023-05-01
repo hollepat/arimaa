@@ -78,7 +78,8 @@ public class Move {
     @Override
     public String toString() {
         return "Moved " + piece.toString() +
-                " from " + sx + " " + sy +
-                " to " + dx + " " + dy;
+                " from= " + sx + " " + sy +
+                " to= " + dx + " " + dy +
+                " pushPromise= " + pushPromise;
     }
 }

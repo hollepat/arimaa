@@ -25,7 +25,6 @@ public class BoardPanel extends JPanel {
     private JPanel boardPane;                   // panel that holds all static object
 
     private JPanel[][] arimaaBoardPanels = new JPanel[8][8];
-    private Stack<JPanel> deadPieces;
     private final String[] COLS = new String[] {"a","b","c","d","e","f","g","h"};
     public final int SQUARE_DIMENSION = 60;
     private final int PANEL_DIMENSION = 600;
@@ -322,7 +321,6 @@ public class BoardPanel extends JPanel {
         arimaaBoardPanels[6][4].add(getImgAsJLabel(silverElephantIterator.next()));
         arimaaBoardPanels[1][3].add(getImgAsJLabel(goldElephantIterator.next()));
 
-        deadPieces = new Stack<>();
     }
 
 

@@ -1,9 +1,6 @@
 package cz.cvut.fel.pjv.pieces;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class PieceSet {
 
@@ -15,8 +12,26 @@ public class PieceSet {
         init();
     }
 
+    /**
+     * Getter.
+     * @param color is GOLD or SILVER
+     * @param pieceType is some animal
+     * @return Return Pieces of color and pieceType. E.g. gold rabbits.
+     */
     public static List<Piece> getPieces(ColorPiece color, PieceType pieceType) {
         return pieces.get(color).get(pieceType);
+    }
+
+    public static List<Piece> getPieces(ColorPiece color) {
+        List<Piece> list = new ArrayList<>();
+        Map<PieceType, List<Piece>> tmp = pieces.get(color);
+        for (Map.Entry<PieceType, List<Piece>> entry : tmp.entrySet()) {
+            for (Piece p : entry.getValue()) {
+                list.add(p);
+            }
+        }
+
+        return list;
     }
 
     private static void init() {

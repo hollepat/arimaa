@@ -2,12 +2,18 @@ package cz.cvut.fel.pjv.model;
 
 import cz.cvut.fel.pjv.pieces.ColorPiece;
 import cz.cvut.fel.pjv.pieces.Piece;
+import cz.cvut.fel.pjv.pieces.PieceSet;
 import cz.cvut.fel.pjv.pieces.PieceType;
 
+import java.awt.font.GlyphMetrics;
 import java.beans.Introspector;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
+
+import static cz.cvut.fel.pjv.pieces.ColorPiece.GOLD;
+import static cz.cvut.fel.pjv.pieces.ColorPiece.SILVER;
 
 public class GameValidator {
 
@@ -52,14 +58,9 @@ public class GameValidator {
             Move moveRight = new Move(pctbm, spot.getX(), spot.getY(), spot.getX(), spot.getY() - 1, player);
             moves.add(moveRight);
         }
-
-        List<Move> validMoves = new ArrayList<>();
-        for (Move m : moves) {
-            if (isValid(m)) {
-                validMoves.add(m);
-            }
-        }
-
+        Game.logger.log(Level.CONFIG, "Moves: " + moves.toString());
+        List<Move> validMoves = moves.stream().filter(move -> isValid(move)).collect(Collectors.toList());
+        Game.logger.log(Level.CONFIG,"Valid move: " + validMoves.toString());
         return validMoves;
     }
 
@@ -70,29 +71,32 @@ public class GameValidator {
      */
     public boolean isValid(Move move) {
 
+        // check if spot is free
         if (boardModel.getSpot(move.getDx(), move.getDy()).isOccupied()) {
             Game.logger.log(Level.WARNING,
                     "Spot " + move.getDx() + " " + move.getDy() + " is occupied by another Piece!");
             return false;
         }
 
+        // check if not moving enemy piece (exception push and drag)
         if (move.getPiece().getColor() == game.currentPlayer.getColor()
-                && !isNextTo(move.getSx(), move.getSy(), move.getDx(), move.getDy())) {   // move my Piece
+                && !isNextTo(move.getSx(), move.getSy(), move.getDx(), move.getDy())) {
             return false;
         }
 
+        // check if piece itself allows this move
         if (!move.getPiece().isValidMove(move)) {
             Game.logger.log(Level.WARNING, "Rabbit cannot move backwards!");
             return false;
         }
 
+        // check for push promise
         Move previousMove = game.getMoveLogger().getLastMove();
         if (previousMove != null && previousMove.pushPromise) {     // promise to move own piece into place after push
-            if (!isPushedByPiece(move)) {
-                return false;
-            }
+            if (!keepingPromise(move)) { return false; }
         }
 
+        // check if move is push or drag
         if (move.getPiece().getColor() != game.currentPlayer.getColor()) {  // move opposite Piece
             if (!isDraggedByPiece(move)) {      // is enemy piece dragged?
                 return isPushedByPiece(move);   // if not --> has to be pushed
@@ -146,7 +150,7 @@ public class GameValidator {
      * @return true if move is winning
      */
     public boolean endMove(Move move) {
-        if (move.getPiece().getType() == PieceType.RABBIT && move.getPiece().getColor() == ColorPiece.GOLD && move.getDy() == 8) {
+        if (move.getPiece().getType() == PieceType.RABBIT && move.getPiece().getColor() == GOLD && move.getDy() == 8) {
             game.setGameStatus(GameStatus.GOLD_WIN);
             Game.logger.log(Level.INFO, "Gold player wins!");
             return true;
@@ -158,9 +162,22 @@ public class GameValidator {
             return true;
         }
 
-        // TODO END GAME IF ONE PLAYER IS BLOCKED
+        if (hasDeadPieces(GOLD)) {
+            Game.logger.log(Level.INFO, "All " + SILVER + " pieces are dead!");
+            return true;
+        }
+        if (hasDeadPieces(SILVER)) {
+            Game.logger.log(Level.INFO, "All " + GOLD + " pieces are dead!");
+            return true;
+        }
 
         return false;
+    }
+
+    private boolean hasDeadPieces(ColorPiece colorPiece) {
+        List<Piece> alivePieces = PieceSet.getPieces(colorPiece).stream()
+                .filter(Piece::isAlive).toList();
+        return alivePieces.isEmpty();
     }
 
     private boolean isNextTo(char sx1, int sy1, char sx2, int sy2) {
@@ -198,7 +215,7 @@ public class GameValidator {
                 return true;
             }
         } catch (NullPointerException e) {
-            Game.logger.log(Level.FINE, e.getMessage());
+            Game.logger.log(Level.FINER, e.getMessage());
         }
         try {
             if (boardModel.getSpot(x, y+1).getPiece().getColor() == piece.getColor()) {
@@ -206,7 +223,7 @@ public class GameValidator {
                 return true;
             }
         } catch (NullPointerException e) {
-            Game.logger.log(Level.FINE, e.getMessage());
+            Game.logger.log(Level.FINER, e.getMessage());
         }
         try {
             if (boardModel.getSpot(addX(x, 1), y).getPiece().getColor()  == piece.getColor()) {
@@ -214,7 +231,7 @@ public class GameValidator {
                 return true;
             }
         } catch (NullPointerException e) {
-            Game.logger.log(Level.FINE, e.getMessage());
+            Game.logger.log(Level.FINER, e.getMessage());
         }
         try {
             if (boardModel.getSpot(addX(x, - 1), y).getPiece().getColor()  == piece.getColor()) {
@@ -222,7 +239,7 @@ public class GameValidator {
                 return true;
             }
         } catch (NullPointerException e) {
-            Game.logger.log(Level.FINE, e.getMessage());
+            Game.logger.log(Level.FINER, e.getMessage());
         }
         return false;
     }
@@ -240,37 +257,33 @@ public class GameValidator {
         return false;
     }
 
-    private boolean isPushedByPiece(Move move) {
+    private boolean keepingPromise(Move move) {
         Move previousMove = game.getMoveLogger().getLastMove();
-        if (previousMove.pushPromise) {
-             if (!(previousMove.getSx() == move.getDx() && previousMove.getSy() == move.getDy())) {
-                 game.undoMove();   // undo also push move if promised move rejected
-                 return false;
-             }
-             return true;
-        } else {    // make promise for next move (move own piece on old spot of enemy piece
-             if (game.movesInTurn > game.MAX_MOVES-1) {
-                Game.logger.log(Level.WARNING, "Cannot proceed with push, you have " + game.movesInTurn + " move left!");
-                return false;
-            }
-            if (isStrongerAround(move)) {
-                Game.logger.log(Level.CONFIG,
-                        """
-                                Created push promise!
-                                (In next move you have to drag your piece on spot of enemy piece you dragged before)
-                                (your piece has to be stronger than enemy ones)""");
-                move.pushPromise = true;
-                return true;
-            }
+        if (previousMove.getSx() == move.getDx() && previousMove.getSy() == move.getDy()) {
+            return true;
         }
+        return false;
+    }
 
-
+    private boolean isPushedByPiece(Move move) {
+         if (game.movesInTurn > game.MAX_MOVES-1) {
+            Game.logger.log(Level.WARNING, "Cannot proceed with push, you have " + game.movesInTurn + " move left!");
+            return false;
+        }
+        if (isStrongerAround(move)) {
+            Game.logger.log(Level.CONFIG,
+                    """
+                            Created push promise!
+                            (In next move you have to drag your piece on spot of enemy piece you dragged before)
+                            (your piece has to be stronger than enemy ones)""");
+            move.pushPromise = true;
+            return true;
+        }
         return false;
     }
 
     private char addX(char x, int d) {
         char newX = (char)((int)x + d);
-        Game.logger.log(Level.FINE, x + " -> " + newX + " (moved by " + d + ")");
         return newX;
     }
 
