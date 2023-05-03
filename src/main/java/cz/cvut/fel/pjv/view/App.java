@@ -1,4 +1,4 @@
-package cz.cvut.fel.pjv.gui;
+package cz.cvut.fel.pjv.view;
 
 import javax.swing.*;
 import java.awt.*;

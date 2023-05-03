@@ -1,11 +1,7 @@
 package cz.cvut.fel.pjv.model;
 
-import cz.cvut.fel.pjv.gui.TimerPanel;
+import cz.cvut.fel.pjv.view.TimerPanel;
 import cz.cvut.fel.pjv.pieces.ColorPiece;
-
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.Timer;
 
 public class Player {
     private ColorPiece color;

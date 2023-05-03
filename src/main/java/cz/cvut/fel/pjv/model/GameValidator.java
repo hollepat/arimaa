@@ -1,5 +1,7 @@
 package cz.cvut.fel.pjv.model;
 
+import cz.cvut.fel.pjv.controller.Game;
+import cz.cvut.fel.pjv.controller.GameStatus;
 import cz.cvut.fel.pjv.pieces.ColorPiece;
 import cz.cvut.fel.pjv.pieces.Piece;
 import cz.cvut.fel.pjv.pieces.PieceSet;

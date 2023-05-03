@@ -1,6 +1,6 @@
 package cz.cvut.fel.pjv.model;
 
-import cz.cvut.fel.pjv.gui.TimerPanel;
+import cz.cvut.fel.pjv.view.TimerPanel;
 
 public class RealTimeClocks extends Thread{
 

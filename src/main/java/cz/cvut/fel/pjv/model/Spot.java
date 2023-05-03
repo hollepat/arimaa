@@ -1,5 +1,6 @@
 package cz.cvut.fel.pjv.model;
 
+import cz.cvut.fel.pjv.controller.Game;
 import cz.cvut.fel.pjv.pieces.Piece;
 
 import java.util.logging.Level;

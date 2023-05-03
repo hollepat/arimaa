@@ -1,4 +1,4 @@
-package cz.cvut.fel.pjv.model;
+package cz.cvut.fel.pjv.controller;
 
 public enum GameStatus {
     ACTIVE,

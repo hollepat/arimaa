@@ -1,6 +1,6 @@
-package cz.cvut.fel.pjv.gui;
+package cz.cvut.fel.pjv.view;
 
-import cz.cvut.fel.pjv.model.Game;
+import cz.cvut.fel.pjv.controller.Game;
 
 import javax.swing.*;
 import java.awt.*;

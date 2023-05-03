@@ -1,5 +1,5 @@
-import cz.cvut.fel.pjv.gui.App;
-import cz.cvut.fel.pjv.model.Game;
+import cz.cvut.fel.pjv.view.App;
+import cz.cvut.fel.pjv.controller.Game;
 import org.junit.jupiter.api.Test;
 
 public class AppTest {

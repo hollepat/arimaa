@@ -1,9 +1,7 @@
-package cz.cvut.fel.pjv.gui;
+package cz.cvut.fel.pjv.view;
 
-import cz.cvut.fel.pjv.model.DragAndDropListener;
-import cz.cvut.fel.pjv.model.Game;
+import cz.cvut.fel.pjv.controller.Game;
 import cz.cvut.fel.pjv.model.Move;
-import cz.cvut.fel.pjv.model.Spot;
 import cz.cvut.fel.pjv.pieces.ColorPiece;
 import cz.cvut.fel.pjv.pieces.Piece;
 import cz.cvut.fel.pjv.pieces.PieceType;
@@ -15,7 +13,6 @@ import java.awt.*;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Stack;
 import java.util.logging.Level;
 
 public class BoardPanel extends JPanel {

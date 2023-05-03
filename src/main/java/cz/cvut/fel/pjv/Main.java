@@ -1,6 +1,6 @@
 package cz.cvut.fel.pjv;
 
-import cz.cvut.fel.pjv.gui.App;
+import cz.cvut.fel.pjv.view.App;
 
 import javax.swing.*;
 

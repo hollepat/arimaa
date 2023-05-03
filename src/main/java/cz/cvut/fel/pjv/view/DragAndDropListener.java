@@ -1,6 +1,7 @@
-package cz.cvut.fel.pjv.model;
+package cz.cvut.fel.pjv.view;
 
-import cz.cvut.fel.pjv.gui.BoardPanel;
+import cz.cvut.fel.pjv.controller.Game;
+import cz.cvut.fel.pjv.view.BoardPanel;
 
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;

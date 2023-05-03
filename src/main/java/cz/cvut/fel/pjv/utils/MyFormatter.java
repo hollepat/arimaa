@@ -1,4 +1,4 @@
-package cz.cvut.fel.pjv.utilities;
+package cz.cvut.fel.pjv.utils;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;

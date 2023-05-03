@@ -1,11 +1,12 @@
-package cz.cvut.fel.pjv.model;
+package cz.cvut.fel.pjv.controller;
 
-import cz.cvut.fel.pjv.gui.BoardPanel;
-import cz.cvut.fel.pjv.gui.GameFrame;
-import cz.cvut.fel.pjv.gui.TimerPanel;
+import cz.cvut.fel.pjv.model.*;
+import cz.cvut.fel.pjv.view.BoardPanel;
+import cz.cvut.fel.pjv.view.GameFrame;
+import cz.cvut.fel.pjv.view.TimerPanel;
 import cz.cvut.fel.pjv.pieces.ColorPiece;
 import cz.cvut.fel.pjv.pieces.Piece;
-import cz.cvut.fel.pjv.utilities.MyFormatter;
+import cz.cvut.fel.pjv.utils.MyFormatter;
 
 import javax.swing.*;
 import java.io.File;

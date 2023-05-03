@@ -1,6 +1,7 @@
 package cz.cvut.fel.pjv.model;
 
 
+import cz.cvut.fel.pjv.controller.Game;
 import cz.cvut.fel.pjv.pieces.ColorPiece;
 import cz.cvut.fel.pjv.pieces.Piece;
 import cz.cvut.fel.pjv.pieces.PieceType;
@@ -8,7 +9,6 @@ import cz.cvut.fel.pjv.pieces.PieceSet;
 
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Stack;
 import java.util.logging.Level;
 
 public class BoardModel {
