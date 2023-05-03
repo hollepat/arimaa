@@ -6,10 +6,9 @@ Game __arimaa__.
 ### Todo
 
 1. Threads --> real time hours interaction with game
-2. Add Game Logic
-3. Save Game --> write state of board to file and use function to recreate
-4. Player to Player/ PC to Player options
-5. Set Position of Pieces???
+2. Save Game --> write state of board to file and use function to recreate
+3. Player to Player/ PC to Player options
+4. Set Position of Pieces???
 
 ### Rules
 
@@ -23,7 +22,7 @@ Pravidla. Ty nejzákladnější jsou (není to úplný výčet):
 - [x] Silnější figurky mohou táhnout figurky protivníka (počítá se jako jeden tah) na políčko, kde byli
 - [x] Mizení figurek na polích “past” - ty jsou 4, figurka na něm zmizí pokud se na něm nachází a nemá kolem sebe
   přátelskou figurku
-- [ ] Zmražení figurky (v závislosti na síle figurky), figurka zlata je blízko silnější figurky stříbrné, tak je frozen
+- [x] Zmražení figurky (v závislosti na síle figurky), figurka zlata je blízko silnější figurky stříbrné, tak je frozen
   pokud vedle sebe nemá přátelskou figurku
 - [x] Ukončení hry při přechodu králíka přes celé pole
 - [x] Ukončení hry při zablokování jednoho hráče

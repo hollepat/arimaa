@@ -5,8 +5,6 @@ import cz.cvut.fel.pjv.pieces.Piece;
 import cz.cvut.fel.pjv.pieces.PieceSet;
 import cz.cvut.fel.pjv.pieces.PieceType;
 
-import java.awt.font.GlyphMetrics;
-import java.beans.Introspector;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -58,9 +56,9 @@ public class GameValidator {
             Move moveRight = new Move(pctbm, spot.getX(), spot.getY(), spot.getX(), spot.getY() - 1, player);
             moves.add(moveRight);
         }
-        Game.logger.log(Level.CONFIG, "Moves: " + moves.toString());
-        List<Move> validMoves = moves.stream().filter(move -> isValid(move)).collect(Collectors.toList());
-        Game.logger.log(Level.CONFIG,"Valid move: " + validMoves.toString());
+        Game.logger.log(Level.CONFIG, "Moves: " + moves);
+        List<Move> validMoves = moves.stream().filter(this::isValid).collect(Collectors.toList());
+        Game.logger.log(Level.CONFIG,"Valid move: " + validMoves);
         return validMoves;
     }
 
@@ -97,17 +95,25 @@ public class GameValidator {
         }
 
         // check if move is push or drag
-        if (move.getPiece().getColor() != game.currentPlayer.getColor()) {  // move opposite Piece
-            if (!isDraggedByPiece(move)) {      // is enemy piece dragged?
-                return isPushedByPiece(move);   // if not --> has to be pushed
+        if (move.getPiece().getColor() != game.currentPlayer.getColor()) {
+            if (!isDraggedByPiece(move)) {
+                return isPushedByPiece(move);
             }
         }
 
-        // TODO Piece is frozen if is near stronger enemy Piece and not have next to itself friendly Piece
+        // check if piece is frozen
+        if (isFrozen(move)) {
+            Game.logger.log(Level.CONFIG, move.getPiece().toString() + " is frozen!");
+            return false;
+        }
 
         return true;
     }
 
+    /**
+     * Check for move all trap spots and add to move all pieces that has been killed in this move.
+     * @param move that triggers possibility of some piece being trapped
+     */
     public void checkTrapped(Move move){
 
         try {
@@ -115,32 +121,39 @@ public class GameValidator {
                 Game.logger.log(Level.CONFIG, boardModel.getSpot('c', 3).getPiece().toString() + " is trapped!");
                 move.addKilledPiece('c' + Integer.toString(3), boardModel.getSpot('c', 3).getPiece());
             }
-        } catch (NullPointerException e) {}
+        } catch (NullPointerException e) {
+            Game.logger.log(Level.FINER, e.getMessage());
+        }
         try {
             if (!isFriendlyAround('c', 6)) {
                 Game.logger.log(Level.CONFIG, boardModel.getSpot('c', 6).getPiece().toString() + " is trapped!");
                 move.addKilledPiece('c' + Integer.toString(6), boardModel.getSpot('c', 6).getPiece());
             }
-        } catch (NullPointerException e) {}
+        } catch (NullPointerException e) {
+            Game.logger.log(Level.FINER, e.getMessage());
+        }
         try {
             if (!isFriendlyAround('f', 3)) {
                 Game.logger.log(Level.CONFIG, boardModel.getSpot('f', 3).getPiece().toString() + " is trapped!");
                 move.addKilledPiece('f' + Integer.toString(3), boardModel.getSpot('f', 3).getPiece());
             }
-        } catch (NullPointerException e) {}
+        } catch (NullPointerException e) {
+            Game.logger.log(Level.FINER, e.getMessage());
+        }
         try {
             if (!isFriendlyAround('f', 6)) {
                 Game.logger.log(Level.CONFIG, boardModel.getSpot('f', 6).getPiece().toString() + " is trapped!");
                 move.addKilledPiece('f' + Integer.toString(6), boardModel.getSpot('f', 6).getPiece());
             }
-        } catch (NullPointerException e) {}
+        } catch (NullPointerException e) {
+            Game.logger.log(Level.FINER, e.getMessage());
+        }
 
     }
 
 
-    private boolean isPieceFrozen() {
-        // TODO
-        return false;
+    private boolean isFrozen(Move move) {
+        return !isFriendlyAround(move.getSx(), move.getSy()) && isStrongerAround(move);
     }
 
 
@@ -193,17 +206,33 @@ public class GameValidator {
         if (stronger == null || weaker == null) {
             return false;
         }
-        if (stronger.getColor() == game.currentPlayer.getColor() && stronger.getPieceStrength() > weaker.getPieceStrength()) {
+        if (stronger.getColor() != weaker.getColor() && stronger.getPieceStrength() > weaker.getPieceStrength()) {
             return true;
         }
         return false;
     }
 
     private boolean isStrongerAround(Move move) {
-        if (isStronger(boardModel.getSpot(move.getSx(), move.getSy()-1).getPiece() , move.getPiece())) { return true; }
-        if (isStronger(boardModel.getSpot(move.getSx(), move.getSy()+1).getPiece() , move.getPiece())) { return true; }
-        if (isStronger(boardModel.getSpot((char)((int)move.getSx() + 1), move.getSy()).getPiece() , move.getPiece())) { return true; }
-        if (isStronger(boardModel.getSpot((char)((int)move.getSx() - 1), move.getSy()).getPiece() , move.getPiece())) { return true; }
+        try {
+            if (isStronger(boardModel.getSpot(move.getSx(), move.getSy()-1).getPiece() , move.getPiece())) { return true; }
+        } catch (NullPointerException e) {
+            Game.logger.log(Level.FINER, e.getMessage());
+        }
+        try {
+            if (isStronger(boardModel.getSpot(move.getSx(), move.getSy()+1).getPiece() , move.getPiece())) { return true; }
+        } catch (NullPointerException e) {
+            Game.logger.log(Level.FINER, e.getMessage());
+        }
+        try {
+            if (isStronger(boardModel.getSpot(addX(move.getSx(), 1), move.getSy()).getPiece() , move.getPiece())) { return true; }
+        } catch (NullPointerException e) {
+            Game.logger.log(Level.FINER, e.getMessage());
+        }
+        try {
+            if (isStronger(boardModel.getSpot(addX(move.getSx(), -1), move.getSy()).getPiece() , move.getPiece())) { return true; }
+        } catch (NullPointerException e) {
+            Game.logger.log(Level.FINER, e.getMessage());
+        }
         return false;
     }
 
@@ -211,7 +240,6 @@ public class GameValidator {
         Piece piece = boardModel.getSpot(x, y).getPiece();
         try {
             if (boardModel.getSpot(x, y-1).getPiece().getColor() == piece.getColor()) {
-                Game.logger.log(Level.CONFIG, piece.toString() + " is saved!");
                 return true;
             }
         } catch (NullPointerException e) {
@@ -219,7 +247,6 @@ public class GameValidator {
         }
         try {
             if (boardModel.getSpot(x, y+1).getPiece().getColor() == piece.getColor()) {
-                Game.logger.log(Level.CONFIG, piece.toString() + " is saved!");
                 return true;
             }
         } catch (NullPointerException e) {
@@ -227,7 +254,6 @@ public class GameValidator {
         }
         try {
             if (boardModel.getSpot(addX(x, 1), y).getPiece().getColor()  == piece.getColor()) {
-                Game.logger.log(Level.CONFIG, piece.toString() + " is saved!");
                 return true;
             }
         } catch (NullPointerException e) {
@@ -235,7 +261,6 @@ public class GameValidator {
         }
         try {
             if (boardModel.getSpot(addX(x, - 1), y).getPiece().getColor()  == piece.getColor()) {
-                Game.logger.log(Level.CONFIG, piece.toString() + " is saved!");
                 return true;
             }
         } catch (NullPointerException e) {
@@ -259,10 +284,7 @@ public class GameValidator {
 
     private boolean keepingPromise(Move move) {
         Move previousMove = game.getMoveLogger().getLastMove();
-        if (previousMove.getSx() == move.getDx() && previousMove.getSy() == move.getDy()) {
-            return true;
-        }
-        return false;
+        return previousMove.getSx() == move.getDx() && previousMove.getSy() == move.getDy();
     }
 
     private boolean isPushedByPiece(Move move) {
@@ -283,8 +305,7 @@ public class GameValidator {
     }
 
     private char addX(char x, int d) {
-        char newX = (char)((int)x + d);
-        return newX;
+        return (char)((int)x + d);
     }
 
     /**
