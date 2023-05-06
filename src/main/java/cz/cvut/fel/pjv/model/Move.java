@@ -18,7 +18,6 @@ public class Move {
     private int moveNumInTurn;  // indicates in which of 1...4 moves was this move played (one turn)
     private Map<String, Piece> killedPieces;
     public boolean pushPromise = false;
-    private String notation;
 
     public Move(Piece piece, char sx, int sy, char dx, int dy, Player player, int moveNumInTurn) {
         this.piece = piece;
@@ -38,11 +37,14 @@ public class Move {
         this.dx = dx;
         this.dy = dy;
         this.player = player;
-        this.notation = getNotation();
     }
 
     public String getNotation() {
-        return piece.getNotationName() + sx + Integer.toString(sy) + getDirection();
+        try {
+            return String.valueOf(piece.getNotationName()) + sx + sy + getDirection();
+        } catch (NullPointerException e) {
+            return "null";
+        }
     }
 
     private char getDirection() {
@@ -54,9 +56,9 @@ public class Move {
             }
         } else if (sy != dy) {
             if (sy-dy == 1) {
-                return 'n';
-            } else if (sy-dy == -1) {
                 return 's';
+            } else if (sy-dy == -1) {
+                return 'n';
             }
         }
         return ' ';
@@ -98,8 +100,15 @@ public class Move {
         this.killedPieces.put(string, piece);
     }
 
+
     @Override
     public String toString() {
+        if (piece == null) {
+            return "Moved " + null +
+                    " from= " + sx + " " + sy +
+                    " to= " + dx + " " + dy +
+                    " pushPromise= " + pushPromise;
+        }
         return "Moved " + piece.toString() +
                 " from= " + sx + " " + sy +
                 " to= " + dx + " " + dy +

@@ -10,7 +10,9 @@ import cz.cvut.fel.pjv.utils.MyFormatter;
 
 import javax.swing.*;
 import java.io.File;
+import java.util.Collection;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 import java.util.logging.*;
 import java.util.stream.Collectors;
@@ -19,10 +21,10 @@ import java.util.stream.Collectors;
 public class Game {
 
     public Player currentPlayer;
-    public int movesInTurn = 0;
     public final int ZERO_MOVES = 0;
     public final int MAX_MOVES = 3;
-
+    private Turn currentTurn;
+    public int moveCnt = 0;
     private int timeLimit;
     private Player playerGold;
     private Player playerSilver;
@@ -41,7 +43,7 @@ public class Game {
     /**
      * Constructor for new Game.
      *
-     * @param log boolean to indicated if log messages should be on/off
+     * @param log       boolean to indicated if log messages should be on/off
      * @param timeLimit is how much time Player has for his moves
      * @param ownLayout boolean to indicated if Players want their own layout or preset
      */
@@ -59,6 +61,7 @@ public class Game {
 
     /**
      * Constructor for loaded Game.
+     *
      * @param file containing move log from previous game
      */
     public Game(File file) {
@@ -67,14 +70,14 @@ public class Game {
 
 
     private void initPlayers() {
-        this.playerGold = new Player(ColorPiece.GOLD, timerPanel,timeLimit);
+        this.playerGold = new Player(ColorPiece.GOLD, timerPanel, timeLimit);
         this.playerSilver = new Player(ColorPiece.SILVER, timerPanel, timeLimit);
         this.currentPlayer = this.playerGold;   // starting Player
     }
 
     private void initModel() {
         boardModel = new BoardModel(this);
-        moveLogger = new MoveLogger();
+        moveLogger = new MoveLogger(this);
         gameValidator = new GameValidator(boardModel, this);
         Game.logger.log(Level.INFO, boardModel.toString());
     }
@@ -95,10 +98,10 @@ public class Game {
         if (this.logging) {
             logger.setLevel(level);
             handler.setLevel(level);
+        } else {
+            logger.setLevel(Level.OFF);
         }
-        else { logger.setLevel(Level.OFF); }
     }
-
 
 
     /**
@@ -111,7 +114,7 @@ public class Game {
      */
     public void moveRequest(char sx, int sy, char dx, int dy) {
         // create new Move
-        Move move = new Move(boardModel.getSpot(sx, sy).getPiece(), sx, sy, dx, dy, currentPlayer, this.movesInTurn);
+        Move move = new Move(boardModel.getSpot(sx, sy).getPiece(), sx, sy, dx, dy, currentPlayer, moveCnt);
         Game.logger.log(Level.CONFIG, "Request to move from " + sx + " " + sy + " to " + dx + " " + dy);
         // generate all possible Moves for Piece
         List<Move> validMoves = gameValidator.generateValidMoves(boardModel.getSpot(sx, sy).getPiece(), boardModel.getSpot(sx, sy), currentPlayer);
@@ -121,17 +124,18 @@ public class Game {
         if (!validMoves.isEmpty()) {
             move.pushPromise = validMoves.get(0).pushPromise;
             execute(move);
-            Game.logger.log(Level.INFO, "Move executed by " + currentPlayer.getColor() + "! " + move.toString()
-            );
+            moveLogger.saveMove(move);
+            Game.logger.log(Level.INFO, "Move " + move.getMoveNumInTurn() + " executed by " + currentPlayer.getColor() + "! " + move.getNotation());
         } else { // undo also push move (previous) if promised move rejected
-            if (moveLogger.getLastMove().pushPromise) { undoMove(); }
-            return;
+            if (!moveLogger.isEmpty() && moveLogger.peekMove().pushPromise) {
+                undoMove();
+            }
+            Game.logger.log(Level.INFO, "Invalid Move!!! " + move.getNotation());
+            return; // throw away invalid move
         }
 
         // update Turn
-
-        checkNumberOfMoves();
-        moveLogger.saveMove(move);
+        updateTurn(move);
 
         // check traps
         gameValidator.checkTrapped(move);
@@ -150,18 +154,22 @@ public class Game {
 
     }
 
-    /**
-     * Check number of moves in turn and switch player if
-     * movesInTurn == MAX_MOVES. There can be only 1..4 moves in turn.
-     */
-    private void checkNumberOfMoves() {
-        if (movesInTurn == MAX_MOVES) {
-            switchCurrentPlayer();
-            movesInTurn = ZERO_MOVES;
+    public void updateTurn(Move move) {
+        if (currentTurn == null) {
+            currentTurn = new Turn(currentPlayer);
+        }
+
+        if (moveCnt >= MAX_MOVES) {
+            currentTurn.addMove(move);
+            nextTurn();
         } else {
-            movesInTurn++;
+            currentTurn.addMove(move);
+            moveCnt++;
         }
     }
+
+
+
 
     /**
      * Handle move requests between player and PC.
@@ -177,46 +185,98 @@ public class Game {
     }
 
     /**
-     * Save history of moves into file.
+     * Undo last two turns so currentPlayer can replace his previous turn.
      */
-    public void saveToFile() {
-        // TODO save current game set to file
-        Game.logger.log(Level.INFO, "Saving current Game!");
-
+    public void undoTurn() {
+        // undo moves in current turn
+        Game.logger.log(Level.INFO, currentPlayer.getTurn() + String.valueOf(currentPlayer.getNotation()) + " takeback");
+        ListIterator<Move> listIterator = currentTurn.getMoves().listIterator(currentTurn.getMoves().size());
+        while (listIterator.hasPrevious()) {
+            Move prev = listIterator.previous();
+            //boardPanel.makeUndo(prev);
+            boardModel.undoMove(prev);
+        }
+        // undo moves in Opponent's turn
+        Turn lastTurn = moveLogger.popTurn();
+        if (lastTurn != null) {
+            Game.logger.log(Level.INFO, lastTurn.getCnt() + String.valueOf(lastTurn.getPlayer().getNotation()) + " takeback");
+            lastTurn.getPlayer().decreaseTurn();
+            listIterator = lastTurn.getMoves().listIterator(lastTurn.getMoves().size());
+            while (listIterator.hasPrevious()) {
+                Move prev = listIterator.previous();
+                //boardPanel.makeUndo(prev);
+                boardModel.undoMove(prev);
+            }
+        }
+        // undo moves in previous turn to replace them
+        lastTurn = moveLogger.popTurn();
+        if (lastTurn != null) {
+            listIterator = lastTurn.getMoves().listIterator(lastTurn.getMoves().size());
+            while (listIterator.hasPrevious()) {
+                Move prev = listIterator.previous();
+                //boardPanel.makeUndo(prev);
+                boardModel.undoMove(prev);
+            }
+        }
+        currentPlayer.decreaseTurn();
+        currentTurn = new Turn(currentPlayer);
+        moveCnt = ZERO_MOVES;
+        Game.logger.log(Level.INFO, boardModel.toString());
     }
 
 
     /**
      * Undo last Move in GUI (BoardPanel) and model (BoardModel).
      */
-    public void undoMove() {
+    private void undoMove() {
         // get last Move
-        Move lastMove = moveLogger.undoMove();
+        Move lastMove = moveLogger.popMove();
         if (lastMove != null) {
             Game.logger.log(Level.INFO, "Undo move: " + lastMove.toString());
             //boardPanel.makeUndo(lastMove);
             boardModel.undoMove(lastMove);
-            this.movesInTurn = lastMove.getMoveNumInTurn();
+            moveCnt = lastMove.getMoveNumInTurn();
             switchCurrentPlayer(lastMove.getPlayer());
+            currentTurn.popMove();
         }
+        Game.logger.log(Level.CONFIG, currentTurn.toString());
+        Game.logger.log(Level.INFO, boardModel.toString());
     }
 
     private void showWinnerDialog() {
-        Move lastMove = moveLogger.getLastMove();
+        Move lastMove = moveLogger.peekMove();
         JOptionPane.showMessageDialog(null, "You win " + lastMove.getPlayer().getColor() + "!");
+    }
+
+    private void nextTurn() {
+        // old Turn
+        moveLogger.saveTurn(currentTurn);
+        Game.logger.log(Level.INFO, currentTurn.getNotation());
+
+        // new Turn
+        switchCurrentPlayer();
+        currentPlayer.increaseTurn();
+        currentTurn = new Turn(currentPlayer);
+        moveCnt = ZERO_MOVES;
+    }
+
+    /**
+     * End current turn change players!
+     */
+    public void endTurn() {
+        nextTurn();
     }
 
     /**
      * Change currentPlayer to opposite one.
      */
-    public void switchCurrentPlayer() {
+    private void switchCurrentPlayer() {
         switch (this.currentPlayer.getColor()) {
             case GOLD -> this.currentPlayer = this.getPlayerSilver();
             case SILVER -> this.currentPlayer = this.getPlayerGold();
             default -> Game.logger.log(Level.WARNING, "Current player is null!");
         }
-        this.movesInTurn = ZERO_MOVES;
-        gameFrame.changeMsg("Current player is: " + currentPlayer.getColor());
+        //gameFrame.changeMsg("Current player is: " + currentPlayer.getColor());
         Game.logger.log(Level.INFO, "Current player is: " + currentPlayer.getColor());
     }
 
@@ -227,9 +287,22 @@ public class Game {
      */
     private void switchCurrentPlayer(Player player) {
         this.currentPlayer = player;
-        gameFrame.changeMsg("Current player is: " + currentPlayer.getColor());
+        //gameFrame.changeMsg("Current player is: " + currentPlayer.getColor());
         Game.logger.log(Level.INFO, "Current player is: " + currentPlayer.getColor());
     }
+
+    /**
+     * Save history of moves into file.
+     */
+    public void saveToFile() {
+        // TODO save current game set to file
+        Game.logger.log(Level.INFO, "Saving current Game!");
+
+    }
+
+    // -----------------------------
+    // ---- Getters and Setters ----
+    // -----------------------------
 
     public BoardPanel getBoardPanel() {
         return boardPanel;

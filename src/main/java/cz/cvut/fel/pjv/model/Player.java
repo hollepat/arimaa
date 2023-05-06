@@ -9,12 +9,12 @@ public class Player {
     private TimerPanel timerPanel;
     private int timeLimit;
     private RealTimeClocks timer;
-    private int turn = 0;
+    private int turnCnt = 1;
+
     public Player(ColorPiece color) {
         this.color = color;
 
     }
-
     public Player(ColorPiece color, TimerPanel timerPanel, int timeLimit) {
         this.color = color;
         this.timerPanel = timerPanel;
@@ -26,21 +26,27 @@ public class Player {
         this.timer = new RealTimeClocks(timerPanel, timeLimit);
     }
 
-
+    public char getNotation() {
+        return switch (color) {
+            case SILVER -> 's';
+            case GOLD -> 'g';
+        };
+    }
     public ColorPiece getColor() {
         return color;
     }
 
     public void increaseTurn() {
-        this.turn++;
+        this.turnCnt++;
     }
 
     public void decreaseTurn() {
-        this.turn--;
+        this.turnCnt--;
     }
 
     public int getTurn() {
-        return this.turn;
+        return this.turnCnt;
     }
+
 
 }

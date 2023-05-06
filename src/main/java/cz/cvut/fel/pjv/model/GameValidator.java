@@ -58,9 +58,9 @@ public class GameValidator {
             Move moveRight = new Move(pctbm, spot.getX(), spot.getY(), spot.getX(), spot.getY() - 1, player);
             moves.add(moveRight);
         }
-        Game.logger.log(Level.CONFIG, "Moves: " + moves);
+        Game.logger.log(Level.CONFIG, "Filtering valid moves: " + moves);
         List<Move> validMoves = moves.stream().filter(this::isValid).collect(Collectors.toList());
-        Game.logger.log(Level.CONFIG,"Valid move: " + validMoves);
+        Game.logger.log(Level.CONFIG,"Valid moves: " + validMoves);
         return validMoves;
     }
 
@@ -70,6 +70,11 @@ public class GameValidator {
      * @return true == valid
      */
     public boolean isValid(Move move) {
+
+        if (move.getPiece() == null) {
+            Game.logger.log(Level.WARNING, "No piece found on " + move.getSx() + " " + move.getSy() +" !");
+            return false;
+        }
 
         // check if spot is free
         if (boardModel.getSpot(move.getDx(), move.getDy()).isOccupied()) {
@@ -81,6 +86,7 @@ public class GameValidator {
         // check if not moving enemy piece (exception push and drag)
         if (move.getPiece().getColor() == game.currentPlayer.getColor()
                 && !isNextTo(move.getSx(), move.getSy(), move.getDx(), move.getDy())) {
+            Game.logger.log(Level.WARNING, "Trying to move enemy Piece, your pieces are " + game.currentPlayer.getColor());
             return false;
         }
 
@@ -91,7 +97,7 @@ public class GameValidator {
         }
 
         // check for push promise
-        Move previousMove = game.getMoveLogger().getLastMove();
+        Move previousMove = game.getMoveLogger().peekMove();
         if (previousMove != null && previousMove.pushPromise) {     // promise to move own piece into place after push
             if (!keepingPromise(move)) { return false; }
         }
@@ -272,7 +278,7 @@ public class GameValidator {
     }
 
     private boolean isDraggedByPiece(Move move) {
-        Move previousMove = game.getMoveLogger().getLastMove();
+        Move previousMove = game.getMoveLogger().peekMove();
         if (previousMove == null) {
             return false;
         }
@@ -285,13 +291,13 @@ public class GameValidator {
     }
 
     private boolean keepingPromise(Move move) {
-        Move previousMove = game.getMoveLogger().getLastMove();
+        Move previousMove = game.getMoveLogger().peekMove();
         return previousMove.getSx() == move.getDx() && previousMove.getSy() == move.getDy();
     }
 
     private boolean isPushedByPiece(Move move) {
-         if (game.movesInTurn > game.MAX_MOVES-1) {
-            Game.logger.log(Level.WARNING, "Cannot proceed with push, you have " + game.movesInTurn + " move left!");
+         if (game.moveCnt > game.MAX_MOVES-1) {
+            Game.logger.log(Level.WARNING, "Cannot proceed with push, you have " + game.moveCnt + " move left!");
             return false;
         }
         if (isStrongerAround(move)) {
