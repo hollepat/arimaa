@@ -273,7 +273,7 @@ public class BoardPanel extends JPanel {
      * Draw initial set of Pieces on board.
      */
     private void createPieces() {
-
+        // todo remake so it reads from boardModel position of Pieces
         // rabbit
         Iterator<Piece> silverRabbitsIterator = PieceSet.getPieces(ColorPiece.SILVER, PieceType.RABBIT).iterator();
         Iterator<Piece> goldRabbitsIterator = PieceSet.getPieces(ColorPiece.GOLD, PieceType.RABBIT).iterator();

@@ -51,10 +51,10 @@ public class Game {
         this.logging = log;
         this.timeLimit = timeLimit;
         this.ownLayout = ownLayout;
+        setUpLogger();
         initPlayers();
         initModel();
-        initGUI();
-        setUpLogger();
+        //initGUI();
     }
 
     /**
@@ -73,10 +73,10 @@ public class Game {
     }
 
     private void initModel() {
-        boardModel = new BoardModel();
+        boardModel = new BoardModel(this);
         moveLogger = new MoveLogger();
         gameValidator = new GameValidator(boardModel, this);
-
+        Game.logger.log(Level.INFO, boardModel.toString());
     }
 
     private void initGUI() {
@@ -110,47 +110,51 @@ public class Game {
      * @param dy int coordinate of Piece
      */
     public void moveRequest(char sx, int sy, char dx, int dy) {
+        // create new Move
         Move move = new Move(boardModel.getSpot(sx, sy).getPiece(), sx, sy, dx, dy, currentPlayer, this.movesInTurn);
         Game.logger.log(Level.CONFIG, "Request to move from " + sx + " " + sy + " to " + dx + " " + dy);
+        // generate all possible Moves for Piece
         List<Move> validMoves = gameValidator.generateValidMoves(boardModel.getSpot(sx, sy).getPiece(), boardModel.getSpot(sx, sy), currentPlayer);
 
-        // check valid move
+        // check if Move is in valid Moves
         validMoves = validMoves.stream().filter(move1 -> move.getDy() == move1.getDy() && move.getDx() == move1.getDx()).collect(Collectors.toList());
         if (!validMoves.isEmpty()) {
             move.pushPromise = validMoves.get(0).pushPromise;
             execute(move);
-            checkMovesInTurn();
-            moveLogger.saveMove(move);
-            Game.logger.log(Level.INFO,
-                    "Move executed by " + currentPlayer.getColor() + "! " +
-                            move.toString()
+            Game.logger.log(Level.INFO, "Move executed by " + currentPlayer.getColor() + "! " + move.toString()
             );
         } else { // undo also push move (previous) if promised move rejected
             if (moveLogger.getLastMove().pushPromise) { undoMove(); }
+            return;
         }
 
+        // update Turn
+
+        checkNumberOfMoves();
+        moveLogger.saveMove(move);
 
         // check traps
         gameValidator.checkTrapped(move);
         for (Map.Entry<String, Piece> entry : move.getKilledPieces().entrySet()) {
             Game.logger.log(Level.INFO, "Killing " + entry.getValue().toString() + " on " + entry.getKey());
             boardModel.removePiece(entry.getValue(), entry.getKey().charAt(0), Integer.parseInt(String.valueOf(entry.getKey().charAt(1))));
-            boardPanel.removePiece(entry.getKey().charAt(0), Integer.parseInt(String.valueOf(entry.getKey().charAt(1))));
+            //boardPanel.removePiece(entry.getKey().charAt(0), Integer.parseInt(String.valueOf(entry.getKey().charAt(1))));
         }
-        Game.logger.log(Level.CONFIG, boardModel.toString());
-
         // check end game
         if (gameValidator.endMove(move)) {
             Game.logger.log(Level.INFO, "End of game!");
             showWinnerDialog();
         }
+
+        Game.logger.log(Level.CONFIG, boardModel.toString());
+
     }
 
     /**
      * Check number of moves in turn and switch player if
      * movesInTurn == MAX_MOVES. There can be only 1..4 moves in turn.
      */
-    private void checkMovesInTurn() {
+    private void checkNumberOfMoves() {
         if (movesInTurn == MAX_MOVES) {
             switchCurrentPlayer();
             movesInTurn = ZERO_MOVES;
@@ -168,7 +172,7 @@ public class Game {
 
     private void execute(Move move) {
         boardModel.doMove(move);    // Update move in board model
-        boardPanel.makeMove(move);  // Update move in board panel
+        //boardPanel.makeMove(move);  // Update move in board panel
 
     }
 
@@ -177,6 +181,8 @@ public class Game {
      */
     public void saveToFile() {
         // TODO save current game set to file
+        Game.logger.log(Level.INFO, "Saving current Game!");
+
     }
 
 
@@ -184,10 +190,11 @@ public class Game {
      * Undo last Move in GUI (BoardPanel) and model (BoardModel).
      */
     public void undoMove() {
+        // get last Move
         Move lastMove = moveLogger.undoMove();
         if (lastMove != null) {
             Game.logger.log(Level.INFO, "Undo move: " + lastMove.toString());
-            boardPanel.makeUndo(lastMove);
+            //boardPanel.makeUndo(lastMove);
             boardModel.undoMove(lastMove);
             this.movesInTurn = lastMove.getMoveNumInTurn();
             switchCurrentPlayer(lastMove.getPlayer());
@@ -198,9 +205,6 @@ public class Game {
         Move lastMove = moveLogger.getLastMove();
         JOptionPane.showMessageDialog(null, "You win " + lastMove.getPlayer().getColor() + "!");
     }
-
-
-    // ----- Getters and Setters -----
 
     /**
      * Change currentPlayer to opposite one.
@@ -251,6 +255,7 @@ public class Game {
         return playerSilver;
     }
 
-
-
+    public Boolean getOwnLayout() {
+        return ownLayout;
+    }
 }

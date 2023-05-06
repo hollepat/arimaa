@@ -4,6 +4,8 @@ public class Dog extends Piece{
 
     private String pathSilver = "/pieces/dog-silver.png";
     private String pathGold = "/pieces/dog-gold.png";
+    private char silverCharName = 'd';
+    private char goldCharName = 'D';
     /**
      * Constructor for Piece
      *
@@ -14,7 +16,13 @@ public class Dog extends Piece{
         super(color, PieceType.DOG);
         pieceStrength = 3;
     }
-
+    @Override
+    public char getNotationName() {
+        return switch (color) {
+            case GOLD -> goldCharName;
+            case SILVER -> silverCharName;
+        };
+    }
     @Override
     public String getImgPath() {
         if (color == ColorPiece.GOLD) {

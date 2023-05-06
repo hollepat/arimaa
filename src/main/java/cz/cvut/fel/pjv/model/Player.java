@@ -9,9 +9,10 @@ public class Player {
     private TimerPanel timerPanel;
     private int timeLimit;
     private RealTimeClocks timer;
-
+    private int turn = 0;
     public Player(ColorPiece color) {
         this.color = color;
+
     }
 
     public Player(ColorPiece color, TimerPanel timerPanel, int timeLimit) {
@@ -29,4 +30,17 @@ public class Player {
     public ColorPiece getColor() {
         return color;
     }
+
+    public void increaseTurn() {
+        this.turn++;
+    }
+
+    public void decreaseTurn() {
+        this.turn--;
+    }
+
+    public int getTurn() {
+        return this.turn;
+    }
+
 }

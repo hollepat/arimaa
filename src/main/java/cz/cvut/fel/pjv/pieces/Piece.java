@@ -63,6 +63,8 @@ abstract public class Piece extends JLabel {
         this.alive = alive;
     }
 
+    public abstract char getNotationName();
+
     @Override
     public String toString() {
         return pieceType +

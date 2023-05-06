@@ -9,14 +9,35 @@ import cz.cvut.fel.pjv.pieces.PieceSet;
 
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Scanner;
 import java.util.logging.Level;
 
 public class BoardModel {
 
     private final int BOARD_DIMENSION = 8;
-
     private final Spot[][] arimaaBoardSpots = new Spot[8][8];
+    private Game game = null;
 
+    private Iterator<Piece> silverRabbitsIterator = PieceSet.getPieces(ColorPiece.SILVER, PieceType.RABBIT).iterator();
+    private Iterator<Piece> goldRabbitsIterator = PieceSet.getPieces(ColorPiece.GOLD, PieceType.RABBIT).iterator();
+    private Iterator<Piece> silverCatIterator = PieceSet.getPieces(ColorPiece.SILVER, PieceType.CAT).iterator();
+    private Iterator<Piece> goldCatIterator = PieceSet.getPieces(ColorPiece.GOLD, PieceType.CAT).iterator();
+    private Iterator<Piece> silverDogIterator = PieceSet.getPieces(ColorPiece.SILVER, PieceType.DOG).iterator();
+    private Iterator<Piece> goldDogIterator = PieceSet.getPieces(ColorPiece.GOLD, PieceType.DOG).iterator();
+    private Iterator<Piece> silverHorseIterator = PieceSet.getPieces(ColorPiece.SILVER, PieceType.HORSE).iterator();
+    private Iterator<Piece> goldHorseIterator = PieceSet.getPieces(ColorPiece.GOLD, PieceType.HORSE).iterator();
+    private Iterator<Piece> silverCamelIterator = PieceSet.getPieces(ColorPiece.SILVER, PieceType.CAMEL).iterator();
+    private Iterator<Piece> goldCamelIterator = PieceSet.getPieces(ColorPiece.GOLD, PieceType.CAMEL).iterator();
+    private Iterator<Piece> silverElephantIterator = PieceSet.getPieces(ColorPiece.SILVER, PieceType.ELEPHANT).iterator();
+    private Iterator<Piece> goldElephantIterator = PieceSet.getPieces(ColorPiece.GOLD, PieceType.ELEPHANT).iterator();
+
+
+    public BoardModel(Game game) {
+        this.game = game;
+        initSquares();
+        initPieces();
+        Game.logger.log(Level.CONFIG, "BoardModel was initiated.");
+    }
 
     public BoardModel() {
         initSquares();
@@ -31,6 +52,7 @@ public class BoardModel {
      * @return  Piece
      */
     public Spot getSpot(char x, int y) {
+        Game.logger.log(Level.FINER, x+" "+y);
         if (x < 'a' || x > 'h' || y < 1 || y > 8) {
             return null;
         } else {
@@ -104,6 +126,61 @@ public class BoardModel {
 
     private void initPieces() {
 
+        if (game != null && game.getOwnLayout()) {
+            ownLayoutOfPieces();
+        } else {
+            defaultLayoutOfPieces();
+        }
+    }
+
+    private void ownLayoutOfPieces() {
+        Scanner sc = new Scanner(System.in);
+        String[] goldLayout;
+        goldLayout = sc.nextLine().split(" ");
+        String[] silverLayout;
+        silverLayout = sc.nextLine().split(" ");
+
+        if (goldLayout[0].equals("1g") && silverLayout[0].equals("1s")) {
+            try {
+                char offset = '0';
+                for (int i = 1; i < goldLayout.length; i++) {
+                    getSpot(goldLayout[i].charAt(1), goldLayout[i].charAt(2) - offset)
+                            .setPiece(getPieceFromSet(goldLayout[i].charAt(0)));
+                    getSpot(silverLayout[i].charAt(1), silverLayout[i].charAt(2) - offset)
+                            .setPiece(getPieceFromSet(silverLayout[i].charAt(0)));
+                }
+            } catch (Exception e) {
+                Game.logger.log(Level.WARNING, "WRONG LAYOUT INPUT, USING DEFAULT");
+                e.printStackTrace();
+                defaultLayoutOfPieces();
+            }
+
+        } else {
+            Game.logger.log(Level.WARNING, "WRONG LAYOUT INPUT, USING DEFAULT");
+            defaultLayoutOfPieces();
+        }
+    }
+
+    private Piece getPieceFromSet(char c) {
+        return switch (c) {
+            case 'r' -> silverRabbitsIterator.next();
+            case 'c' -> silverCatIterator.next();
+            case 'd' -> silverDogIterator.next();
+            case 'h' -> silverHorseIterator.next();
+            case 'm' -> silverCamelIterator.next();
+            case 'e' -> silverElephantIterator.next();
+            case 'R' -> goldRabbitsIterator.next();
+            case 'C' -> goldCatIterator.next();
+            case 'D' -> goldDogIterator.next();
+            case 'H' -> goldHorseIterator.next();
+            case 'E' -> goldElephantIterator.next();
+            case 'M' -> goldCamelIterator.next();
+            default -> null;
+        };
+    }
+
+    private void defaultLayoutOfPieces() {
+
         // rabbit
         Iterator<Piece> silverRabbitsIterator = PieceSet.getPieces(ColorPiece.SILVER, PieceType.RABBIT).iterator();
         Iterator<Piece> goldRabbitsIterator = PieceSet.getPieces(ColorPiece.GOLD, PieceType.RABBIT).iterator();
@@ -165,18 +242,25 @@ public class BoardModel {
     @Override
     public String toString() {
         // note! - StringBuilder is not thread safe
+        char offset = 'a';
         StringBuilder str = new StringBuilder();
         str.append('\n');
         for (int i = BOARD_DIMENSION-1; i > -1; i--) {
+            str.append(String.format("%d ", (i+1)));
             for (int j = 0; j < BOARD_DIMENSION; j++) {
                 if (arimaaBoardSpots[i][j].getPiece() == null) {
-                    str.append(String.format("[%8s]", " "));
+                    str.append(String.format("[%s]", " "));
                 } else {
-                    str.append(String.format("[%8s]", arimaaBoardSpots[i][j].getPiece().getType()));
+                    str.append(String.format("[%s]", arimaaBoardSpots[i][j].getPiece().getNotationName()));
                 }
             }
             str.append('\n');
         }
+        str.append(String.format("%2s", " "));
+        for (int i = 0; i < BOARD_DIMENSION; i++) {
+            str.append(String.format(" %s ", (char)(((int)offset)+i)));
+        }
+        str.append('\n');
         return str.toString();
     }
 }

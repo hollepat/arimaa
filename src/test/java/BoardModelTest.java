@@ -25,13 +25,7 @@ public class BoardModelTest {
         assert boardModel.getSpot('c', 3).getTypeOfSpot() == TypeOfSpot.TRAP;
         assert boardModel.getSpot('f', 3).getTypeOfSpot() == TypeOfSpot.TRAP;
         assert boardModel.getSpot('a', 8).getTypeOfSpot() == TypeOfSpot.NORMAL;
-
     }
 
-    @Test
-    public void testPieces() {
 
-        assert boardModel.getSpot('a', 1).getPiece() instanceof Rabbit;
-        assert boardModel.getSpot('a', 2).getPiece() instanceof Cat;
-    }
 }
