@@ -7,6 +7,7 @@ import cz.cvut.fel.pjv.pieces.Piece;
 import cz.cvut.fel.pjv.pieces.PieceType;
 import cz.cvut.fel.pjv.pieces.PieceSet;
 
+import java.io.File;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Scanner;
@@ -18,6 +19,11 @@ public class BoardModel {
     private final Spot[][] arimaaBoardSpots = new Spot[8][8];
     private Game game = null;
 
+    private String defaultLayoutGold = "1g Ra1 Rb1 Rc1 Rd1 Re1 Rf1 Rg1 Rh1 Ma2 Eb2 Dc2 Dd2 Ce2 Cf2 Hg2 Hh2";
+    private String defaultLayoutSilver = "1s ra8 rb8 rc8 rd8 re8 rf8 rg8 rh8 ma7 eb7 dc7 dd7 ce7 cf7 hg7 hh7";
+
+    private String currentLayoutGold;
+    private String currentLayoutSilver;
     private Iterator<Piece> silverRabbitsIterator = PieceSet.getPieces(ColorPiece.SILVER, PieceType.RABBIT).iterator();
     private Iterator<Piece> goldRabbitsIterator = PieceSet.getPieces(ColorPiece.GOLD, PieceType.RABBIT).iterator();
     private Iterator<Piece> silverCatIterator = PieceSet.getPieces(ColorPiece.SILVER, PieceType.CAT).iterator();
@@ -93,11 +99,14 @@ public class BoardModel {
 
     }
 
+
+
     /**
      * Save current to file.
      */
-    public void saveState() {
+    public void saveState(File file) {
         // TODO implement
+
     }
 
     /**
@@ -125,40 +134,47 @@ public class BoardModel {
     // -----------------------------------------------------
 
     private void initPieces() {
-
         if (game != null && game.getOwnLayout()) {
             ownLayoutOfPieces();
         } else {
-            defaultLayoutOfPieces();
+            setLayout(defaultLayoutGold.split(" "), defaultLayoutSilver.split(" "));
+            currentLayoutGold = defaultLayoutGold;
+            currentLayoutSilver = defaultLayoutSilver;
         }
     }
 
     private void ownLayoutOfPieces() {
         Scanner sc = new Scanner(System.in);
         String[] goldLayout;
-        goldLayout = sc.nextLine().split(" ");
+        currentLayoutGold = sc.nextLine();
+        goldLayout = currentLayoutGold.split(" ");
         String[] silverLayout;
-        silverLayout = sc.nextLine().split(" ");
+        currentLayoutSilver = sc.nextLine();
+        silverLayout = currentLayoutSilver.split(" ");
 
         if (goldLayout[0].equals("1g") && silverLayout[0].equals("1s")) {
-            try {
-                char offset = '0';
-                for (int i = 1; i < goldLayout.length; i++) {
-                    getSpot(goldLayout[i].charAt(1), goldLayout[i].charAt(2) - offset)
-                            .setPiece(getPieceFromSet(goldLayout[i].charAt(0)));
-                    getSpot(silverLayout[i].charAt(1), silverLayout[i].charAt(2) - offset)
-                            .setPiece(getPieceFromSet(silverLayout[i].charAt(0)));
-                }
-            } catch (Exception e) {
-                Game.logger.log(Level.WARNING, "WRONG LAYOUT INPUT, USING DEFAULT");
-                e.printStackTrace();
-                defaultLayoutOfPieces();
-            }
-
+            setLayout(goldLayout, silverLayout);
         } else {
             Game.logger.log(Level.WARNING, "WRONG LAYOUT INPUT, USING DEFAULT");
-            defaultLayoutOfPieces();
+            setLayout(defaultLayoutGold.split(" "), defaultLayoutSilver.split(" "));
         }
+    }
+
+    private void setLayout(String[] goldLayout, String[] silverLayout) {
+        try {
+            char offset = '0';
+            for (int i = 1; i < goldLayout.length; i++) {
+                getSpot(goldLayout[i].charAt(1), goldLayout[i].charAt(2) - offset)
+                        .setPiece(getPieceFromSet(goldLayout[i].charAt(0)));
+                getSpot(silverLayout[i].charAt(1), silverLayout[i].charAt(2) - offset)
+                        .setPiece(getPieceFromSet(silverLayout[i].charAt(0)));
+            }
+        } catch (Exception e) {
+            Game.logger.log(Level.WARNING, "WRONG LAYOUT INPUT, USING DEFAULT");
+            e.printStackTrace();
+            setLayout(defaultLayoutGold.split(" "), defaultLayoutSilver.split(" "));
+        }
+
     }
 
     private Piece getPieceFromSet(char c) {
@@ -237,6 +253,14 @@ public class BoardModel {
                 }
             }
         }
+    }
+
+    public String getCurrentLayoutGold() {
+        return currentLayoutGold;
+    }
+
+    public String getCurrentLayoutSilver() {
+        return currentLayoutSilver;
     }
 
     @Override

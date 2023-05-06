@@ -10,7 +10,8 @@ import cz.cvut.fel.pjv.utils.MyFormatter;
 
 import javax.swing.*;
 import java.io.File;
-import java.util.Collection;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
@@ -38,7 +39,7 @@ public class Game {
     private Boolean logging;
     private Boolean ownLayout;
     public static Logger logger = Logger.getLogger(Game.class.getName());
-    public static final Level level = Level.CONFIG;
+    public static final Level level = Level.FINE;
 
     /**
      * Constructor for new Game.
@@ -297,9 +298,32 @@ public class Game {
     /**
      * Save history of moves into file.
      */
-    public void saveToFile() {
+    public void saveToFile() throws IOException {
         // TODO save current game set to file
         Game.logger.log(Level.INFO, "Saving current Game!");
+        String fileSeparator = System.getProperty("file.separator");
+        String fileName = "saved_games" + fileSeparator + "recordArimaa.txt";
+        try {
+            // create File
+            File file = new File(fileName); // create a new File object with the desired filename
+            if (file.createNewFile()) { // create a new file with the specified name
+                Game.logger.log(Level.FINE, "File created: " + file.getName()); // print the filename of the newly created file
+            } else {
+                Game.logger.log(Level.FINE,"File already exists."); // if the file already exists, print a message indicating so
+            }
+            // write to File
+            FileWriter writer = new FileWriter(file);
+            writer.write(boardModel.getCurrentLayoutGold() + "\n");
+            writer.write(boardModel.getCurrentLayoutSilver() + "\n");
+            moveLogger.saveMovesToFile(file, writer);
+            writer.close();
+            // show msg
+            JOptionPane.showMessageDialog(null, "Game was saved!");
+        } catch (IOException e) { // if an IOException occurs, print the error message
+            Game.logger.log(Level.WARNING, "An error occurred: " + e.getMessage());
+            e.printStackTrace();
+        }
+
 
     }
 

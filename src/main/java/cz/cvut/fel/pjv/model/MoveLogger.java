@@ -3,6 +3,8 @@ package cz.cvut.fel.pjv.model;
 import cz.cvut.fel.pjv.controller.Game;
 
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.Stack;
 import java.util.logging.Level;
@@ -88,7 +90,9 @@ public class MoveLogger {
      * Write to file all Turns.
      * @param file to write game history
      */
-    public void saveMoves(File file) {
-        // TODO implement
+    public void saveMovesToFile(File file, FileWriter writer) throws IOException {
+        for (Turn t : turnHistory) {
+            writer.write(t.getNotation() + "\n");
+        }
     }
 }

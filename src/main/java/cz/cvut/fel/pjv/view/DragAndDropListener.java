@@ -37,11 +37,11 @@ public class DragAndDropListener implements MouseListener, MouseMotionListener {
     public void mousePressed(MouseEvent e) {
         sourceX = getColumnPosition(e);
         sourceY = getRowPosition(e);
-        Game.logger.log(Level.FINE, "sourceX: " + sourceX + " sourceY: " + sourceY);
+        Game.logger.log(Level.FINER, "sourceX: " + sourceX + " sourceY: " + sourceY);
 
         offsetX = e.getPoint().x - boardPanel.SQUARE_DIMENSION * (getColumnPosition(e) - 'a' + 1);
         offsetY = e.getPoint().y - boardPanel.SQUARE_DIMENSION * (9 - getRowPosition(e));
-        Game.logger.log(Level.FINE, "draggedX: " + offsetX + " draggedY: " + offsetY);
+        Game.logger.log(Level.FINER, "draggedX: " + offsetX + " draggedY: " + offsetY);
     }
 
     /**

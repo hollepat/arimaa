@@ -5,6 +5,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 import java.util.logging.Level;
 
 public class GameFrame extends JFrame {
@@ -47,12 +48,15 @@ public class GameFrame extends JFrame {
         save.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                game.saveToFile();
+                try {
+                    game.saveToFile();
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
             }
         });
         JButton undoButton = new JButton("Undo");
         undoButton.addActionListener(actionEvent -> {
-            //game.undoMove();
             game.undoTurn();
         });
         JButton endTurn = new JButton("End turn");
