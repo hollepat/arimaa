@@ -312,7 +312,13 @@ public class GameValidator {
         return false;
     }
 
-    private char addX(char x, int d) {
+    /**
+     * Get x moved in left or right direction.
+     * @param x is char position
+     * @param d is direction, 1 == right, -1 == left
+     * @return new char left or right from x
+     */
+    public char addX(char x, int d) {
         return (char)((int)x + d);
     }
 

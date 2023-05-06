@@ -45,6 +45,14 @@ public class BoardModel {
         Game.logger.log(Level.CONFIG, "BoardModel was initiated.");
     }
 
+    public BoardModel(Game game, String layoutGold, String layoutSilver) {
+        this.game = game;
+        initSquares();
+        //initPieces();
+        setLayout(layoutGold.split(" "), layoutSilver.split(" "));
+        Game.logger.log(Level.CONFIG, "BoardModel was initiated.");
+    }
+
     public BoardModel() {
         initSquares();
         initPieces();
@@ -138,8 +146,6 @@ public class BoardModel {
             ownLayoutOfPieces();
         } else {
             setLayout(defaultLayoutGold.split(" "), defaultLayoutSilver.split(" "));
-            currentLayoutGold = defaultLayoutGold;
-            currentLayoutSilver = defaultLayoutSilver;
         }
     }
 
@@ -174,6 +180,8 @@ public class BoardModel {
             e.printStackTrace();
             setLayout(defaultLayoutGold.split(" "), defaultLayoutSilver.split(" "));
         }
+        currentLayoutGold = defaultLayoutGold;
+        currentLayoutSilver = defaultLayoutSilver;
 
     }
 
@@ -193,54 +201,6 @@ public class BoardModel {
             case 'M' -> goldCamelIterator.next();
             default -> null;
         };
-    }
-
-    private void defaultLayoutOfPieces() {
-
-        // rabbit
-        Iterator<Piece> silverRabbitsIterator = PieceSet.getPieces(ColorPiece.SILVER, PieceType.RABBIT).iterator();
-        Iterator<Piece> goldRabbitsIterator = PieceSet.getPieces(ColorPiece.GOLD, PieceType.RABBIT).iterator();
-        for (char col = 'a'; col <= 'h'; col++) {
-            getSpot(col, 8).setPiece(silverRabbitsIterator.next());   // add gold Piece
-            getSpot(col, 1).setPiece(goldRabbitsIterator.next());   // add silver Piece
-        }
-
-        // cat
-        Iterator<Piece> silverCatIterator = PieceSet.getPieces(ColorPiece.SILVER, PieceType.CAT).iterator();
-        Iterator<Piece> goldCatIterator = PieceSet.getPieces(ColorPiece.GOLD, PieceType.CAT).iterator();
-        getSpot('a',7).setPiece(silverCatIterator.next());
-        getSpot('h',7).setPiece(silverCatIterator.next());
-        getSpot('a',2).setPiece(goldCatIterator.next());
-        getSpot('h',2).setPiece(goldCatIterator.next());
-
-        // dog
-        Iterator<Piece> silverDogIterator = PieceSet.getPieces(ColorPiece.SILVER, PieceType.DOG).iterator();
-        Iterator<Piece> goldDogIterator = PieceSet.getPieces(ColorPiece.GOLD, PieceType.DOG).iterator();
-        getSpot('b',7).setPiece(silverDogIterator.next());
-        getSpot('g',7).setPiece(silverDogIterator.next());
-        getSpot('b',2).setPiece(goldDogIterator.next());
-        getSpot('g',2).setPiece(goldDogIterator.next());
-
-        // horse
-        Iterator<Piece> silverHorseIterator = PieceSet.getPieces(ColorPiece.SILVER, PieceType.HORSE).iterator();
-        Iterator<Piece> goldHorseIterator = PieceSet.getPieces(ColorPiece.GOLD, PieceType.HORSE).iterator();
-        getSpot('c', 7).setPiece(silverHorseIterator.next());
-        getSpot('f', 7).setPiece(silverHorseIterator.next());
-        getSpot('c', 2).setPiece(goldHorseIterator.next());
-        getSpot('f', 2).setPiece(goldHorseIterator.next());
-
-        // camel
-        Iterator<Piece> silverCamelIterator = PieceSet.getPieces(ColorPiece.SILVER, PieceType.CAMEL).iterator();
-        Iterator<Piece> goldCamelIterator = PieceSet.getPieces(ColorPiece.GOLD, PieceType.CAMEL).iterator();
-        getSpot('d', 7).setPiece(silverCamelIterator.next());
-        getSpot('e', 2).setPiece(goldCamelIterator.next());
-
-        // elephant
-        Iterator<Piece> silverElephantIterator = PieceSet.getPieces(ColorPiece.SILVER, PieceType.ELEPHANT).iterator();
-        Iterator<Piece> goldElephantIterator = PieceSet.getPieces(ColorPiece.GOLD, PieceType.ELEPHANT).iterator();
-        getSpot('e', 7).setPiece(silverElephantIterator.next());
-        getSpot('d', 2).setPiece(goldElephantIterator.next());
-
     }
 
     private void initSquares() {

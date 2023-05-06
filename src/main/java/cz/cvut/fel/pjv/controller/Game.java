@@ -9,9 +9,8 @@ import cz.cvut.fel.pjv.pieces.Piece;
 import cz.cvut.fel.pjv.utils.MyFormatter;
 
 import javax.swing.*;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
@@ -36,7 +35,7 @@ public class Game {
     private BoardPanel boardPanel;
     private TimerPanel timerPanel;
     private GameFrame gameFrame;
-    private Boolean logging;
+    private Boolean logging = true;
     private Boolean ownLayout;
     public static Logger logger = Logger.getLogger(Game.class.getName());
     public static final Level level = Level.FINE;
@@ -67,6 +66,70 @@ public class Game {
      */
     public Game(File file) {
         // TODO init from file
+        Game.logger.log(Level.INFO, file.getAbsolutePath());
+        List<String> loadedGame = readGameFromFile(file);
+        if (loadedGame.isEmpty()) {
+            Game.logger.log(Level.WARNING, "Game couldn't be loaded!");
+            return;
+        }
+        setUpLogger();
+        initPlayers();
+        moveLogger = new MoveLogger(this);
+        boardModel = new BoardModel(this, loadedGame.get(0), loadedGame.get(1));
+        gameValidator = new GameValidator(boardModel, this);
+        Game.logger.log(Level.INFO, boardModel.toString());
+        initGUI();
+        for (int i = 2; i<loadedGame.size(); i++) {
+            parseTurn(loadedGame.get(i).split(" "));
+        }
+    }
+
+    private void parseTurn(String[] s) {
+        char offset = '0';
+        for (int i = 1; i < s.length; i++) {
+            moveRequest(s[i].charAt(1), s[i].charAt(2)-offset,
+                    getDxFromDirection(s[i].charAt(1), s[i].charAt(3)),
+                    getDyFromDirection(s[i].charAt(2)-offset, s[i].charAt(3)));
+        }
+    }
+
+    private int getDyFromDirection(int y, char dir) {
+        return switch (dir) {
+            case 'n' -> y + 1;
+            case 's' -> y -1;
+            default -> y;
+        };
+    }
+
+    private char getDxFromDirection(char x, char dir) {
+        return switch (dir) {
+            case 'e' -> gameValidator.addX(x, 1);
+            case 'w' -> gameValidator.addX(x, -1);
+            default -> x;
+        };
+    }
+
+    private List<String> readGameFromFile(File file) {
+        List<String> loadedGame = new ArrayList<>();
+        try {
+            FileReader reader = new FileReader(file); // open the file for reading
+            BufferedReader bufferedReader = new BufferedReader(reader);
+            String line;
+            while ((line = bufferedReader.readLine()) != null) { // read the contents of the file line by line
+                Game.logger.log(Level.INFO, line); // print the line to the console
+                loadedGame.add(line);
+            }
+            bufferedReader.close(); // close the BufferedReader
+            String layoutLineG = bufferedReader.readLine();
+            String layoutLineS = bufferedReader.readLine();
+            if (layoutLineS == null || layoutLineG == null) {
+                throw new NullPointerException();
+            }
+        } catch (IOException e) { // if an IOException occurs, print the error message
+           Game.logger.log(Level.WARNING, "An error occurred: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return loadedGame;
     }
 
 
@@ -299,7 +362,6 @@ public class Game {
      * Save history of moves into file.
      */
     public void saveToFile() throws IOException {
-        // TODO save current game set to file
         Game.logger.log(Level.INFO, "Saving current Game!");
         String fileSeparator = System.getProperty("file.separator");
         String fileName = "saved_games" + fileSeparator + "recordArimaa.txt";

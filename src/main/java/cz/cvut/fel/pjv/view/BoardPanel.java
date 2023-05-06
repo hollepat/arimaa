@@ -273,62 +273,14 @@ public class BoardPanel extends JPanel {
     }
 
     private void createPieces() {
-        // todo remake so it reads from boardModel position of Pieces
-        char offset = 'a';
         for (int i = 0; i < boardModel.BOARD_DIMENSION; i++) {
             for (int j = 0; j < boardModel.BOARD_DIMENSION; j++) {
                 char x = (char) ('a' + i);
-                System.out.println(x);
                 if (boardModel.getSpot(x, j+1).getPiece() != null) {
                     arimaaBoardPanels[j][i].add(getImgAsJLabel(boardModel.getSpot(x, j+1).getPiece()));
                 }
             }
         }
-//
-//        // rabbit
-//        Iterator<Piece> silverRabbitsIterator = PieceSet.getPieces(ColorPiece.SILVER, PieceType.RABBIT).iterator();
-//        Iterator<Piece> goldRabbitsIterator = PieceSet.getPieces(ColorPiece.GOLD, PieceType.RABBIT).iterator();
-//        for (int col = 0; col < 8; col++) {
-//            arimaaBoardPanels[7][col].add(getImgAsJLabel(silverRabbitsIterator.next()), 0, 0);   // add gold Piece
-//            arimaaBoardPanels[0][col].add(getImgAsJLabel(goldRabbitsIterator.next()), 0, 0);   // add silver Piece
-//        }
-//
-//        // cat
-//        Iterator<Piece> silverCatIterator = PieceSet.getPieces(ColorPiece.SILVER, PieceType.CAT).iterator();
-//        Iterator<Piece> goldCatIterator = PieceSet.getPieces(ColorPiece.GOLD, PieceType.CAT).iterator();
-//        arimaaBoardPanels[6][0].add(getImgAsJLabel(silverCatIterator.next()));
-//        arimaaBoardPanels[6][7].add(getImgAsJLabel(silverCatIterator.next()));
-//        arimaaBoardPanels[1][0].add(getImgAsJLabel(goldCatIterator.next()));
-//        arimaaBoardPanels[1][7].add(getImgAsJLabel(goldCatIterator.next()));
-//
-//        // dog
-//        Iterator<Piece> silverDogIterator = PieceSet.getPieces(ColorPiece.SILVER, PieceType.DOG).iterator();
-//        Iterator<Piece> goldDogIterator = PieceSet.getPieces(ColorPiece.GOLD, PieceType.DOG).iterator();
-//        arimaaBoardPanels[6][1].add(getImgAsJLabel(silverDogIterator.next()));
-//        arimaaBoardPanels[6][6].add(getImgAsJLabel(silverDogIterator.next()));
-//        arimaaBoardPanels[1][1].add(getImgAsJLabel(goldDogIterator.next()));
-//        arimaaBoardPanels[1][6].add(getImgAsJLabel(goldDogIterator.next()));
-//
-//        // horse
-//        Iterator<Piece> silverHorseIterator = PieceSet.getPieces(ColorPiece.SILVER, PieceType.HORSE).iterator();
-//        Iterator<Piece> goldHorseIterator = PieceSet.getPieces(ColorPiece.GOLD, PieceType.HORSE).iterator();
-//        arimaaBoardPanels[6][2].add(getImgAsJLabel(silverHorseIterator.next()));
-//        arimaaBoardPanels[6][5].add(getImgAsJLabel(silverHorseIterator.next()));
-//        arimaaBoardPanels[1][2].add(getImgAsJLabel(goldHorseIterator.next()));
-//        arimaaBoardPanels[1][5].add(getImgAsJLabel(goldHorseIterator.next()));
-//
-//        // camel
-//        Iterator<Piece> silverCamelIterator = PieceSet.getPieces(ColorPiece.SILVER, PieceType.CAMEL).iterator();
-//        Iterator<Piece> goldCamelIterator = PieceSet.getPieces(ColorPiece.GOLD, PieceType.CAMEL).iterator();
-//        arimaaBoardPanels[6][3].add(getImgAsJLabel(silverCamelIterator.next()));
-//        arimaaBoardPanels[1][4].add(getImgAsJLabel(goldCamelIterator.next()));
-//
-//        // elephant
-//        Iterator<Piece> silverElephantIterator = PieceSet.getPieces(ColorPiece.SILVER, PieceType.ELEPHANT).iterator();
-//        Iterator<Piece> goldElephantIterator = PieceSet.getPieces(ColorPiece.GOLD, PieceType.ELEPHANT).iterator();
-//        arimaaBoardPanels[6][4].add(getImgAsJLabel(silverElephantIterator.next()));
-//        arimaaBoardPanels[1][3].add(getImgAsJLabel(goldElephantIterator.next()));
-
     }
 
 

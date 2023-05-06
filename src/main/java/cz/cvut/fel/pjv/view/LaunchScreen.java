@@ -6,6 +6,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 
 public class LaunchScreen extends JFrame {
 
@@ -39,12 +40,15 @@ public class LaunchScreen extends JFrame {
             }
         });
         loadGameButton = new JButton("Load Game");
-        fileChooser = new JFileChooser("Load Game!");
+        fileChooser = new JFileChooser();
         loadGameButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                fileChooser.showOpenDialog(LaunchScreen.this);
-                Game game = new Game(null);
+                int userSelection = fileChooser.showOpenDialog(LaunchScreen.this);
+                if (userSelection == JFileChooser.APPROVE_OPTION) { // if the user selects a file
+                    File fileToOpen = fileChooser.getSelectedFile(); // get the selected file
+                    Game game = new Game(fileToOpen);
+                }
                 setVisible(false);
                 dispose();
             }
