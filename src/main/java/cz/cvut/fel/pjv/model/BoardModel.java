@@ -14,7 +14,7 @@ import java.util.logging.Level;
 
 public class BoardModel {
 
-    private final int BOARD_DIMENSION = 8;
+    public final int BOARD_DIMENSION = 8;
     private final Spot[][] arimaaBoardSpots = new Spot[8][8];
     private Game game = null;
 

@@ -14,7 +14,6 @@ public class MoveLogger {
     private final LinkedList<Turn> turnHistory;
 
 
-
     /**
      * Constructor.
      */
@@ -37,7 +36,7 @@ public class MoveLogger {
      */
     public Turn popTurn() {
         Turn turn = null;
-        if (moveHistory.isEmpty()) { Game.logger.log(Level.WARNING,"History of moves is empty!");
+        if (turnHistory.isEmpty()) { Game.logger.log(Level.WARNING,"History of turns is empty!");
         } else { turn = turnHistory.removeLast(); }
         return turn;
     }

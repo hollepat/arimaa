@@ -56,7 +56,7 @@ public class Game {
         setUpLogger();
         initPlayers();
         initModel();
-        //initGUI();
+        initGUI();
     }
 
     /**
@@ -142,7 +142,7 @@ public class Game {
         for (Map.Entry<String, Piece> entry : move.getKilledPieces().entrySet()) {
             Game.logger.log(Level.INFO, "Killing " + entry.getValue().toString() + " on " + entry.getKey());
             boardModel.removePiece(entry.getValue(), entry.getKey().charAt(0), Integer.parseInt(String.valueOf(entry.getKey().charAt(1))));
-            //boardPanel.removePiece(entry.getKey().charAt(0), Integer.parseInt(String.valueOf(entry.getKey().charAt(1))));
+            boardPanel.removePiece(entry.getKey().charAt(0), Integer.parseInt(String.valueOf(entry.getKey().charAt(1))));
         }
         // check end game
         if (gameValidator.endMove(move)) {
@@ -156,6 +156,7 @@ public class Game {
 
     public void updateTurn(Move move) {
         if (currentTurn == null) {
+            currentPlayer.increaseTurn();
             currentTurn = new Turn(currentPlayer);
         }
 
@@ -180,7 +181,7 @@ public class Game {
 
     private void execute(Move move) {
         boardModel.doMove(move);    // Update move in board model
-        //boardPanel.makeMove(move);  // Update move in board panel
+        boardPanel.makeMove(move);  // Update move in board panel
 
     }
 
@@ -191,9 +192,10 @@ public class Game {
         // undo moves in current turn
         Game.logger.log(Level.INFO, currentPlayer.getTurn() + String.valueOf(currentPlayer.getNotation()) + " takeback");
         ListIterator<Move> listIterator = currentTurn.getMoves().listIterator(currentTurn.getMoves().size());
+        currentPlayer.decreaseTurn();
         while (listIterator.hasPrevious()) {
             Move prev = listIterator.previous();
-            //boardPanel.makeUndo(prev);
+            boardPanel.makeUndo(prev);
             boardModel.undoMove(prev);
         }
         // undo moves in Opponent's turn
@@ -201,24 +203,25 @@ public class Game {
         if (lastTurn != null) {
             Game.logger.log(Level.INFO, lastTurn.getCnt() + String.valueOf(lastTurn.getPlayer().getNotation()) + " takeback");
             lastTurn.getPlayer().decreaseTurn();
+            switchCurrentPlayer(lastTurn.getPlayer());
             listIterator = lastTurn.getMoves().listIterator(lastTurn.getMoves().size());
             while (listIterator.hasPrevious()) {
                 Move prev = listIterator.previous();
-                //boardPanel.makeUndo(prev);
+                boardPanel.makeUndo(prev);
                 boardModel.undoMove(prev);
             }
         }
         // undo moves in previous turn to replace them
         lastTurn = moveLogger.popTurn();
         if (lastTurn != null) {
+            switchCurrentPlayer(lastTurn.getPlayer());
             listIterator = lastTurn.getMoves().listIterator(lastTurn.getMoves().size());
             while (listIterator.hasPrevious()) {
                 Move prev = listIterator.previous();
-                //boardPanel.makeUndo(prev);
+                boardPanel.makeUndo(prev);
                 boardModel.undoMove(prev);
             }
         }
-        currentPlayer.decreaseTurn();
         currentTurn = new Turn(currentPlayer);
         moveCnt = ZERO_MOVES;
         Game.logger.log(Level.INFO, boardModel.toString());
@@ -233,7 +236,7 @@ public class Game {
         Move lastMove = moveLogger.popMove();
         if (lastMove != null) {
             Game.logger.log(Level.INFO, "Undo move: " + lastMove.toString());
-            //boardPanel.makeUndo(lastMove);
+            boardPanel.makeUndo(lastMove);
             boardModel.undoMove(lastMove);
             moveCnt = lastMove.getMoveNumInTurn();
             switchCurrentPlayer(lastMove.getPlayer());
@@ -276,7 +279,7 @@ public class Game {
             case SILVER -> this.currentPlayer = this.getPlayerGold();
             default -> Game.logger.log(Level.WARNING, "Current player is null!");
         }
-        //gameFrame.changeMsg("Current player is: " + currentPlayer.getColor());
+        gameFrame.changeMsg("Current player is: " + currentPlayer.getColor());
         Game.logger.log(Level.INFO, "Current player is: " + currentPlayer.getColor());
     }
 
@@ -287,7 +290,7 @@ public class Game {
      */
     private void switchCurrentPlayer(Player player) {
         this.currentPlayer = player;
-        //gameFrame.changeMsg("Current player is: " + currentPlayer.getColor());
+        gameFrame.changeMsg("Current player is: " + currentPlayer.getColor());
         Game.logger.log(Level.INFO, "Current player is: " + currentPlayer.getColor());
     }
 
