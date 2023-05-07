@@ -27,6 +27,7 @@ public class BoardPanel extends JPanel {
     private final String[] COLS = new String[] {"a","b","c","d","e","f","g","h"};
     public final int SQUARE_DIMENSION = 60;
     private final int PANEL_DIMENSION = 600;
+    private final int BOARD_DIMENSION = 8;
 
 
     public BoardPanel(Game game) {
@@ -67,7 +68,7 @@ public class BoardPanel extends JPanel {
     }
 
     private void changePositionOfPieces() {
-        // TODO allow move Pieces over board as needed
+        // TODO allow switching Pieces
         // TODO on JButton check valid Layout and start normal game
     }
 
@@ -98,6 +99,7 @@ public class BoardPanel extends JPanel {
                 getSquarePanel(sourceY, sourceX).getComponent(0).setVisible(true);
             }
             game.moveRequest(sourceX, sourceY, destinationX, destinationY);
+            //game.move(sourceX, sourceY, destinationX, destinationY);
         } catch (ArrayIndexOutOfBoundsException e) {
             Game.logger.log(Level.WARNING, "Move request was not submitted due error!");
         }
@@ -147,7 +149,6 @@ public class BoardPanel extends JPanel {
 
     public void removePiece(char x, int y) {
         JPanel square = getSquarePanel(y, x);
-        //deadPieces.add((JPanel) square.getComponent(0));
         square.remove(0);
         square.repaint();
     }
@@ -273,14 +274,14 @@ public class BoardPanel extends JPanel {
     }
 
     private void createPieces() {
-        for (int i = 0; i < boardModel.BOARD_DIMENSION; i++) {
-            for (int j = 0; j < boardModel.BOARD_DIMENSION; j++) {
-                char x = (char) ('a' + i);
-                if (boardModel.getSpot(x, j+1).getPiece() != null) {
-                    arimaaBoardPanels[j][i].add(getImgAsJLabel(boardModel.getSpot(x, j+1).getPiece()));
+            for (int i = 0; i < BOARD_DIMENSION; i++) {
+                for (int j = 0; j < BOARD_DIMENSION; j++) {
+                    char x = (char) ('a' + i);
+                    if (boardModel.getSpot(x, j+1).getPiece() != null) {
+                        arimaaBoardPanels[j][i].add(getImgAsJLabel(boardModel.getSpot(x, j+1).getPiece()));
+                    }
                 }
             }
-        }
     }
 
 

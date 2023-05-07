@@ -16,6 +16,8 @@ public class SetUpScreen extends JFrame {
     private JSpinner spinnerTimer;
     private JCheckBox setTimeLimit;
     private JCheckBox ownLayout;
+    private JRadioButton NPCIsGOLDRadioButton;
+    private JRadioButton NPCIsSILVERRadioButton;
 
     private JFrame launchFrame;
 
@@ -25,6 +27,10 @@ public class SetUpScreen extends JFrame {
         getRootPane().setDefaultButton(createButton);
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 
+        ButtonGroup group = new ButtonGroup();
+        group.add(NPCIsSILVERRadioButton);
+        group.add(NPCIsGOLDRadioButton);
+
         logMessagesCheckBox.setSelected(true);
         spinnerTimer.setEnabled(false);
         setListeners();
@@ -33,7 +39,12 @@ public class SetUpScreen extends JFrame {
 
 
     private void onCreate() {
-        Game game = new Game(logMessagesCheckBox.isSelected(), (int) spinnerTimer.getValue(), ownLayout.isSelected());
+        if (playerVsPlayerRadioButton.isSelected()) {
+            Game game = new Game(logMessagesCheckBox.isSelected(), (int) spinnerTimer.getValue(), ownLayout.isSelected());
+        } else if (playerVsPCRadioButton.isSelected()) {
+            Game game = new Game(logMessagesCheckBox.isSelected(), (int) spinnerTimer.getValue(), ownLayout.isSelected(),
+                    NPCIsGOLDRadioButton.isSelected(), NPCIsSILVERRadioButton.isSelected());
+        }
         dispose();
     }
 
@@ -67,6 +78,28 @@ public class SetUpScreen extends JFrame {
                 throw new RuntimeException(ex);
             }
         });
+
+        playerVsPCRadioButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (playerVsPCRadioButton.isSelected()) {
+                    NPCIsGOLDRadioButton.setEnabled(true);
+                    NPCIsSILVERRadioButton.setEnabled(true);
+                }
+            }
+        });
+
+        playerVsPlayerRadioButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (playerVsPlayerRadioButton.isSelected()) {
+                    NPCIsGOLDRadioButton.setEnabled(false);
+                    NPCIsSILVERRadioButton.setEnabled(false);
+                }
+            }
+        });
+
+
         createButton.addActionListener(e -> onCreate());
 
         backButton.addActionListener(e -> onBack());

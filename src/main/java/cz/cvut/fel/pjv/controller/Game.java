@@ -10,17 +10,15 @@ import cz.cvut.fel.pjv.utils.MyFormatter;
 
 import javax.swing.*;
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Map;
+import java.util.*;
 import java.util.logging.*;
 import java.util.stream.Collectors;
 
 
 public class Game {
 
-    public Player currentPlayer;
+    private Player currentPlayer;
+    private Player npcPlayer;
     public final int ZERO_MOVES = 0;
     public final int MAX_MOVES = 3;
     private Turn currentTurn;
@@ -35,7 +33,6 @@ public class Game {
     private BoardPanel boardPanel;
     private TimerPanel timerPanel;
     private GameFrame gameFrame;
-    private Boolean logging = true;
     private Boolean ownLayout;
     public static Logger logger = Logger.getLogger(Game.class.getName());
     public static final Level level = Level.FINE;
@@ -49,30 +46,55 @@ public class Game {
      */
     public Game(Boolean log, int timeLimit, Boolean ownLayout) {
         logger.log(Level.CONFIG, "log = " + log + ", timeLimit = " + timeLimit + "ownLayout = " + ownLayout);
+
         this.gameStatus = GameStatus.ACTIVE;
-        this.logging = log;
         this.timeLimit = timeLimit;
         this.ownLayout = ownLayout;
-        setUpLogger();
+
+        setUpLogger(log);
         initPlayers();
         initModel();
         initGUI();
     }
 
     /**
-     * Constructor for loaded Game.
+     * Constructor for new Game against NPC.
+     *
+     * @param log       boolean to indicated if log messages should be on/off
+     * @param timeLimit is how much time Player has for his moves
+     * @param ownLayout boolean to indicated if Players want their own layout or preset
+     */
+    public Game(Boolean log, int timeLimit, Boolean ownLayout, Boolean NPCisGold, Boolean NPCisSilver) {
+        logger.log(Level.CONFIG, "log = " + log + ", timeLimit = " + timeLimit + ", ownLayout = " +
+                ownLayout + ", NPCisGold = " + NPCisGold + ", NPCisSilver = " + NPCisSilver);
+
+        this.gameStatus = GameStatus.ACTIVE;
+        this.timeLimit = timeLimit;
+        this.ownLayout = ownLayout;
+
+        setUpLogger(log);
+        initPlayers(NPCisGold, NPCisSilver);
+        initModel();
+        initGUI();
+
+        if (currentPlayer == npcPlayer) {
+            moveRequestPC();
+        }
+    }
+
+    /**
+     * Constructor for Game loaded from file.
      *
      * @param file containing move log from previous game
      */
     public Game(File file) {
-        // TODO init from file
         Game.logger.log(Level.INFO, file.getAbsolutePath());
         List<String> loadedGame = readGameFromFile(file);
         if (loadedGame.isEmpty()) {
             Game.logger.log(Level.WARNING, "Game couldn't be loaded!");
             return;
         }
-        setUpLogger();
+        setUpLogger(true);
         initPlayers();
         moveLogger = new MoveLogger(this);
         boardModel = new BoardModel(this, loadedGame.get(0), loadedGame.get(1));
@@ -83,6 +105,8 @@ public class Game {
             parseTurn(loadedGame.get(i).split(" "));
         }
     }
+
+
 
     private void parseTurn(String[] s) {
         char offset = '0';
@@ -133,6 +157,12 @@ public class Game {
     }
 
 
+    private void initPlayers(Boolean NPCisGold, Boolean NPCisSilver) {
+        initPlayers();
+        this.npcPlayer = NPCisGold ? this.playerGold : this.playerSilver;
+
+    }
+
     private void initPlayers() {
         this.playerGold = new Player(ColorPiece.GOLD, timerPanel, timeLimit);
         this.playerSilver = new Player(ColorPiece.SILVER, timerPanel, timeLimit);
@@ -153,13 +183,13 @@ public class Game {
 
     }
 
-    private void setUpLogger() {
+    private void setUpLogger(Boolean isLog) {
         logger.setUseParentHandlers(false);
         Handler handler = new ConsoleHandler();
         handler.setFormatter(new MyFormatter());
         logger.addHandler(handler);
 
-        if (this.logging) {
+        if (isLog) {
             logger.setLevel(level);
             handler.setLevel(level);
         } else {
@@ -169,7 +199,7 @@ public class Game {
 
 
     /**
-     * Check Move for validity.
+     * Handle single request to move Piece.
      *
      * @param sx char coordinate of Piece
      * @param sy int coordinate of Piece
@@ -215,10 +245,13 @@ public class Game {
         }
 
         Game.logger.log(Level.CONFIG, boardModel.toString());
-
     }
 
-    public void updateTurn(Move move) {
+    /**
+     * Update turns. One Turn consists of 1-4 moves of one Player.
+     * @param move in Turn
+     */
+    private void updateTurn(Move move) {
         if (currentTurn == null) {
             currentPlayer.increaseTurn();
             currentTurn = new Turn(currentPlayer);
@@ -233,15 +266,63 @@ public class Game {
         }
     }
 
-
-
+//    /**
+//     * Handle moves.
+//     * @param sx char coordinate of Piece
+//     * @param sy int coordinate of Piece
+//     * @param dx char coordinate of Piece
+//     * @param dy int coordinate of Piece
+//     */
+//    public void move(char sx, int sy, char dx, int dy) {
+//        if (npcPlayer == null) {
+//            // Player VS Player
+//            moveRequest(sx, sy, dx, dy);
+//        } else {
+//            // Player VS NPC
+//            if (this.currentPlayer == this.npcPlayer) {
+//                moveRequestPC();
+//            } else {
+//                moveRequest(sx, sy, dx, dy);
+//            }
+//        }
+//    }
 
     /**
-     * Handle move requests between player and PC.
+     * Generate moves for PC player. Then switch current Player.
      */
     public void moveRequestPC() {
+        Game.logger.log(Level.INFO, "NPC is making Turn!");
+        Random random = new Random();
+        while (moveCnt < 1) {   // at least on move has to be made
+            int numberOfMoves = random.nextInt(4) + 1;
+            for (int i = 0; i < numberOfMoves; i++) {
+                // TODO choose Piece on board
+                Spot s = getRandomPiece();
+                // TODO generate possible moves and push or pull moves
+                List<Move> validMoves = gameValidator.generateValidMoves(s.getPiece(), s, currentPlayer);
+                try {
+                    Move m = validMoves.get(0);
+                    // TODO execute randomlyGenerated move
+                    moveRequest(m.getSx(), m.getSy(), m.getDx(), m.getDy());
+                } catch (IndexOutOfBoundsException e) {
+                    Game.logger.log(Level.WARNING, s.getPiece().toString() + " has no Moves!");
+                }
+            }
+        }
+
+        if (currentPlayer == npcPlayer) {
+            nextTurn();
+        }
 
     }
+
+    private Spot getRandomPiece() {
+        List<Spot> list = boardModel.getPieces(npcPlayer.getColor());
+        Random random = new Random();
+        return list.get(random.nextInt(list.size()));
+
+    }
+
 
     private void execute(Move move) {
         boardModel.doMove(move);    // Update move in board model
@@ -325,6 +406,11 @@ public class Game {
         currentPlayer.increaseTurn();
         currentTurn = new Turn(currentPlayer);
         moveCnt = ZERO_MOVES;
+
+        // NPC will make its turn
+        if (npcPlayer != null && currentPlayer == npcPlayer) {
+            moveRequestPC();
+        }
     }
 
     /**
@@ -344,7 +430,7 @@ public class Game {
             default -> Game.logger.log(Level.WARNING, "Current player is null!");
         }
         gameFrame.changeMsg("Current player is: " + currentPlayer.getColor());
-        Game.logger.log(Level.INFO, "Current player is: " + currentPlayer.getColor());
+        Game.logger.log(Level.INFO, "Switch to (current) player is: " + currentPlayer.getColor());
     }
 
     /**
@@ -355,7 +441,7 @@ public class Game {
     private void switchCurrentPlayer(Player player) {
         this.currentPlayer = player;
         gameFrame.changeMsg("Current player is: " + currentPlayer.getColor());
-        Game.logger.log(Level.INFO, "Current player is: " + currentPlayer.getColor());
+        Game.logger.log(Level.INFO, "Switch to (current) player is: " + currentPlayer.getColor());
     }
 
     /**
@@ -415,6 +501,14 @@ public class Game {
 
     public Player getPlayerSilver() {
         return playerSilver;
+    }
+
+    public Player getCurrentPlayer() {
+        return currentPlayer;
+    }
+
+    public Player getNpcPlayer() {
+        return npcPlayer;
     }
 
     public Boolean getOwnLayout() {

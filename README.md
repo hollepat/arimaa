@@ -6,8 +6,7 @@ Game __arimaa__.
 ### Todo
 
 1. Threads --> real time hours interaction with game
-2. Save Game --> write state of board to file and use function to recreate
-3. Player to Player/ PC to Player options
+2. Player to Player/ PC to Player options
 
 ### Rules
 

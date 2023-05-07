@@ -84,9 +84,9 @@ public class GameValidator {
         }
 
         // check if not moving enemy piece (exception push and drag)
-        if (move.getPiece().getColor() == game.currentPlayer.getColor()
+        if (move.getPiece().getColor() == game.getCurrentPlayer().getColor()
                 && !isNextTo(move.getSx(), move.getSy(), move.getDx(), move.getDy())) {
-            Game.logger.log(Level.WARNING, "Trying to move enemy Piece, your pieces are " + game.currentPlayer.getColor());
+            Game.logger.log(Level.WARNING, "Trying to move enemy Piece, your pieces are " + game.getCurrentPlayer().getColor());
             return false;
         }
 
@@ -103,7 +103,7 @@ public class GameValidator {
         }
 
         // check if move is push or drag
-        if (move.getPiece().getColor() != game.currentPlayer.getColor()) {
+        if (move.getPiece().getColor() != game.getCurrentPlayer().getColor()) {
             if (!isDraggedByPiece(move)) {
                 return isPushedByPiece(move);
             }

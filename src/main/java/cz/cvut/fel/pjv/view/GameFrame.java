@@ -59,12 +59,13 @@ public class GameFrame extends JFrame {
         undoButton.addActionListener(actionEvent -> {
             game.undoTurn();
         });
-        JButton endTurn = new JButton("End turn");
+        JButton endTurn = new JButton("End Turn");
         endTurn.addActionListener(e -> {
                 if (game.moveCnt >= 1) {
                     game.endTurn();
                 } else {
                     Game.logger.log(Level.WARNING, "Your turn must have at least 1 move!");
+                    JOptionPane.showMessageDialog(null, "Your turn must have at least 1 move!");
                 }
             }
         );
@@ -87,6 +88,8 @@ public class GameFrame extends JFrame {
         tools.add(setLayout);
         tools.addSeparator();
         tools.add(infoText);
+
+
 
     }
 

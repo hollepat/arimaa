@@ -8,9 +8,7 @@ import cz.cvut.fel.pjv.pieces.PieceType;
 import cz.cvut.fel.pjv.pieces.PieceSet;
 
 import java.io.File;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Scanner;
+import java.util.*;
 import java.util.logging.Level;
 
 public class BoardModel {
@@ -38,6 +36,10 @@ public class BoardModel {
     private Iterator<Piece> goldElephantIterator = PieceSet.getPieces(ColorPiece.GOLD, PieceType.ELEPHANT).iterator();
 
 
+    /**
+     * Constructor for boardModel when creating New Game.
+     * @param game is New Game
+     */
     public BoardModel(Game game) {
         this.game = game;
         initSquares();
@@ -45,14 +47,23 @@ public class BoardModel {
         Game.logger.log(Level.CONFIG, "BoardModel was initiated.");
     }
 
+    /**
+     * Constructor for boardModel when recreating Game from File.
+     * @param game
+     * @param layoutGold
+     * @param layoutSilver
+     */
     public BoardModel(Game game, String layoutGold, String layoutSilver) {
         this.game = game;
         initSquares();
-        //initPieces();
+        // set own layout of Pieces
         setLayout(layoutGold.split(" "), layoutSilver.split(" "));
         Game.logger.log(Level.CONFIG, "BoardModel was initiated.");
     }
 
+    /**
+     * Constructor to create only boardModel.
+     */
     public BoardModel() {
         initSquares();
         initPieces();
@@ -143,13 +154,13 @@ public class BoardModel {
 
     private void initPieces() {
         if (game != null && game.getOwnLayout()) {
-            ownLayoutOfPieces();
+            setOwnLayoutOfPieces();
         } else {
             setLayout(defaultLayoutGold.split(" "), defaultLayoutSilver.split(" "));
         }
     }
 
-    private void ownLayoutOfPieces() {
+    private void setOwnLayoutOfPieces() {
         Scanner sc = new Scanner(System.in);
         String[] goldLayout;
         currentLayoutGold = sc.nextLine();
@@ -213,6 +224,24 @@ public class BoardModel {
                 }
             }
         }
+    }
+
+    /**
+     * Get all Spots where stands Piece, which has specified color.
+     * @param color color of Pieces to look for
+     * @return list of Spot with Piece of specified color
+     */
+    public List<Spot> getPieces(ColorPiece color) {
+        List<Spot> list = new ArrayList<>();
+        for (int i = 0; i < BOARD_DIMENSION; i++) {
+            for (int j = 0; j < BOARD_DIMENSION; j++) {
+                Piece p = arimaaBoardSpots[i][j].getPiece();
+                if (p != null && p.getColor() == color) {
+                    list.add(arimaaBoardSpots[i][j]);
+                }
+            }
+        }
+        return  list;
     }
 
     public String getCurrentLayoutGold() {
