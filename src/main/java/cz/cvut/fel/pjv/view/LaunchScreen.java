@@ -29,29 +29,23 @@ public class LaunchScreen extends JFrame {
         JLabel gameName = new JLabel("Welcome to Arimaa!");
 
         newGameButton = new JButton("New Game");
-        newGameButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                SetUpScreen setUpScreen = new SetUpScreen();
-                setUpScreen.start();
-                setVisible(false);
-                dispose();
+        newGameButton.addActionListener(e -> {
+            SetUpScreen setUpScreen = new SetUpScreen();
+            setUpScreen.start();
+            setVisible(false);
+            dispose();
 
-            }
         });
         loadGameButton = new JButton("Load Game");
         fileChooser = new JFileChooser();
-        loadGameButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                int userSelection = fileChooser.showOpenDialog(LaunchScreen.this);
-                if (userSelection == JFileChooser.APPROVE_OPTION) { // if the user selects a file
-                    File fileToOpen = fileChooser.getSelectedFile(); // get the selected file
-                    Game game = new Game(fileToOpen);
-                }
-                setVisible(false);
-                dispose();
+        loadGameButton.addActionListener(e -> {
+            int userSelection = fileChooser.showOpenDialog(LaunchScreen.this);
+            if (userSelection == JFileChooser.APPROVE_OPTION) { // if the user selects a file
+                File fileToOpen = fileChooser.getSelectedFile(); // get the selected file
+                Game game = new Game(fileToOpen);
             }
+            setVisible(false);
+            dispose();
         });
 
         gameName.setAlignmentX(Component.CENTER_ALIGNMENT);

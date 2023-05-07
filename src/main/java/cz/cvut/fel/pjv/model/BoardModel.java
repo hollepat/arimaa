@@ -178,9 +178,10 @@ public class BoardModel {
     }
 
     private void setLayout(String[] goldLayout, String[] silverLayout) {
+        int i = 1;
         try {
             char offset = '0';
-            for (int i = 1; i < goldLayout.length; i++) {
+            for (i = 1; i < goldLayout.length; i++) {
                 getSpot(goldLayout[i].charAt(1), goldLayout[i].charAt(2) - offset)
                         .setPiece(getPieceFromSet(goldLayout[i].charAt(0)));
                 getSpot(silverLayout[i].charAt(1), silverLayout[i].charAt(2) - offset)
@@ -188,6 +189,8 @@ public class BoardModel {
             }
         } catch (Exception e) {
             Game.logger.log(Level.WARNING, "WRONG LAYOUT INPUT, USING DEFAULT");
+            Game.logger.log(Level.WARNING, goldLayout[i]);
+            Game.logger.log(Level.WARNING, silverLayout[i]);
             e.printStackTrace();
             setLayout(defaultLayoutGold.split(" "), defaultLayoutSilver.split(" "));
         }

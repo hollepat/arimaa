@@ -45,14 +45,11 @@ public class GameFrame extends JFrame {
         tools.setFloatable(false);
         JButton newGame = new JButton("New");
         JButton save = new JButton("Save");
-        save.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                try {
-                    game.saveToFile();
-                } catch (IOException ex) {
-                    ex.printStackTrace();
-                }
+        save.addActionListener(e -> {
+            try {
+                game.saveToFile();
+            } catch (IOException ex) {
+                ex.printStackTrace();
             }
         });
         JButton undoButton = new JButton("Undo");
@@ -70,19 +67,17 @@ public class GameFrame extends JFrame {
             }
         );
         JButton setLayout = new JButton("Set Layout");
-        setLayout.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                // TODO
-            }
+        newGame.addActionListener(e -> {
+            LaunchScreen launchScreen = new LaunchScreen();
+            dispose();
         });
         infoText = new JButton("Current player is: GOLD");
         infoText.setBorderPainted(false);
 
         // --- Add Components ---
         add(tools, BorderLayout.NORTH);
-        tools.add(newGame); // TODO - create new game
-        tools.add(save); // TODO - save game
+        tools.add(newGame);
+        tools.add(save);
         tools.add(undoButton);
         tools.add(endTurn);
         tools.add(setLayout);

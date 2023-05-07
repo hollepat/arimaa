@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 import static cz.cvut.fel.pjv.pieces.ColorPiece.GOLD;
 import static cz.cvut.fel.pjv.pieces.ColorPiece.SILVER;
 
-public class GameValidator {
+public class MoveValidator {
 
 
     private final BoardModel boardModel;
@@ -27,7 +27,7 @@ public class GameValidator {
      * @param boardModel is model of Board
      * @param game object using GameValidator to validate moves.
      */
-    public GameValidator(BoardModel boardModel, Game game) {
+    public MoveValidator(BoardModel boardModel, Game game) {
         this.boardModel = boardModel;
         this.game = game;
     }
@@ -83,18 +83,7 @@ public class GameValidator {
             return false;
         }
 
-        // check if not moving enemy piece (exception push and drag)
-        if (move.getPiece().getColor() == game.getCurrentPlayer().getColor()
-                && !isNextTo(move.getSx(), move.getSy(), move.getDx(), move.getDy())) {
-            Game.logger.log(Level.WARNING, "Trying to move enemy Piece, your pieces are " + game.getCurrentPlayer().getColor());
-            return false;
-        }
 
-        // check if piece itself allows this move
-        if (!move.getPiece().isValidMove(move)) {
-            Game.logger.log(Level.WARNING, "Rabbit cannot move backwards!");
-            return false;
-        }
 
         // check for push promise
         Move previousMove = game.getMoveLogger().peekMove();
@@ -107,6 +96,13 @@ public class GameValidator {
             if (!isDraggedByPiece(move)) {
                 return isPushedByPiece(move);
             }
+            return true;
+        }
+
+        // check if piece itself allows this move
+        if (!move.getPiece().isValidMove(move) && !move.pushPromise) {
+            Game.logger.log(Level.WARNING, "Rabbit cannot move backwards!");
+            return false;
         }
 
         // check if piece is frozen
@@ -210,6 +206,39 @@ public class GameValidator {
         return false;
     }
 
+
+    public Spot isWeakerAround(Spot spot) {
+        try {
+            if (isStronger(spot.getPiece(), boardModel.getSpot(spot.getX(), spot.getY()-1).getPiece())) {
+                return boardModel.getSpot(spot.getX(), spot.getY()-1); }
+        } catch (NullPointerException e) {
+            Game.logger.log(Level.FINER, e.getMessage());
+        }
+        try {
+            if (isStronger(spot.getPiece(), boardModel.getSpot(spot.getX(), spot.getY()+1).getPiece())) {
+                return boardModel.getSpot(spot.getX(), spot.getY()+1);
+            }
+        } catch (NullPointerException e) {
+            Game.logger.log(Level.FINER, e.getMessage());
+        }
+        try {
+            if (isStronger( spot.getPiece(), boardModel.getSpot(addX(spot.getX(), 1), spot.getY()).getPiece())) {
+                return boardModel.getSpot(addX(spot.getX(), 1), spot.getY());
+            }
+        } catch (NullPointerException e) {
+            Game.logger.log(Level.FINER, e.getMessage());
+        }
+        try {
+            if (isStronger(spot.getPiece(), boardModel.getSpot(addX(spot.getX(), -1), spot.getY()).getPiece())) {
+                return boardModel.getSpot(addX(spot.getX(), -1), spot.getY());
+            }
+        } catch (NullPointerException e) {
+            Game.logger.log(Level.FINER, e.getMessage());
+        }
+        return null;
+    }
+
+
     private boolean isStronger(Piece stronger, Piece weaker) {
         if (stronger == null || weaker == null) {
             return false;
@@ -282,9 +311,10 @@ public class GameValidator {
         if (previousMove == null) {
             return false;
         }
-        if (move.getDx() == previousMove.getSx() && move.getDy() == previousMove.getSy()
-                && isNextTo(previousMove.getSx(), previousMove.getSy(), move.getSx(), move.getSy())
-                && isStronger(previousMove.getPiece(), move.getPiece())) {
+        if (move.getDx() == previousMove.getSx()
+                && move.getDy() == previousMove.getSy()
+                && isStronger(previousMove.getPiece(), move.getPiece())
+                && previousMove.getPlayer() == move.getPlayer()) {
             return true;
         }
         return false;

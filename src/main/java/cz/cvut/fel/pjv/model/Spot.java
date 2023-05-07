@@ -58,4 +58,13 @@ public class Spot {
     public TypeOfSpot getTypeOfSpot() {
         return typeOfSpot;
     }
+
+    @Override
+    public String toString() {
+        return "Spot{" +
+                ", currentPiece=" + currentPiece.toString() +
+                ", x=" + x +
+                ", y=" + y +
+                '}';
+    }
 }

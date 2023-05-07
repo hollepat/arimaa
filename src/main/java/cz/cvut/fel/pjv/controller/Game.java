@@ -1,9 +1,7 @@
 package cz.cvut.fel.pjv.controller;
 
 import cz.cvut.fel.pjv.model.*;
-import cz.cvut.fel.pjv.view.BoardPanel;
-import cz.cvut.fel.pjv.view.GameFrame;
-import cz.cvut.fel.pjv.view.TimerPanel;
+import cz.cvut.fel.pjv.view.*;
 import cz.cvut.fel.pjv.pieces.ColorPiece;
 import cz.cvut.fel.pjv.pieces.Piece;
 import cz.cvut.fel.pjv.utils.MyFormatter;
@@ -29,11 +27,12 @@ public class Game {
     private GameStatus gameStatus;
     private MoveLogger moveLogger;
     private BoardModel boardModel;  // originator
-    private GameValidator gameValidator;
+    private MoveValidator moveValidator;
     private BoardPanel boardPanel;
     private TimerPanel timerPanel;
     private GameFrame gameFrame;
     private Boolean ownLayout;
+    private Boolean isLog = true;
     public static Logger logger = Logger.getLogger(Game.class.getName());
     public static final Level level = Level.FINE;
 
@@ -51,7 +50,7 @@ public class Game {
         this.timeLimit = timeLimit;
         this.ownLayout = ownLayout;
 
-        setUpLogger(log);
+        setUpLogger();
         initPlayers();
         initModel();
         initGUI();
@@ -71,8 +70,9 @@ public class Game {
         this.gameStatus = GameStatus.ACTIVE;
         this.timeLimit = timeLimit;
         this.ownLayout = ownLayout;
+        this.isLog = log;
 
-        setUpLogger(log);
+        setUpLogger();
         initPlayers(NPCisGold, NPCisSilver);
         initModel();
         initGUI();
@@ -94,19 +94,50 @@ public class Game {
             Game.logger.log(Level.WARNING, "Game couldn't be loaded!");
             return;
         }
-        setUpLogger(true);
-        initPlayers();
+        int offset = setUpConfigData(loadedGame);
+        setUpLogger();
+        if (playerGold == null || playerSilver == null) { initPlayers(); }
         moveLogger = new MoveLogger(this);
-        boardModel = new BoardModel(this, loadedGame.get(0), loadedGame.get(1));
-        gameValidator = new GameValidator(boardModel, this);
+        boardModel = new BoardModel(this, loadedGame.get(offset), loadedGame.get(offset+1));
+        moveValidator = new MoveValidator(boardModel, this);
         Game.logger.log(Level.INFO, boardModel.toString());
         initGUI();
-        for (int i = 2; i<loadedGame.size(); i++) {
-            parseTurn(loadedGame.get(i).split(" "));
+        try {
+            for (int i = offset+2; i < loadedGame.size(); i++) {
+                parseTurn(loadedGame.get(i).split(" "));
+            }
+        } catch (Exception e) {
+            Game.logger.log(Level.WARNING, "Cannot recreate Game!");
+
+            gameFrame.dispose();
+            LaunchScreen launchScreen = new LaunchScreen();
         }
+
     }
 
+    /**
+     * Read config data from file.
+     * @param loadedGame List of information
+     * @return index where is starts log of Game
+     */
+    private int setUpConfigData(List<String> loadedGame) {
+        Iterator<String> stringIterator = loadedGame.iterator();
+        String line;
+        int idx = 0;
+        while (!(line = stringIterator.next()).equals("--------")) {
+            setData(List.of(line.split(" ")));
+            idx++;
+        }
+        return ++idx;
+    }
 
+    private void setData(List<String> list) {
+        switch (list.get(0)) {
+            case "timeLimit" -> this.timeLimit = Integer.parseInt(list.get(1));
+            case "NPC" -> initPlayers(list.get(1));
+            case "isLog" -> this.isLog = Boolean.parseBoolean(list.get(1));
+        }
+    }
 
     private void parseTurn(String[] s) {
         char offset = '0';
@@ -127,8 +158,8 @@ public class Game {
 
     private char getDxFromDirection(char x, char dir) {
         return switch (dir) {
-            case 'e' -> gameValidator.addX(x, 1);
-            case 'w' -> gameValidator.addX(x, -1);
+            case 'e' -> moveValidator.addX(x, 1);
+            case 'w' -> moveValidator.addX(x, -1);
             default -> x;
         };
     }
@@ -144,11 +175,6 @@ public class Game {
                 loadedGame.add(line);
             }
             bufferedReader.close(); // close the BufferedReader
-            String layoutLineG = bufferedReader.readLine();
-            String layoutLineS = bufferedReader.readLine();
-            if (layoutLineS == null || layoutLineG == null) {
-                throw new NullPointerException();
-            }
         } catch (IOException e) { // if an IOException occurs, print the error message
            Game.logger.log(Level.WARNING, "An error occurred: " + e.getMessage());
             e.printStackTrace();
@@ -160,7 +186,14 @@ public class Game {
     private void initPlayers(Boolean NPCisGold, Boolean NPCisSilver) {
         initPlayers();
         this.npcPlayer = NPCisGold ? this.playerGold : this.playerSilver;
+    }
 
+    private void initPlayers(String npc) {
+        initPlayers();
+        switch (npc) {
+            case "s" -> this.npcPlayer = this.playerSilver;
+            case "g" -> this.npcPlayer = this.playerGold;
+        }
     }
 
     private void initPlayers() {
@@ -172,7 +205,7 @@ public class Game {
     private void initModel() {
         boardModel = new BoardModel(this);
         moveLogger = new MoveLogger(this);
-        gameValidator = new GameValidator(boardModel, this);
+        moveValidator = new MoveValidator(boardModel, this);
         Game.logger.log(Level.INFO, boardModel.toString());
     }
 
@@ -183,13 +216,13 @@ public class Game {
 
     }
 
-    private void setUpLogger(Boolean isLog) {
+    private void setUpLogger() {
         logger.setUseParentHandlers(false);
         Handler handler = new ConsoleHandler();
         handler.setFormatter(new MyFormatter());
         logger.addHandler(handler);
 
-        if (isLog) {
+        if (this.isLog) {
             logger.setLevel(level);
             handler.setLevel(level);
         } else {
@@ -211,7 +244,7 @@ public class Game {
         Move move = new Move(boardModel.getSpot(sx, sy).getPiece(), sx, sy, dx, dy, currentPlayer, moveCnt);
         Game.logger.log(Level.CONFIG, "Request to move from " + sx + " " + sy + " to " + dx + " " + dy);
         // generate all possible Moves for Piece
-        List<Move> validMoves = gameValidator.generateValidMoves(boardModel.getSpot(sx, sy).getPiece(), boardModel.getSpot(sx, sy), currentPlayer);
+        List<Move> validMoves = moveValidator.generateValidMoves(boardModel.getSpot(sx, sy).getPiece(), boardModel.getSpot(sx, sy), currentPlayer);
 
         // check if Move is in valid Moves
         validMoves = validMoves.stream().filter(move1 -> move.getDy() == move1.getDy() && move.getDx() == move1.getDx()).collect(Collectors.toList());
@@ -232,14 +265,14 @@ public class Game {
         updateTurn(move);
 
         // check traps
-        gameValidator.checkTrapped(move);
+        moveValidator.checkTrapped(move);
         for (Map.Entry<String, Piece> entry : move.getKilledPieces().entrySet()) {
             Game.logger.log(Level.INFO, "Killing " + entry.getValue().toString() + " on " + entry.getKey());
             boardModel.removePiece(entry.getValue(), entry.getKey().charAt(0), Integer.parseInt(String.valueOf(entry.getKey().charAt(1))));
             boardPanel.removePiece(entry.getKey().charAt(0), Integer.parseInt(String.valueOf(entry.getKey().charAt(1))));
         }
         // check end game
-        if (gameValidator.endMove(move)) {
+        if (moveValidator.endMove(move)) {
             Game.logger.log(Level.INFO, "End of game!");
             showWinnerDialog();
         }
@@ -266,26 +299,6 @@ public class Game {
         }
     }
 
-//    /**
-//     * Handle moves.
-//     * @param sx char coordinate of Piece
-//     * @param sy int coordinate of Piece
-//     * @param dx char coordinate of Piece
-//     * @param dy int coordinate of Piece
-//     */
-//    public void move(char sx, int sy, char dx, int dy) {
-//        if (npcPlayer == null) {
-//            // Player VS Player
-//            moveRequest(sx, sy, dx, dy);
-//        } else {
-//            // Player VS NPC
-//            if (this.currentPlayer == this.npcPlayer) {
-//                moveRequestPC();
-//            } else {
-//                moveRequest(sx, sy, dx, dy);
-//            }
-//        }
-//    }
 
     /**
      * Generate moves for PC player. Then switch current Player.
@@ -293,19 +306,23 @@ public class Game {
     public void moveRequestPC() {
         Game.logger.log(Level.INFO, "NPC is making Turn!");
         Random random = new Random();
-        while (moveCnt < 1) {   // at least on move has to be made
+        while (moveCnt == 0) {
             int numberOfMoves = random.nextInt(4) + 1;
             for (int i = 0; i < numberOfMoves; i++) {
                 // TODO choose Piece on board
                 Spot s = getRandomPiece();
-                // TODO generate possible moves and push or pull moves
-                List<Move> validMoves = gameValidator.generateValidMoves(s.getPiece(), s, currentPlayer);
-                try {
-                    Move m = validMoves.get(0);
-                    // TODO execute randomlyGenerated move
-                    moveRequest(m.getSx(), m.getSy(), m.getDx(), m.getDy());
-                } catch (IndexOutOfBoundsException e) {
-                    Game.logger.log(Level.WARNING, s.getPiece().toString() + " has no Moves!");
+                Game.logger.log(Level.FINE, s.toString() + " to be moved by NPC!");
+                // TODO push or pull move if can be apply
+                Spot weaker = moveValidator.isWeakerAround(s);
+                if (weaker != null && moveCnt < 2) {
+                    Game.logger.log(Level.FINE, weaker.toString() + " to be moved by NPC!");
+                    int pushOrPull = random.nextInt(2);
+                    switch (pushOrPull) {
+                        case 0 -> doPushPC(weaker, s);
+                        case 1 -> doPullPC(weaker, s);
+                    };
+                } else {
+                    executeRandomMove(s);
                 }
             }
         }
@@ -314,6 +331,30 @@ public class Game {
             nextTurn();
         }
 
+    }
+
+    private void executeRandomMove(Spot s) {
+        Random rand = new Random();
+        Game.logger.log(Level.FINE, "Execute random move for " + s.toString());
+        // TODO generate possible moves
+        List<Move> validMoves = moveValidator.generateValidMoves(s.getPiece(), s, currentPlayer);
+        try {
+            Move m = validMoves.get(rand.nextInt(validMoves.size()));
+            // TODO execute randomlyGenerated move
+            moveRequest(m.getSx(), m.getSy(), m.getDx(), m.getDy());
+        } catch (IndexOutOfBoundsException | IllegalArgumentException e) {
+            Game.logger.log(Level.WARNING, s.getPiece().toString() + " has no Moves!");
+        }
+    }
+
+    private void doPushPC(Spot weaker, Spot s) {
+        executeRandomMove(weaker);
+        moveRequest(s.getX(), s.getY(), weaker.getX(), weaker.getY());
+    }
+
+    private void doPullPC(Spot weaker, Spot s) {
+        executeRandomMove(s);
+        moveRequest(weaker.getX(), weaker.getY(), s.getX(), s.getY());
     }
 
     private Spot getRandomPiece() {
@@ -461,6 +502,7 @@ public class Game {
             }
             // write to File
             FileWriter writer = new FileWriter(file);
+            writeToFileConfigData(writer);
             writer.write(boardModel.getCurrentLayoutGold() + "\n");
             writer.write(boardModel.getCurrentLayoutSilver() + "\n");
             moveLogger.saveMovesToFile(file, writer);
@@ -473,6 +515,15 @@ public class Game {
         }
 
 
+    }
+
+    public void writeToFileConfigData(FileWriter writer) throws IOException {
+        writer.write("timeLimit " + timeLimit + "\n");
+        if (npcPlayer != null) {
+            writer.write("NPC " + npcPlayer.getNotation() + "\n");
+        }
+        writer.write("isLog " + this.isLog + "\n");
+        writer.write("--------\n");
     }
 
     // -----------------------------
