@@ -6,12 +6,10 @@ Game __arimaa__.
 ### Todo
 
 1. Threads --> real time hours interaction with game
-2. Player to Player/ PC to Player options
 
 ### Rules
 
-Pravidla. Ty nejzákladnější jsou (není to úplný výčet):
-- [x] goal je dostat rabbit na druhou stranu desky
+Pravidla:
 - [x] Hrací deska 8x8
 - [x] 6 typu figurek - elephant 1x, camel 1x, horse 2x, dog 2x, cat 2x, rabbit 8x
 - [x] figurky se pohybují forward, backwards, right, left až na rabbit ten nesmí backwards
