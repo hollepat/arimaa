@@ -46,7 +46,7 @@ public class Game {
     public Game(Boolean log, int timeLimit, Boolean ownLayout) {
         logger.log(Level.CONFIG, "log = " + log + ", timeLimit = " + timeLimit + "ownLayout = " + ownLayout);
 
-        this.gameStatus = GameStatus.ACTIVE;
+        this.gameStatus = GameStatus.IDLE;
         this.timeLimit = timeLimit;
         this.ownLayout = ownLayout;
 
@@ -76,10 +76,6 @@ public class Game {
         initPlayers(NPCisGold, NPCisSilver);
         initModel();
         initGUI();
-
-        if (currentPlayer == npcPlayer) {
-            moveRequestPC();
-        }
     }
 
     /**
@@ -115,72 +111,6 @@ public class Game {
 
     }
 
-    /**
-     * Read config data from file.
-     * @param loadedGame List of information
-     * @return index where is starts log of Game
-     */
-    private int setUpConfigData(List<String> loadedGame) {
-        Iterator<String> stringIterator = loadedGame.iterator();
-        String line;
-        int idx = 0;
-        while (!(line = stringIterator.next()).equals("--------")) {
-            setData(List.of(line.split(" ")));
-            idx++;
-        }
-        return ++idx;
-    }
-
-    private void setData(List<String> list) {
-        switch (list.get(0)) {
-            case "timeLimit" -> this.timeLimit = Integer.parseInt(list.get(1));
-            case "NPC" -> initPlayers(list.get(1));
-            case "isLog" -> this.isLog = Boolean.parseBoolean(list.get(1));
-        }
-    }
-
-    private void parseTurn(String[] s) {
-        char offset = '0';
-        for (int i = 1; i < s.length; i++) {
-            moveRequest(s[i].charAt(1), s[i].charAt(2)-offset,
-                    getDxFromDirection(s[i].charAt(1), s[i].charAt(3)),
-                    getDyFromDirection(s[i].charAt(2)-offset, s[i].charAt(3)));
-        }
-    }
-
-    private int getDyFromDirection(int y, char dir) {
-        return switch (dir) {
-            case 'n' -> y + 1;
-            case 's' -> y -1;
-            default -> y;
-        };
-    }
-
-    private char getDxFromDirection(char x, char dir) {
-        return switch (dir) {
-            case 'e' -> moveValidator.addX(x, 1);
-            case 'w' -> moveValidator.addX(x, -1);
-            default -> x;
-        };
-    }
-
-    private List<String> readGameFromFile(File file) {
-        List<String> loadedGame = new ArrayList<>();
-        try {
-            FileReader reader = new FileReader(file); // open the file for reading
-            BufferedReader bufferedReader = new BufferedReader(reader);
-            String line;
-            while ((line = bufferedReader.readLine()) != null) { // read the contents of the file line by line
-                Game.logger.log(Level.INFO, line); // print the line to the console
-                loadedGame.add(line);
-            }
-            bufferedReader.close(); // close the BufferedReader
-        } catch (IOException e) { // if an IOException occurs, print the error message
-           Game.logger.log(Level.WARNING, "An error occurred: " + e.getMessage());
-            e.printStackTrace();
-        }
-        return loadedGame;
-    }
 
 
     private void initPlayers(Boolean NPCisGold, Boolean NPCisSilver) {
@@ -240,6 +170,10 @@ public class Game {
      * @param dy int coordinate of Piece
      */
     public void moveRequest(char sx, int sy, char dx, int dy) {
+        // throw request if Game is not ACTIVE
+        if (gameStatus != GameStatus.ACTIVE) {
+            return;
+        }
         // create new Move
         Move move = new Move(boardModel.getSpot(sx, sy).getPiece(), sx, sy, dx, dy, currentPlayer, moveCnt);
         Game.logger.log(Level.CONFIG, "Request to move from " + sx + " " + sy + " to " + dx + " " + dy);
@@ -315,12 +249,12 @@ public class Game {
                 // TODO push or pull move if can be apply
                 Spot weaker = moveValidator.isWeakerAround(s);
                 if (weaker != null && moveCnt < 2) {
-                    Game.logger.log(Level.FINE, weaker.toString() + " to be moved by NPC!");
+                    Game.logger.log(Level.FINE, weaker + " to be moved by NPC!");
                     int pushOrPull = random.nextInt(2);
                     switch (pushOrPull) {
                         case 0 -> doPushPC(weaker, s);
                         case 1 -> doPullPC(weaker, s);
-                    };
+                    }
                 } else {
                     executeRandomMove(s);
                 }
@@ -380,7 +314,7 @@ public class Game {
         ListIterator<Move> listIterator = currentTurn.getMoves().listIterator(currentTurn.getMoves().size());
         currentPlayer.decreaseTurn();
         while (listIterator.hasPrevious()) {
-            Move prev = listIterator.previous();
+                Move prev = listIterator.previous();
             boardPanel.makeUndo(prev);
             boardModel.undoMove(prev);
         }
@@ -421,7 +355,7 @@ public class Game {
         // get last Move
         Move lastMove = moveLogger.popMove();
         if (lastMove != null) {
-            Game.logger.log(Level.INFO, "Undo move: " + lastMove.toString());
+            Game.logger.log(Level.INFO, "Undo move: " + lastMove);
             boardPanel.makeUndo(lastMove);
             boardModel.undoMove(lastMove);
             moveCnt = lastMove.getMoveNumInTurn();
@@ -525,6 +459,74 @@ public class Game {
         writer.write("isLog " + this.isLog + "\n");
         writer.write("--------\n");
     }
+
+    /**
+     * Read config data from file.
+     * @param loadedGame List of information
+     * @return index where is starts log of Game
+     */
+    private int setUpConfigData(List<String> loadedGame) {
+        Iterator<String> stringIterator = loadedGame.iterator();
+        String line;
+        int idx = 0;
+        while (!(line = stringIterator.next()).equals("--------")) {
+            setData(List.of(line.split(" ")));
+            idx++;
+        }
+        return ++idx;
+    }
+
+    private void setData(List<String> list) {
+        switch (list.get(0)) {
+            case "timeLimit" -> this.timeLimit = Integer.parseInt(list.get(1));
+            case "NPC" -> initPlayers(list.get(1));
+            case "isLog" -> this.isLog = Boolean.parseBoolean(list.get(1));
+        }
+    }
+
+    private void parseTurn(String[] s) {
+        char offset = '0';
+        for (int i = 1; i < s.length; i++) {
+            moveRequest(s[i].charAt(1), s[i].charAt(2)-offset,
+                    getDxFromDirection(s[i].charAt(1), s[i].charAt(3)),
+                    getDyFromDirection(s[i].charAt(2)-offset, s[i].charAt(3)));
+        }
+    }
+
+    private int getDyFromDirection(int y, char dir) {
+        return switch (dir) {
+            case 'n' -> y + 1;
+            case 's' -> y -1;
+            default -> y;
+        };
+    }
+
+    private char getDxFromDirection(char x, char dir) {
+        return switch (dir) {
+            case 'e' -> moveValidator.addX(x, 1);
+            case 'w' -> moveValidator.addX(x, -1);
+            default -> x;
+        };
+    }
+
+    private List<String> readGameFromFile(File file) {
+        List<String> loadedGame = new ArrayList<>();
+        try {
+            FileReader reader = new FileReader(file); // open the file for reading
+            BufferedReader bufferedReader = new BufferedReader(reader);
+            String line;
+            while ((line = bufferedReader.readLine()) != null) { // read the contents of the file line by line
+                Game.logger.log(Level.INFO, line); // print the line to the console
+                loadedGame.add(line);
+            }
+            bufferedReader.close(); // close the BufferedReader
+        } catch (IOException e) { // if an IOException occurs, print the error message
+            Game.logger.log(Level.WARNING, "An error occurred: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return loadedGame;
+    }
+
 
     // -----------------------------
     // ---- Getters and Setters ----

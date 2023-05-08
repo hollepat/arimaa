@@ -1,10 +1,10 @@
 package cz.cvut.fel.pjv.view;
 
 import cz.cvut.fel.pjv.controller.Game;
+import cz.cvut.fel.pjv.controller.GameStatus;
+
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.util.logging.Level;
 
@@ -44,6 +44,10 @@ public class GameFrame extends JFrame {
         JToolBar tools = new JToolBar();
         tools.setFloatable(false);
         JButton newGame = new JButton("New");
+        newGame.addActionListener(e -> {
+            LaunchScreen launchScreen = new LaunchScreen();
+            dispose();
+        });
         JButton save = new JButton("Save");
         save.addActionListener(e -> {
             try {
@@ -66,12 +70,15 @@ public class GameFrame extends JFrame {
                 }
             }
         );
-        JButton setLayout = new JButton("Set Layout");
-        newGame.addActionListener(e -> {
-            LaunchScreen launchScreen = new LaunchScreen();
-            dispose();
+        JButton play = new JButton("Play!");
+        play.addActionListener(e -> {
+            game.setGameStatus(GameStatus.ACTIVE);
+            if (game.getCurrentPlayer() == game.getNpcPlayer()) {
+                game.moveRequestPC();
+            }
+            infoText.setText("Current Player is: " + game.getCurrentPlayer().getColor());
         });
-        infoText = new JButton("Current player is: GOLD");
+        infoText = new JButton("Pres Play to start a Game!");
         infoText.setBorderPainted(false);
 
         // --- Add Components ---
@@ -80,7 +87,7 @@ public class GameFrame extends JFrame {
         tools.add(save);
         tools.add(undoButton);
         tools.add(endTurn);
-        tools.add(setLayout);
+        tools.add(play);
         tools.addSeparator();
         tools.add(infoText);
 

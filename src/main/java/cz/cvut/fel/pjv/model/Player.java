@@ -4,11 +4,10 @@ import cz.cvut.fel.pjv.view.TimerPanel;
 import cz.cvut.fel.pjv.pieces.ColorPiece;
 
 public class Player {
-    private ColorPiece color;
-    private String name;
+    private final ColorPiece color;
     private TimerPanel timerPanel;
     private int timeLimit;
-    private RealTimeClocks timer;
+    private OwnTimer timer;
     private int turnCnt = 1;
 
     public Player(ColorPiece color) {
@@ -23,7 +22,7 @@ public class Player {
     }
 
     private void initTimer() {
-        this.timer = new RealTimeClocks(timerPanel, timeLimit);
+        this.timer = new OwnTimer(timeLimit);
     }
 
     public char getNotation() {

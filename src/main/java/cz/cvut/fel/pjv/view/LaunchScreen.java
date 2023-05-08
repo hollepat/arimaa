@@ -4,8 +4,6 @@ import cz.cvut.fel.pjv.controller.Game;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
 
 public class LaunchScreen extends JFrame {
@@ -38,6 +36,10 @@ public class LaunchScreen extends JFrame {
         });
         loadGameButton = new JButton("Load Game");
         fileChooser = new JFileChooser();
+        // Set the default directory to open
+        fileChooser.setCurrentDirectory(new File(System.getProperty("user.home")));
+        // Set the dialog title
+        fileChooser.setDialogTitle("Choose a file");
         loadGameButton.addActionListener(e -> {
             int userSelection = fileChooser.showOpenDialog(LaunchScreen.this);
             if (userSelection == JFileChooser.APPROVE_OPTION) { // if the user selects a file
