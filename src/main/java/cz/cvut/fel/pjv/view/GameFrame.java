@@ -5,6 +5,8 @@ import cz.cvut.fel.pjv.controller.GameStatus;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.util.logging.Level;
 
@@ -23,13 +25,25 @@ public class GameFrame extends JFrame {
      */
     public void loadUI() {
         setTitle("Arimaa Game");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         setMinimumSize(new Dimension(720, 720));
         setLayout(new BorderLayout(3, 3));
 
+        // add a window listener to detect when the JFrame is closed
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                // interrupt the thread and wait for it to finish
+                game.endTimer();
+
+                // close the JFrame
+                dispose();
+            }
+        });
+
         initToolBar();
         add(game.getBoardPanel(), BorderLayout.CENTER);
-        //add(game.getTimerPanel(), BorderLayout.EAST);
+        add(game.getTimerPanel(), BorderLayout.EAST);
 
         App.setFrameCenter(this);
         setVisible(true);
@@ -40,11 +54,18 @@ public class GameFrame extends JFrame {
 
     private void initToolBar() {
 
-        // --- Create Components
+        // --------------------------------
+        // ------ Create Components -------
+        // --------------------------------
         JToolBar tools = new JToolBar();
         tools.setFloatable(false);
         JButton newGame = new JButton("New");
         newGame.addActionListener(e -> {
+
+            // terminate timer thread
+            game.endTimer();
+
+            // create new launch screen
             LaunchScreen launchScreen = new LaunchScreen();
             dispose();
         });
@@ -62,6 +83,8 @@ public class GameFrame extends JFrame {
         });
         JButton endTurn = new JButton("End Turn");
         endTurn.addActionListener(e -> {
+
+                // end turn of current player
                 if (game.moveCnt >= 1) {
                     game.endTurn();
                 } else {
@@ -72,16 +95,26 @@ public class GameFrame extends JFrame {
         );
         JButton play = new JButton("Play!");
         play.addActionListener(e -> {
+
+            // start timer
+            if (game.getGameStatus() == GameStatus.IDLE) {
+                game.getTimers().playGold();
+            }
+
+            // run turn for NPC
             game.setGameStatus(GameStatus.ACTIVE);
             if (game.getCurrentPlayer() == game.getNpcPlayer()) {
                 game.moveRequestPC();
             }
             infoText.setText("Current Player is: " + game.getCurrentPlayer().getColor());
+
         });
         infoText = new JButton("Pres Play to start a Game!");
         infoText.setBorderPainted(false);
 
-        // --- Add Components ---
+        // --------------------------
+        // ----- Add Components -----
+        // --------------------------
         add(tools, BorderLayout.NORTH);
         tools.add(newGame);
         tools.add(save);

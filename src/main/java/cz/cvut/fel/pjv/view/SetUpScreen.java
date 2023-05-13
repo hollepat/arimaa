@@ -33,6 +33,7 @@ public class SetUpScreen extends JFrame {
 
         logMessagesCheckBox.setSelected(true);
         spinnerTimer.setEnabled(false);
+        spinnerTimer.setValue(100);
         setListeners();
 
     }

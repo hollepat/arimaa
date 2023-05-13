@@ -1,6 +1,7 @@
 package cz.cvut.fel.pjv.controller;
 
 import cz.cvut.fel.pjv.model.*;
+import cz.cvut.fel.pjv.utils.MyTimer;
 import cz.cvut.fel.pjv.view.*;
 import cz.cvut.fel.pjv.pieces.ColorPiece;
 import cz.cvut.fel.pjv.pieces.Piece;
@@ -30,9 +31,11 @@ public class Game {
     private MoveValidator moveValidator;
     private BoardPanel boardPanel;
     private TimerPanel timerPanel;
+    private MyTimer timers;
+    private Thread timersThread;
     private GameFrame gameFrame;
     private Boolean ownLayout;
-    private Boolean isLog = true;
+    private Boolean isLogging = true;
     public static Logger logger = Logger.getLogger(Game.class.getName());
     public static final Level level = Level.FINE;
 
@@ -52,6 +55,7 @@ public class Game {
 
         setUpLogger();
         initPlayers();
+        initTimer(timeLimit);
         initModel();
         initGUI();
     }
@@ -70,12 +74,36 @@ public class Game {
         this.gameStatus = GameStatus.ACTIVE;
         this.timeLimit = timeLimit;
         this.ownLayout = ownLayout;
-        this.isLog = log;
+        this.isLogging = log;
 
         setUpLogger();
         initPlayers(NPCisGold, NPCisSilver);
+        initTimer(timeLimit);
         initModel();
         initGUI();
+    }
+
+    private void initTimer(int timeLimit) {
+        // create Runnable object
+        timers = new MyTimer(isLogging, timeLimit);
+
+        // create thread
+        timersThread = new Thread(timers);
+        timersThread.start();
+
+    }
+
+
+    public void endTimer() {
+        // let finish Thread
+        timers.stop();
+
+        // end thread
+        try {
+            timersThread.join();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
@@ -127,8 +155,8 @@ public class Game {
     }
 
     private void initPlayers() {
-        this.playerGold = new Player(ColorPiece.GOLD, timerPanel, timeLimit);
-        this.playerSilver = new Player(ColorPiece.SILVER, timerPanel, timeLimit);
+        this.playerGold = new Player(ColorPiece.GOLD);
+        this.playerSilver = new Player(ColorPiece.SILVER);
         this.currentPlayer = this.playerGold;   // starting Player
     }
 
@@ -147,12 +175,18 @@ public class Game {
     }
 
     private void setUpLogger() {
+        // turn of parent Handler (default)
         logger.setUseParentHandlers(false);
+
+        // create Console Handler with custom Formatter
         Handler handler = new ConsoleHandler();
         handler.setFormatter(new MyFormatter());
+
+        // add Handler
         logger.addHandler(handler);
 
-        if (this.isLog) {
+        // set Level of Logger
+        if (this.isLogging) {
             logger.setLevel(level);
             handler.setLevel(level);
         } else {
@@ -162,22 +196,24 @@ public class Game {
 
 
     /**
-     * Handle single request to move Piece.
+     * Handle single request to move Piece p.
      *
-     * @param sx char coordinate of Piece
-     * @param sy int coordinate of Piece
-     * @param dx char coordinate of Piece
-     * @param dy int coordinate of Piece
+     * @param sx is source x coordinate of p
+     * @param sy is source y coordinate of p
+     * @param dx is destination x coordinate of p
+     * @param dy is destination y coordinate of p
      */
     public void moveRequest(char sx, int sy, char dx, int dy) {
+
         // throw request if Game is not ACTIVE
-        if (gameStatus != GameStatus.ACTIVE) {
+        if (gameStatus != GameStatus.ACTIVE)
             return;
-        }
+
         // create new Move
         Move move = new Move(boardModel.getSpot(sx, sy).getPiece(), sx, sy, dx, dy, currentPlayer, moveCnt);
         Game.logger.log(Level.CONFIG, "Request to move from " + sx + " " + sy + " to " + dx + " " + dy);
-        // generate all possible Moves for Piece
+
+        // generate all possible Moves for Piece requested to move
         List<Move> validMoves = moveValidator.generateValidMoves(boardModel.getSpot(sx, sy).getPiece(), boardModel.getSpot(sx, sy), currentPlayer);
 
         // check if Move is in valid Moves
@@ -188,9 +224,8 @@ public class Game {
             moveLogger.saveMove(move);
             Game.logger.log(Level.INFO, "Move " + move.getMoveNumInTurn() + " executed by " + currentPlayer.getColor() + "! " + move.getNotation());
         } else { // undo also push move (previous) if promised move rejected
-            if (!moveLogger.isEmpty() && moveLogger.peekMove().pushPromise) {
+            if (!moveLogger.isEmpty() && moveLogger.peekMove().pushPromise)
                 undoMove();
-            }
             Game.logger.log(Level.INFO, "Invalid Move!!! " + move.getNotation());
             return; // throw away invalid move
         }
@@ -205,12 +240,15 @@ public class Game {
             boardModel.removePiece(entry.getValue(), entry.getKey().charAt(0), Integer.parseInt(String.valueOf(entry.getKey().charAt(1))));
             boardPanel.removePiece(entry.getKey().charAt(0), Integer.parseInt(String.valueOf(entry.getKey().charAt(1))));
         }
+
         // check end game
         if (moveValidator.endMove(move)) {
+            endTimer();
             Game.logger.log(Level.INFO, "End of game!");
             showWinnerDialog();
         }
 
+        // print model of board
         Game.logger.log(Level.CONFIG, boardModel.toString());
     }
 
@@ -399,11 +437,18 @@ public class Game {
      * Change currentPlayer to opposite one.
      */
     private void switchCurrentPlayer() {
+
+        // switch current player
         switch (this.currentPlayer.getColor()) {
             case GOLD -> this.currentPlayer = this.getPlayerSilver();
             case SILVER -> this.currentPlayer = this.getPlayerGold();
             default -> Game.logger.log(Level.WARNING, "Current player is null!");
         }
+
+        // switch timers
+        switchTimers();
+
+        // show msg
         gameFrame.changeMsg("Current player is: " + currentPlayer.getColor());
         Game.logger.log(Level.INFO, "Switch to (current) player is: " + currentPlayer.getColor());
     }
@@ -414,9 +459,29 @@ public class Game {
      * @param player is new currentPlayer
      */
     private void switchCurrentPlayer(Player player) {
+
+        // set current player
         this.currentPlayer = player;
+
+        // switch timers
+        switchTimers();
+
+        // show msg
         gameFrame.changeMsg("Current player is: " + currentPlayer.getColor());
         Game.logger.log(Level.INFO, "Switch to (current) player is: " + currentPlayer.getColor());
+    }
+
+    private void switchTimers() {
+        switch (currentPlayer.getColor()) {
+            case GOLD:
+                timers.pauseSilver();
+                timers.playGold();
+                break;
+            case SILVER:
+                timers.pauseGold();
+                timers.playSilver();
+                break;
+        }
     }
 
     /**
@@ -456,7 +521,7 @@ public class Game {
         if (npcPlayer != null) {
             writer.write("NPC " + npcPlayer.getNotation() + "\n");
         }
-        writer.write("isLog " + this.isLog + "\n");
+        writer.write("isLog " + this.isLogging + "\n");
         writer.write("--------\n");
     }
 
@@ -480,7 +545,7 @@ public class Game {
         switch (list.get(0)) {
             case "timeLimit" -> this.timeLimit = Integer.parseInt(list.get(1));
             case "NPC" -> initPlayers(list.get(1));
-            case "isLog" -> this.isLog = Boolean.parseBoolean(list.get(1));
+            case "isLog" -> this.isLogging = Boolean.parseBoolean(list.get(1));
         }
     }
 
@@ -566,5 +631,17 @@ public class Game {
 
     public Boolean getOwnLayout() {
         return ownLayout;
+    }
+
+    public TimerPanel getTimerPanel() {
+        return timerPanel;
+    }
+
+    public MyTimer getTimers() {
+        return timers;
+    }
+
+    public GameStatus getGameStatus() {
+        return gameStatus;
     }
 }
