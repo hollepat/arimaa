@@ -5,7 +5,7 @@ public class MyTimerTest {
 
     @Test
     public void CreateTest() {
-        MyTimer timers = new MyTimer(true, 20);
+        MyTimer timers = new MyTimer(true, 5);
         Thread timersThread = new Thread(timers);
         timersThread.start();
     }
@@ -31,7 +31,7 @@ public class MyTimerTest {
         try {
             Thread.sleep(5000);
         } catch (InterruptedException e) {
-            // handle exception
+            e.printStackTrace();
         }
         timers.playGold();
 
@@ -41,6 +41,26 @@ public class MyTimerTest {
             timersThread.join();
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    public void getTimeAsStringTest() {
+        MyTimer timers = new MyTimer(true, 20);
+        Thread timersThread = new Thread(timers);
+        timersThread.start();
+
+        timers.playGold();
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        synchronized (timersThread) {
+            String s2 = timers.getCurrentTimeGold().toString();
+            System.out.println(s2);
+            assert s2.equals("00:00:05") || s2.equals("00:00:04");
+
         }
     }
 

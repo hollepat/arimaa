@@ -100,9 +100,9 @@ public class GameFrame extends JFrame {
             if (game.getGameStatus() == GameStatus.IDLE) {
                 game.getTimers().playGold();
             }
+            game.setGameStatus(GameStatus.ACTIVE);
 
             // run turn for NPC
-            game.setGameStatus(GameStatus.ACTIVE);
             if (game.getCurrentPlayer() == game.getNpcPlayer()) {
                 game.moveRequestPC();
             }

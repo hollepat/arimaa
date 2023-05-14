@@ -4,6 +4,6 @@ public enum GameStatus {
     ACTIVE,
     GOLD_WIN,
     SILVER_WIN,
-    RESIGNATION,
+    SETUP,
     IDLE
 }

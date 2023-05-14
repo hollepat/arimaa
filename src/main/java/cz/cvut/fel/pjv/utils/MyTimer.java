@@ -21,6 +21,8 @@ public class MyTimer implements Runnable {
     private LocalTime currentTimeSilver;
     private GameStatus gameStatus;
 
+    private TimerEventListener listener;
+
     public static Logger logger = Logger.getLogger(MyTimer.class.getName());
     public static final Level level = Level.FINE;
 
@@ -44,6 +46,7 @@ public class MyTimer implements Runnable {
         gameStatus = GameStatus.ACTIVE;
     }
 
+
     @Override
     public void run() {
 
@@ -58,6 +61,11 @@ public class MyTimer implements Runnable {
 
                 // print time to console
                 logger.log(Level.INFO,"Gold Timer: " + timeStringGold);
+
+                // notify listener
+                if (listener != null) {
+                    listener.tikTokGold(currentTimeGold);
+                }
 
                 // check if time's up
                 if (currentTimeGold.equals(endTime)) {
@@ -75,6 +83,11 @@ public class MyTimer implements Runnable {
 
                 // print time to console
                 logger.log(Level.INFO, "Silver Timer: " + timeStringSilver);
+
+                // notify listener
+                if (listener != null) {
+                    listener.tikTokSilver(currentTimeSilver);
+                }
 
                 // check if time's up --> break while()
                 if (currentTimeSilver.equals(endTime)) {
@@ -158,5 +171,34 @@ public class MyTimer implements Runnable {
         pausedSilver = false;
     }
 
+    public LocalTime getCurrentTimeGold() {
+        return currentTimeGold;
+    }
+
+    public LocalTime getCurrentTimeSilver() {
+        return currentTimeSilver;
+    }
+
+    public String getCurrentTimeGoldString() {
+        return currentTimeGold.format(DateTimeFormatter.ofPattern("HH:mm:ss"));
+    }
+
+    public String getCurrentTimeSilverString() {
+        return currentTimeSilver.format(DateTimeFormatter.ofPattern("HH:mm:ss"));
+    }
+
+    public void setCurrentTimeGold(LocalTime currentTimeGold) {
+        this.currentTimeGold = currentTimeGold;
+        logger.log(Level.INFO, "Gold's time set to " + currentTimeGold.format(DateTimeFormatter.ofPattern("HH:mm:ss")));
+    }
+
+    public void setCurrentTimeSilver(LocalTime currentTimeSilver) {
+        this.currentTimeSilver = currentTimeSilver;
+        logger.log(Level.INFO, "Silver's time set to " + currentTimeGold.format(DateTimeFormatter.ofPattern("HH:mm:ss")));
+    }
+
+    public void setListener(TimerEventListener listener) {
+        this.listener = listener;
+    }
 }
 

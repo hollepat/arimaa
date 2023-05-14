@@ -5,7 +5,8 @@ Game __arimaa__.
 
 ### Todo
 
-1. Threads --> real time hours interaction with game
+1. repair generating moves for npc
+2. do changing of layout in gui
 
 ### Rules
 

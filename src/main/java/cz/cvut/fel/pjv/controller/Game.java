@@ -9,6 +9,7 @@ import cz.cvut.fel.pjv.utils.MyFormatter;
 
 import javax.swing.*;
 import java.io.*;
+import java.time.LocalTime;
 import java.util.*;
 import java.util.logging.*;
 import java.util.stream.Collectors;
@@ -25,7 +26,7 @@ public class Game {
     private int timeLimit;
     private Player playerGold;
     private Player playerSilver;
-    private GameStatus gameStatus;
+    private GameStatus gameStatus = GameStatus.IDLE;
     private MoveLogger moveLogger;
     private BoardModel boardModel;  // originator
     private MoveValidator moveValidator;
@@ -37,7 +38,7 @@ public class Game {
     private Boolean ownLayout;
     private Boolean isLogging = true;
     public static Logger logger = Logger.getLogger(Game.class.getName());
-    public static final Level level = Level.FINE;
+    public static final Level level = Level.FINER;
 
     /**
      * Constructor for new Game.
@@ -49,7 +50,6 @@ public class Game {
     public Game(Boolean log, int timeLimit, Boolean ownLayout) {
         logger.log(Level.CONFIG, "log = " + log + ", timeLimit = " + timeLimit + "ownLayout = " + ownLayout);
 
-        this.gameStatus = GameStatus.IDLE;
         this.timeLimit = timeLimit;
         this.ownLayout = ownLayout;
 
@@ -71,7 +71,6 @@ public class Game {
         logger.log(Level.CONFIG, "log = " + log + ", timeLimit = " + timeLimit + ", ownLayout = " +
                 ownLayout + ", NPCisGold = " + NPCisGold + ", NPCisSilver = " + NPCisSilver);
 
-        this.gameStatus = GameStatus.ACTIVE;
         this.timeLimit = timeLimit;
         this.ownLayout = ownLayout;
         this.isLogging = log;
@@ -83,28 +82,7 @@ public class Game {
         initGUI();
     }
 
-    private void initTimer(int timeLimit) {
-        // create Runnable object
-        timers = new MyTimer(isLogging, timeLimit);
 
-        // create thread
-        timersThread = new Thread(timers);
-        timersThread.start();
-
-    }
-
-
-    public void endTimer() {
-        // let finish Thread
-        timers.stop();
-
-        // end thread
-        try {
-            timersThread.join();
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-    }
 
     /**
      * Constructor for Game loaded from file.
@@ -112,33 +90,62 @@ public class Game {
      * @param file containing move log from previous game
      */
     public Game(File file) {
+
+        // print absolute file path
         Game.logger.log(Level.INFO, file.getAbsolutePath());
+
+        // read Game from file
         List<String> loadedGame = readGameFromFile(file);
         if (loadedGame.isEmpty()) {
             Game.logger.log(Level.WARNING, "Game couldn't be loaded!");
             return;
         }
+
+        // set up config data
         int offset = setUpConfigData(loadedGame);
+
+        // set up logger
         setUpLogger();
+
+        // set up players
         if (playerGold == null || playerSilver == null) { initPlayers(); }
+
+        // set up move logger
         moveLogger = new MoveLogger(this);
+
+        // set up model
         boardModel = new BoardModel(this, loadedGame.get(offset), loadedGame.get(offset+1));
+
+        // set up validator
         moveValidator = new MoveValidator(boardModel, this);
+
+        // print model
         Game.logger.log(Level.INFO, boardModel.toString());
+
         initGUI();
+
+        // recreate game
         try {
+            setGameStatus(GameStatus.SETUP);
             for (int i = offset+2; i < loadedGame.size(); i++) {
                 parseTurn(loadedGame.get(i).split(" "));
             }
+            setIdleState();
         } catch (Exception e) {
+            // dispose loaded game because of corruption
             Game.logger.log(Level.WARNING, "Cannot recreate Game!");
-
             gameFrame.dispose();
             LaunchScreen launchScreen = new LaunchScreen();
         }
 
     }
 
+    private void setIdleState() {
+        setGameStatus(GameStatus.IDLE);
+        timers.pauseGold();
+        timers.pauseSilver();
+        gameFrame.changeMsg("Pres Play to start a Game!");
+    }
 
 
     private void initPlayers(Boolean NPCisGold, Boolean NPCisSilver) {
@@ -172,6 +179,36 @@ public class Game {
         boardPanel = new BoardPanel(this);
         gameFrame = new GameFrame(this);
 
+        // set gui of timer to be listener of thread timer
+        timers.setListener(timerPanel);
+    }
+
+    private void initTimer(int timeLimit) {
+        // create Runnable object
+        timers = new MyTimer(isLogging, timeLimit);
+
+        // create thread
+        timersThread = new Thread(timers);
+        timersThread.start();
+
+    }
+
+    /**
+     * Use to end timers thread.
+     */
+    public void endTimer() {
+
+        if (timersThread != null && timersThread.isAlive()) {
+            // let Thread to finish
+            timers.stop();
+
+            // end thread
+            try {
+                timersThread.join();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
     private void setUpLogger() {
@@ -205,9 +242,18 @@ public class Game {
      */
     public void moveRequest(char sx, int sy, char dx, int dy) {
 
-        // throw request if Game is not ACTIVE
-        if (gameStatus != GameStatus.ACTIVE)
+        // if game is in end state because of special rules
+        switch (gameStatus) {
+            case GOLD_WIN, SILVER_WIN -> {
+                Game.logger.log(Level.INFO, "End of game!");
+                showWinnerDialog();
+            }
+        }
+
+        // throw request if Game is IDLE
+        if (gameStatus != GameStatus.ACTIVE && gameStatus != GameStatus.SETUP) {
             return;
+        }
 
         // create new Move
         Move move = new Move(boardModel.getSpot(sx, sy).getPiece(), sx, sy, dx, dy, currentPlayer, moveCnt);
@@ -230,9 +276,6 @@ public class Game {
             return; // throw away invalid move
         }
 
-        // update Turn
-        updateTurn(move);
-
         // check traps
         moveValidator.checkTrapped(move);
         for (Map.Entry<String, Piece> entry : move.getKilledPieces().entrySet()) {
@@ -241,12 +284,16 @@ public class Game {
             boardPanel.removePiece(entry.getKey().charAt(0), Integer.parseInt(String.valueOf(entry.getKey().charAt(1))));
         }
 
+        // update Turn
+        updateTurn(move);
+
         // check end game
         if (moveValidator.endMove(move)) {
             endTimer();
             Game.logger.log(Level.INFO, "End of game!");
             showWinnerDialog();
         }
+
 
         // print model of board
         Game.logger.log(Level.CONFIG, boardModel.toString());
@@ -518,6 +565,8 @@ public class Game {
 
     public void writeToFileConfigData(FileWriter writer) throws IOException {
         writer.write("timeLimit " + timeLimit + "\n");
+        writer.write("goldTimer " + timers.getCurrentTimeGold() + "\n");
+        writer.write("silverTimer " + timers.getCurrentTimeSilver() + "\n");
         if (npcPlayer != null) {
             writer.write("NPC " + npcPlayer.getNotation() + "\n");
         }
@@ -543,7 +592,12 @@ public class Game {
 
     private void setData(List<String> list) {
         switch (list.get(0)) {
-            case "timeLimit" -> this.timeLimit = Integer.parseInt(list.get(1));
+            case "timeLimit" -> {
+                this.timeLimit = Integer.parseInt(list.get(1));
+                initTimer(timeLimit);
+            }
+            case "goldTimer" -> timers.setCurrentTimeGold(LocalTime.parse(list.get(1)));
+            case "silverTimer" -> timers.setCurrentTimeSilver(LocalTime.parse(list.get(1)));
             case "NPC" -> initPlayers(list.get(1));
             case "isLog" -> this.isLogging = Boolean.parseBoolean(list.get(1));
         }

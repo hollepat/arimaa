@@ -43,8 +43,7 @@ public class SetUpScreen extends JFrame {
         if (playerVsPlayerRadioButton.isSelected()) {
             Game game = new Game(logMessagesCheckBox.isSelected(), (int) spinnerTimer.getValue(), ownLayout.isSelected());
         } else if (playerVsPCRadioButton.isSelected()) {
-            Game game = new Game(logMessagesCheckBox.isSelected(), (int) spinnerTimer.getValue(), ownLayout.isSelected(),
-                    NPCIsGOLDRadioButton.isSelected(), NPCIsSILVERRadioButton.isSelected());
+            Game game = new Game(logMessagesCheckBox.isSelected(), (int) spinnerTimer.getValue(), ownLayout.isSelected(), NPCIsGOLDRadioButton.isSelected(), NPCIsSILVERRadioButton.isSelected());
         }
         dispose();
     }
