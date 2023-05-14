@@ -18,6 +18,8 @@ public class DragAndDropListener implements MouseListener, MouseMotionListener {
     private int sourceY;
     private int offsetX;
     private int offsetY;
+    private int switchY;
+    private char switchX;
 
     /**
      * Constructor.
@@ -94,8 +96,13 @@ public class DragAndDropListener implements MouseListener, MouseMotionListener {
 
     @Override
     public void mouseClicked(MouseEvent e) {
-        Game.logger.log(Level.FINE, "x: " + getColumnPosition(e) + "(" + e.getPoint().x + ")");
-        Game.logger.log(Level.FINE, "y: " + getRowPosition(e) + "(" + e.getPoint().y + ")");
+        //Game.logger.log(Level.FINE, "x: " + getColumnPosition(e) + "(" + e.getPoint().x + ")");
+        //Game.logger.log(Level.FINE, "y: " + getRowPosition(e) + "(" + e.getPoint().y + ")");
+        switchY = getRowPosition(e);
+        switchX = getColumnPosition(e);
+        Game.logger.log(Level.FINE, "Mouse clicked on " + switchX + " " + switchY);
+        boardPanel.submitSwitchRequest(switchX, switchY);
+
 
     }
 

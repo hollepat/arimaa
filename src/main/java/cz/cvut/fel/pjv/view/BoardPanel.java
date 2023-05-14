@@ -1,17 +1,15 @@
 package cz.cvut.fel.pjv.view;
 
 import cz.cvut.fel.pjv.controller.Game;
+import cz.cvut.fel.pjv.controller.GameStatus;
 import cz.cvut.fel.pjv.model.BoardModel;
 import cz.cvut.fel.pjv.model.Move;
-import cz.cvut.fel.pjv.pieces.ColorPiece;
 import cz.cvut.fel.pjv.pieces.Piece;
-import cz.cvut.fel.pjv.pieces.PieceType;
-import cz.cvut.fel.pjv.pieces.PieceSet;
+import cz.cvut.fel.pjv.utils.CharIntTuple;
 
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import java.awt.*;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Objects;
 import java.util.logging.Level;
@@ -29,6 +27,9 @@ public class BoardPanel extends JPanel {
     private final int PANEL_DIMENSION = 600;
     private final int BOARD_DIMENSION = 8;
 
+    // switch Pieces
+    private CharIntTuple switch1;
+    private CharIntTuple switch2;
 
     public BoardPanel(Game game) {
         super(new BorderLayout());
@@ -147,10 +148,86 @@ public class BoardPanel extends JPanel {
         SwingUtilities.updateComponentTreeUI(boardPane);    // problem - square got repainted in next move
     }
 
+    /**
+     * Remove Piece from Spot x y.
+     *
+     * @param x coordinate of Piece to be removed
+     * @param y coordinate of Piece to be removed
+     */
     public void removePiece(char x, int y) {
         JPanel square = getSquarePanel(y, x);
         square.remove(0);
         square.repaint();
+    }
+
+    /**
+     * Switch two Pieces on the board.
+     *
+     * @param x1 coordinate of piece 1
+     * @param y1 coordinate of piece 1
+     * @param x2 coordinate of piece 2
+     * @param y2 coordinate of piece 2
+     */
+    public void makeSwitch(char x1, int y1, char x2, int y2) {
+        // get panels where Pieces are
+        JPanel panel1 = getSquarePanel(y1, x1);
+        JPanel panel2 = getSquarePanel(y2, x2);
+
+        // tmp store Piece in panel2
+        Component tmp = panel2.getComponent(0);
+
+        // remove any Piece from panel2
+        panel2.removeAll();
+
+        // add switched Piece
+        panel2.add(panel1.getComponent(0));
+
+        // refresh panel2
+        panel2.repaint();
+
+        // remove any Piece from panel1
+        panel1.removeAll();
+
+        // add switched Piece
+        panel1.add(tmp);
+
+        // refresh panel1
+        panel1.repaint();
+    }
+
+    /**
+     * Request to switch from GUI input.
+     *
+     * @param x coordinate of Piece to be switched
+     * @param y coordinate of Piece to be switched
+     *
+     */
+    public void submitSwitchRequest(char x, int y) {
+
+        if (game.getGameStatus() != GameStatus.SETUP) {
+            Game.logger.log(Level.WARNING, "To change position of Pieces set Game to SETUP mode!");
+            return;
+        }
+
+        // no Piece has been chosen yet
+        if (switch1 == null) {
+            // choose switch 1 and wait for switch 2
+            switch1 = new CharIntTuple(x, y);
+            Game.logger.log(Level.INFO, "Switch1 chosen: " + x + " " + y);
+            game.getGameFrame().changeMsg("Choose another piece to switch place with piece on " + x + " " + y);
+            return;
+        }
+
+        // choose second Piece to switch --> and switch them
+        switch2 = new CharIntTuple(x, y);
+        Game.logger.log(Level.INFO, "Switch2 chosen: " + x + " " + y);
+        game.switchRequest(switch1.getCharacter(), switch1.getInteger(), switch2.getCharacter(), switch2.getInteger());
+
+        // reset switch1 and switch2
+        switch1 = null;
+        switch2 = null;
+        game.getGameFrame().changeMsg("Pres Play to start a Game!");
+
     }
 
     // --------------------------------------------------------

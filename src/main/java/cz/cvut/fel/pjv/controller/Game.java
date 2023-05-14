@@ -58,7 +58,14 @@ public class Game {
         initTimer(timeLimit);
         initModel();
         initGUI();
+
+
+        if (ownLayout) {
+            // set SETUP mode
+            gameStatus = GameStatus.SETUP;
+        }
     }
+
 
     /**
      * Constructor for new Game against NPC.
@@ -80,6 +87,12 @@ public class Game {
         initTimer(timeLimit);
         initModel();
         initGUI();
+
+        // set own layout
+        if (ownLayout) {
+            // set SETUP mode
+            gameStatus = GameStatus.SETUP;
+        }
     }
 
 
@@ -125,17 +138,19 @@ public class Game {
         initGUI();
 
         // recreate game
-        try {
-            setGameStatus(GameStatus.SETUP);
-            for (int i = offset+2; i < loadedGame.size(); i++) {
-                parseTurn(loadedGame.get(i).split(" "));
+        synchronized (this) {
+            try {
+                setGameStatus(GameStatus.ACTIVE);
+                for (int i = offset + 2; i < loadedGame.size(); i++) {
+                    parseTurn(loadedGame.get(i).split(" "));
+                }
+                setIdleState();
+            } catch (Exception e) {
+                // dispose loaded game because of corruption
+                Game.logger.log(Level.WARNING, "Cannot recreate Game!");
+                gameFrame.dispose();
+                LaunchScreen launchScreen = new LaunchScreen();
             }
-            setIdleState();
-        } catch (Exception e) {
-            // dispose loaded game because of corruption
-            Game.logger.log(Level.WARNING, "Cannot recreate Game!");
-            gameFrame.dispose();
-            LaunchScreen launchScreen = new LaunchScreen();
         }
 
     }
@@ -240,13 +255,58 @@ public class Game {
             }
         }
 
-        // throw request if Game is IDLE
-        if (gameStatus != GameStatus.ACTIVE && gameStatus != GameStatus.SETUP) {
-            return false;
-        }
-        return true;
+        return gameStatus == GameStatus.ACTIVE;
     }
 
+    /**
+     * Handle single request to Switch.
+     *
+     * @param x1 coordinate of piece 1
+     * @param y1 coordinate of piece 1
+     * @param x2 coordinate of piece 2
+     * @param y2 coordinate of piece 2
+     */
+    public void switchRequest(char x1, int y1, char x2, int y2) {
+
+        Game.logger.log(Level.INFO, "Requesting Controller to switch Pieces!");
+
+        // game is in setup mode
+        if (gameStatus != GameStatus.SETUP) {
+            Game.logger.log(Level.WARNING, "Cannot switch Pieces Game is not in SETUP mode!");
+            return;
+        }
+
+        // check if on both Spots are Pieces
+        if (boardModel.getSpot(x1, y1).getPiece() == null) {
+            Game.logger.log(Level.WARNING, "Missing Piece to switch " + x1 + " " + y1 + "!");
+            return;
+        }
+        if (boardModel.getSpot(x2, y2).getPiece() == null) {
+            Game.logger.log(Level.WARNING, "Missing Piece to switch " + x2 + " " + y2 + "!");
+            return;
+        }
+
+        // check if both Pieces have same color
+        if (boardModel.getSpot(x1, y1).getPiece().getColor() != boardModel.getSpot(x2, y2).getPiece().getColor()) {
+            Game.logger.log(Level.WARNING, "Pieces don't have same color!");
+            return;
+        }
+
+        // check if Pieces are not same Piece
+        if (boardModel.getSpot(x1, y1).getPiece() == boardModel.getSpot(x2, y2).getPiece()) {
+            Game.logger.log(Level.WARNING, "Cannot switch the Piece with itself!");
+            return;
+        }
+
+        // switch pieces in boardModel
+        boardModel.doSwitch(x1, y1, x2, y2);
+
+        // switch pieces in boardPanel
+        boardPanel.makeSwitch(x1, y1, x2, y2);
+
+        // print model of board
+        Game.logger.log(Level.INFO, boardModel.toString());
+    }
 
     /**
      * Handle single request to move Piece p.
@@ -714,5 +774,9 @@ public class Game {
 
     public GameStatus getGameStatus() {
         return gameStatus;
+    }
+
+    public GameFrame getGameFrame() {
+        return gameFrame;
     }
 }

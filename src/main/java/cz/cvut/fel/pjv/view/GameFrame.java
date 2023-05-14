@@ -96,16 +96,25 @@ public class GameFrame extends JFrame {
         JButton play = new JButton("Play!");
         play.addActionListener(e -> {
 
+            // save current setup of Pieces
+            if (game.getGameStatus() == GameStatus.SETUP) {
+                game.getBoardModel().saveLayoutOfPieces();
+            }
+
             // start timer
-            if (game.getGameStatus() == GameStatus.IDLE) {
+            if (game.getGameStatus() == GameStatus.IDLE || game.getGameStatus() == GameStatus.SETUP) {
                 game.getTimers().playGold();
             }
+
+            // change Game mode to ACTIVE
             game.setGameStatus(GameStatus.ACTIVE);
 
-            // run turn for NPC
+            // run turn for NPC if Opponent is NPC
             if (game.getCurrentPlayer() == game.getNpcPlayer()) {
                 game.moveRequestPC();
             }
+
+            // change msg
             infoText.setText("Current Player is: " + game.getCurrentPlayer().getColor());
 
         });

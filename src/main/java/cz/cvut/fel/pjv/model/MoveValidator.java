@@ -84,7 +84,6 @@ public class MoveValidator {
         }
 
 
-
         // check for push promise
         Move previousMove = game.getMoveLogger().peekMove();
         if (previousMove != null && previousMove.pushPromise) {     // promise to move own piece into place after push

@@ -2,12 +2,12 @@ package cz.cvut.fel.pjv.model;
 
 
 import cz.cvut.fel.pjv.controller.Game;
+import cz.cvut.fel.pjv.controller.GameStatus;
 import cz.cvut.fel.pjv.pieces.ColorPiece;
 import cz.cvut.fel.pjv.pieces.Piece;
 import cz.cvut.fel.pjv.pieces.PieceType;
 import cz.cvut.fel.pjv.pieces.PieceSet;
 
-import java.io.File;
 import java.util.*;
 import java.util.logging.Level;
 
@@ -118,22 +118,28 @@ public class BoardModel {
 
     }
 
-
-
     /**
-     * Save current to file.
+     * Switch piece on (x1, y1) with piece on (x2, y2) in model.
+     *
+     @param x1 coordinate of piece 1
+     @param y1 coordinate of piece 1
+     @param x2 coordinate of piece 2
+     @param y2 coordinate of piece 2
      */
-    public void saveState(File file) {
-        // TODO implement
+    public void doSwitch(char x1, int y1, char x2, int y2) {
 
+        // get Spots
+        Spot originSquare = getSpot(x1, y1);
+        Spot destinationSquare = getSpot(x2, y2);
+
+        // tmp destination Piece reference
+        Piece p = destinationSquare.getPiece();
+
+        // switch Pieces
+        destinationSquare.setPiece(originSquare.getPiece());
+        originSquare.setPiece(p);
     }
 
-    /**
-     * Load state of board from file.
-     */
-    public void loadState() {
-        // TODO implement
-    }
 
     /**
      * Remove Piece from boardModel.
@@ -153,11 +159,12 @@ public class BoardModel {
     // -----------------------------------------------------
 
     private void initPieces() {
-        if (game != null && game.getOwnLayout()) {
-            setOwnLayoutOfPieces();
-        } else {
-            setLayout(defaultLayoutGold.split(" "), defaultLayoutSilver.split(" "));
-        }
+//        if (game != null && game.getOwnLayout()) {
+//            setOwnLayoutOfPieces();
+//        } else {
+//            setLayout(defaultLayoutGold.split(" "), defaultLayoutSilver.split(" "));
+//        }
+        setLayout(defaultLayoutGold.split(" "), defaultLayoutSilver.split(" "));
     }
 
     private void setOwnLayoutOfPieces() {
@@ -254,6 +261,55 @@ public class BoardModel {
     public String getCurrentLayoutSilver() {
         return currentLayoutSilver;
     }
+
+    public void saveLayoutOfPieces() {
+        if(game.getGameStatus() != GameStatus.SETUP) {
+            Game.logger.log(Level.WARNING,"Layout of Pieces can be save only in SETUP mode!");
+            return;
+        }
+
+        // TODO save current layout of pieces
+        Game.logger.log(Level.INFO, "Save starting position of Pieces!");
+        saveSilverLayout();
+        saveGoldLayout();
+
+
+    }
+
+    private void saveSilverLayout() {
+        StringBuilder s = new StringBuilder();
+        s.append("1s");
+        s.append(" ");
+        for (int i = 7; i > 5; i--) {
+            for (int j = 0; j < BOARD_DIMENSION; j++) {
+                Spot spot = arimaaBoardSpots[i][j];
+                s.append(spot.getPiece().getNotationName());
+                s.append(spot.getX());
+                s.append(spot.getY());
+                s.append(" ");
+            }
+        }
+        s.deleteCharAt(s.length());
+        currentLayoutSilver = s.toString();
+    }
+
+    private void saveGoldLayout() {
+        StringBuilder s = new StringBuilder();
+        s.append("1g");
+        s.append(" ");
+        for (int i = 0; i < 2; i++) {
+            for (int j = 0; j < BOARD_DIMENSION; j++) {
+                Spot spot = arimaaBoardSpots[i][j];
+                s.append(spot.getPiece().getNotationName());
+                s.append(spot.getX());
+                s.append(spot.getY());
+                s.append(" ");
+            }
+        }
+        s.deleteCharAt(s.length());
+        currentLayoutGold = s.toString();
+    }
+
 
     @Override
     public String toString() {
