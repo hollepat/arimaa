@@ -159,11 +159,6 @@ public class BoardModel {
     // -----------------------------------------------------
 
     private void initPieces() {
-//        if (game != null && game.getOwnLayout()) {
-//            setOwnLayoutOfPieces();
-//        } else {
-//            setLayout(defaultLayoutGold.split(" "), defaultLayoutSilver.split(" "));
-//        }
         setLayout(defaultLayoutGold.split(" "), defaultLayoutSilver.split(" "));
     }
 

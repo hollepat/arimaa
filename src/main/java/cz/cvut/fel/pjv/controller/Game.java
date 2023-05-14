@@ -28,7 +28,7 @@ public class Game {
     private Player playerSilver;
     private GameStatus gameStatus = GameStatus.IDLE;
     private MoveLogger moveLogger;
-    private BoardModel boardModel;  // originator
+    private BoardModel boardModel;
     private MoveValidator moveValidator;
     private BoardPanel boardPanel;
     private TimerPanel timerPanel;
@@ -137,20 +137,21 @@ public class Game {
 
         initGUI();
 
-        // recreate game
-        synchronized (this) {
-            try {
-                setGameStatus(GameStatus.ACTIVE);
-                for (int i = offset + 2; i < loadedGame.size(); i++) {
-                    parseTurn(loadedGame.get(i).split(" "));
-                }
-                setIdleState();
-            } catch (Exception e) {
-                // dispose loaded game because of corruption
-                Game.logger.log(Level.WARNING, "Cannot recreate Game!");
-                gameFrame.dispose();
-                LaunchScreen launchScreen = new LaunchScreen();
+        try {
+            // recreate game
+            setGameStatus(GameStatus.ACTIVE);
+            for (int i = offset + 2; i < loadedGame.size(); i++) {
+                parseTurn(loadedGame.get(i).split(" "));
             }
+            // set current player to be the next one
+            switchCurrentPlayer();
+            // set IDLE state --> wait for play button
+            setIdleState();
+        } catch (Exception e) {
+            // dispose loaded game because of corruption
+            Game.logger.log(Level.WARNING, "Cannot recreate Game!");
+            gameFrame.dispose();
+            LaunchScreen launchScreen = new LaunchScreen();
         }
 
     }
@@ -597,14 +598,14 @@ public class Game {
 
     private void switchTimers() {
         switch (currentPlayer.getColor()) {
-            case GOLD:
+            case GOLD -> {
                 timers.pauseSilver();
                 timers.playGold();
-                break;
-            case SILVER:
+            }
+            case SILVER -> {
                 timers.pauseGold();
                 timers.playSilver();
-                break;
+            }
         }
     }
 
@@ -760,9 +761,6 @@ public class Game {
         return npcPlayer;
     }
 
-    public Boolean getOwnLayout() {
-        return ownLayout;
-    }
 
     public TimerPanel getTimerPanel() {
         return timerPanel;

@@ -2,10 +2,7 @@ package cz.cvut.fel.pjv.utils;
 
 import cz.cvut.fel.pjv.controller.Game;
 import cz.cvut.fel.pjv.controller.GameStatus;
-import cz.cvut.fel.pjv.model.Move;
-import cz.cvut.fel.pjv.pieces.ColorPiece;
 
-import javax.swing.*;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.logging.ConsoleHandler;
@@ -19,13 +16,12 @@ public class MyTimer implements Runnable {
     private volatile boolean pausedGold = true;
     private volatile boolean pausedSilver = true;
 
-    private LocalTime startTime;
-    private LocalTime endTime;
+    private final LocalTime endTime;
     private LocalTime currentTimeGold;
     private LocalTime currentTimeSilver;
     private GameStatus gameStatus;
     private TimerEventListener listener;
-    private Game game;
+    private final Game game;
 
     public static Logger logger = Logger.getLogger(MyTimer.class.getName());
     public static final Level level = Level.FINE;
@@ -33,7 +29,7 @@ public class MyTimer implements Runnable {
     public MyTimer(Boolean isLogging, int timeLimit, Game game) {
         setUpLogger(isLogging);
         // set start time to 00:00:00
-        startTime = LocalTime.MIN;
+        LocalTime startTime = LocalTime.MIN;
         currentTimeGold = startTime;
         currentTimeSilver = startTime;
 
@@ -41,8 +37,7 @@ public class MyTimer implements Runnable {
         logger.log(Level.INFO, "Start time: " + startTime.toString());
 
         // calculate end time based on time limit
-        int timeLimitSeconds = timeLimit;
-        endTime = startTime.plusSeconds(timeLimitSeconds);
+        endTime = startTime.plusSeconds(timeLimit);
 
         // print end time
         logger.log(Level.INFO, "End time: " + endTime.toString());
@@ -144,7 +139,9 @@ public class MyTimer implements Runnable {
 
     private void updateGameStatusInGameControl(GameStatus gameStatus) {
         if (game != null) {
-            game.setGameStatus(gameStatus);
+            synchronized (game) {
+                game.setGameStatus(gameStatus);
+            }
         }
     }
 
