@@ -185,7 +185,7 @@ public class Game {
 
     private void initTimer(int timeLimit) {
         // create Runnable object
-        timers = new MyTimer(isLogging, timeLimit);
+        timers = new MyTimer(isLogging, timeLimit, this);
 
         // create thread
         timersThread = new Thread(timers);
@@ -231,6 +231,22 @@ public class Game {
         }
     }
 
+    private boolean isGameStatusActive() {
+        // if game is in end state because of special rules
+        switch (gameStatus) {
+            case GOLD_WIN, SILVER_WIN -> {
+                Game.logger.log(Level.INFO, "End of game!");
+                showWinnerDialog();
+            }
+        }
+
+        // throw request if Game is IDLE
+        if (gameStatus != GameStatus.ACTIVE && gameStatus != GameStatus.SETUP) {
+            return false;
+        }
+        return true;
+    }
+
 
     /**
      * Handle single request to move Piece p.
@@ -242,18 +258,9 @@ public class Game {
      */
     public void moveRequest(char sx, int sy, char dx, int dy) {
 
-        // if game is in end state because of special rules
-        switch (gameStatus) {
-            case GOLD_WIN, SILVER_WIN -> {
-                Game.logger.log(Level.INFO, "End of game!");
-                showWinnerDialog();
-            }
-        }
-
-        // throw request if Game is IDLE
-        if (gameStatus != GameStatus.ACTIVE && gameStatus != GameStatus.SETUP) {
-            return;
-        }
+       if (!isGameStatusActive()) {
+           return;
+       }
 
         // create new Move
         Move move = new Move(boardModel.getSpot(sx, sy).getPiece(), sx, sy, dx, dy, currentPlayer, moveCnt);
@@ -323,6 +330,11 @@ public class Game {
      * Generate moves for PC player. Then switch current Player.
      */
     public void moveRequestPC() {
+
+        if (!isGameStatusActive()) {
+            return;
+        }
+
         Game.logger.log(Level.INFO, "NPC is making Turn!");
         Random random = new Random();
         while (moveCnt == 0) {
@@ -451,9 +463,14 @@ public class Game {
         Game.logger.log(Level.INFO, boardModel.toString());
     }
 
-    private void showWinnerDialog() {
-        Move lastMove = moveLogger.peekMove();
-        JOptionPane.showMessageDialog(null, "You win " + lastMove.getPlayer().getColor() + "!");
+    public void showWinnerDialog() {
+        String s;
+        switch (gameStatus) {
+            case SILVER_WIN -> s = "Winner is SILVER!";
+            case GOLD_WIN -> s = "Winner is GOLD!";
+            default -> s = "Game is still in progress.";
+        }
+        JOptionPane.showMessageDialog(null, s);
     }
 
     private void nextTurn() {
@@ -559,11 +576,11 @@ public class Game {
             Game.logger.log(Level.WARNING, "An error occurred: " + e.getMessage());
             e.printStackTrace();
         }
-
-
     }
 
-    public void writeToFileConfigData(FileWriter writer) throws IOException {
+
+
+    private void writeToFileConfigData(FileWriter writer) throws IOException {
         writer.write("timeLimit " + timeLimit + "\n");
         writer.write("goldTimer " + timers.getCurrentTimeGold() + "\n");
         writer.write("silverTimer " + timers.getCurrentTimeSilver() + "\n");

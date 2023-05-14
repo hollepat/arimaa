@@ -5,7 +5,7 @@ public class MyTimerTest {
 
     @Test
     public void CreateTest() {
-        MyTimer timers = new MyTimer(true, 5);
+        MyTimer timers = new MyTimer(true, 5, null);
         Thread timersThread = new Thread(timers);
         timersThread.start();
     }
@@ -13,7 +13,7 @@ public class MyTimerTest {
 
     @Test
     public void RunTest() {
-        MyTimer timers = new MyTimer(true, 20);
+        MyTimer timers = new MyTimer(true, 20, null);
         Thread timersThread = new Thread(timers);
         timersThread.start();
 
@@ -46,7 +46,7 @@ public class MyTimerTest {
 
     @Test
     public void getTimeAsStringTest() {
-        MyTimer timers = new MyTimer(true, 20);
+        MyTimer timers = new MyTimer(true, 20, null);
         Thread timersThread = new Thread(timers);
         timersThread.start();
 

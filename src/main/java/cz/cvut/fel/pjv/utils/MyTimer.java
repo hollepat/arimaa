@@ -1,7 +1,11 @@
 package cz.cvut.fel.pjv.utils;
 
+import cz.cvut.fel.pjv.controller.Game;
 import cz.cvut.fel.pjv.controller.GameStatus;
+import cz.cvut.fel.pjv.model.Move;
+import cz.cvut.fel.pjv.pieces.ColorPiece;
 
+import javax.swing.*;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.logging.ConsoleHandler;
@@ -20,13 +24,13 @@ public class MyTimer implements Runnable {
     private LocalTime currentTimeGold;
     private LocalTime currentTimeSilver;
     private GameStatus gameStatus;
-
     private TimerEventListener listener;
+    private Game game;
 
     public static Logger logger = Logger.getLogger(MyTimer.class.getName());
     public static final Level level = Level.FINE;
 
-    public MyTimer(Boolean isLogging, int timeLimit) {
+    public MyTimer(Boolean isLogging, int timeLimit, Game game) {
         setUpLogger(isLogging);
         // set start time to 00:00:00
         startTime = LocalTime.MIN;
@@ -43,7 +47,9 @@ public class MyTimer implements Runnable {
         // print end time
         logger.log(Level.INFO, "End time: " + endTime.toString());
 
+        // set game status
         gameStatus = GameStatus.ACTIVE;
+        this.game = game;
     }
 
 
@@ -70,6 +76,7 @@ public class MyTimer implements Runnable {
                 // check if time's up
                 if (currentTimeGold.equals(endTime)) {
                     gameStatus = GameStatus.SILVER_WIN;
+                    updateGameStatusInGameControl(GameStatus.SILVER_WIN);
                     logger.log(Level.INFO, "Time's up for Gold");
                 }
             }
@@ -92,18 +99,18 @@ public class MyTimer implements Runnable {
                 // check if time's up --> break while()
                 if (currentTimeSilver.equals(endTime)) {
                     gameStatus = GameStatus.GOLD_WIN;
+                    updateGameStatusInGameControl(GameStatus.GOLD_WIN);
                     logger.log(Level.INFO, "Time's up for Silver");
                 }
-
             }
 
             // wait for one second before printing the next time --> effect of counting after seconds
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
-                // handle exception
                 e.printStackTrace();
             }
+
         }
     }
 
@@ -133,6 +140,12 @@ public class MyTimer implements Runnable {
      */
     public void stopGold() {
         runningGold = false;
+    }
+
+    private void updateGameStatusInGameControl(GameStatus gameStatus) {
+        if (game != null) {
+            game.setGameStatus(gameStatus);
+        }
     }
 
     /**

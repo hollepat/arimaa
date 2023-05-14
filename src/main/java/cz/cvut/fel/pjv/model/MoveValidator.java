@@ -180,10 +180,12 @@ public class MoveValidator {
         }
 
         if (hasDeadPieces(GOLD)) {
+            game.setGameStatus(GameStatus.SILVER_WIN);
             Game.logger.log(Level.INFO, "All " + SILVER + " pieces are dead!");
             return true;
         }
         if (hasDeadPieces(SILVER)) {
+            game.setGameStatus(GameStatus.GOLD_WIN);
             Game.logger.log(Level.INFO, "All " + GOLD + " pieces are dead!");
             return true;
         }
