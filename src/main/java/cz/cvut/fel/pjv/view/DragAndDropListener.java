@@ -1,7 +1,6 @@
 package cz.cvut.fel.pjv.view;
 
 import cz.cvut.fel.pjv.controller.Game;
-import cz.cvut.fel.pjv.view.BoardPanel;
 
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -10,16 +9,12 @@ import java.util.logging.Level;
 
 public class DragAndDropListener implements MouseListener, MouseMotionListener {
 
-
     private final BoardPanel boardPanel;
-
     private boolean isDragged = false;
     private char sourceX;
     private int sourceY;
     private int offsetX;
     private int offsetY;
-    private int switchY;
-    private char switchX;
 
     /**
      * Constructor.
@@ -94,12 +89,14 @@ public class DragAndDropListener implements MouseListener, MouseMotionListener {
 
     }
 
+    /**
+     * One mouse clicked remember first Piece to switch and on second clicked switch them.
+     * @param e the event to be processed
+     */
     @Override
     public void mouseClicked(MouseEvent e) {
-        //Game.logger.log(Level.FINE, "x: " + getColumnPosition(e) + "(" + e.getPoint().x + ")");
-        //Game.logger.log(Level.FINE, "y: " + getRowPosition(e) + "(" + e.getPoint().y + ")");
-        switchY = getRowPosition(e);
-        switchX = getColumnPosition(e);
+        int switchY = getRowPosition(e);
+        char switchX = getColumnPosition(e);
         Game.logger.log(Level.FINE, "Mouse clicked on " + switchX + " " + switchY);
         boardPanel.submitSwitchRequest(switchX, switchY);
 

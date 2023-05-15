@@ -17,7 +17,6 @@ public class Spot {
     private Piece currentPiece = null;
     private final char x;
     private final int y;
-    private final char FIRST = 'a';
 
     /**
      * Represents one spot on game board.
@@ -26,7 +25,8 @@ public class Spot {
      * @param y     {1,2,3,4,5,6,7,8}
      */
     public Spot(int y, int x, TypeOfSpot typeOfSpot) {
-        this.x = (char)((int)FIRST + x);
+        char FIRST = 'a';
+        this.x = (char)((int) FIRST + x);
         this.y = y + 1;
         Game.logger.log(Level.INFO, "Spot created: " + this.x + " " + this.y);
         this.typeOfSpot = typeOfSpot;
@@ -37,6 +37,7 @@ public class Spot {
     }
 
     /**
+     * Check whether Spot is free.
      * @return true if Piece is in Spot.
      */
     public boolean isOccupied() {

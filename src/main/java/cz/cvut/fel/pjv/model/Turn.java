@@ -5,22 +5,31 @@ import java.util.List;
 
 public class Turn {
 
-    private List<Move> moves;
+    private final List<Move> moves;
+    private final Player player;
+    private final int cnt;
 
-    private Player player;
-    private int cnt;
-
-
+    /**
+     * Constructor for Turn.
+     * @param player which is making turn
+     */
     public Turn(Player player) {
         this.player = player;
         cnt = player.getTurn();
         moves = new ArrayList<>();
     }
 
+    /**
+     * Add move made in this turn.
+     * @param m is Move object
+     */
     public void addMove(Move m) {
         moves.add(m);
     }
 
+    /**
+     * Remove move from Turn.
+     */
     public void popMove() {
         moves.remove(moves.size()-1);
     }
@@ -33,16 +42,24 @@ public class Turn {
         return player;
     }
 
+    /**
+     * Get number of Turn.
+     * @return number of Turn
+     */
     public int getCnt() {
         return cnt;
     }
 
+    /**
+     * Describes Turn in arimaa notation.
+     * @return String describing Turn in arimaa notation
+     */
     public String getNotation() {
-        String notation = Integer.toString(cnt) + player.getNotation();
+        StringBuilder notation = new StringBuilder(Integer.toString(cnt) + player.getNotation());
         for (Move m : moves) {
-            notation += " " + m.getNotation();
+            notation.append(" ").append(m.getNotation());
         }
-        return notation;
+        return notation.toString();
     }
 
     @Override

@@ -4,8 +4,8 @@ public class Horse extends Piece{
     private final String pathSilver = "/pieces/horse-silver.png";
     private final String pathGold = "/pieces/horse-gold.png";
 
-    private char silverCharName = 'h';
-    private char goldCharName = 'H';
+    private final char silverCharName = 'h';
+    private final char goldCharName = 'H';
 
     /**
      * Constructor for Piece

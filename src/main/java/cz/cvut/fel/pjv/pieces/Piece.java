@@ -38,6 +38,11 @@ abstract public class Piece extends JLabel {
         return true;
     }
 
+    /**
+     * Check if Piece is able to make such a Move.
+     * @param move object describing whole Move
+     * @return true if is valid
+     */
     private boolean isValidMoveForRabbit(Move move) {
         ColorPiece color = move.getPiece().getColor();
         return switch (color) {
@@ -52,6 +57,11 @@ abstract public class Piece extends JLabel {
     public ColorPiece getColor() {
         return color;
     }
+
+    /**
+     * Get path to Piece Graphic.
+     * @return relative path to Piece Graphic
+     */
     public abstract String getImgPath();
     public int getPieceStrength() {
         return pieceStrength;
@@ -63,6 +73,10 @@ abstract public class Piece extends JLabel {
         this.alive = alive;
     }
 
+    /**
+     * Description of Piece in arimaa notation.
+     * @return String object containing description of Piece
+     */
     public abstract char getNotationName();
 
     @Override

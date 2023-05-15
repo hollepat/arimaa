@@ -5,8 +5,8 @@ public class Camel extends Piece{
     private final String pathSilver = "/pieces/camel-silver.png";
     private final String pathGold = "/pieces/camel-gold.png";
 
-    private char silverCharName = 'm';
-    private char goldCharName = 'M';
+    private final char silverCharName = 'm';
+    private final char goldCharName = 'M';
 
     /**
      * Constructor for Piece

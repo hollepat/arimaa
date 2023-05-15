@@ -7,30 +7,23 @@ import cz.cvut.fel.pjv.utils.TimerEventListener;
 import javax.swing.*;
 import java.awt.*;
 import java.time.LocalTime;
-import java.util.Observable;
-import java.util.Observer;
 import java.util.logging.Level;
 
 public class TimerPanel extends JPanel implements TimerEventListener {
 
-    private Game game;
-    private MyTimer timers;
-
-    private JPanel displayPanel;
-    private JPanel silverTimerPanel;
-    private JPanel silverTimerDigitsPanel;
+    private final MyTimer timers;
     private JLabel silverTimerDigitsLabel;
     private JPanel silverTimerStatusPanel;
-    private JPanel goldTimerPanel;
-    private JPanel goldTimerDigitsPanel;
     private JLabel goldTimerDigitsLabel;
 
     private JPanel goldTimerStatusPanel;
 
-
+    /**
+     * Constructor for TimerPanel.
+     * @param game reference to Game object
+     */
     public TimerPanel(Game game) {
         super(new BorderLayout());
-        this.game = game;
         timers = game.getTimers();
         initialize();
         Game.logger.log(Level.CONFIG, "Timer was initiated.");
@@ -63,14 +56,12 @@ public class TimerPanel extends JPanel implements TimerEventListener {
     }
 
 
-    public void setSilverTimer(long time) {
-        //silverTime.setTime(time);
+    public void setSilverTimer() {
         silverTimerDigitsLabel.setText(timers.getCurrentTimeSilver().toString());
         silverTimerStatusPanel.setVisible(false);
     }
 
-    public void setGoldTimer(long time) {
-        //goldTime.setTime(time);
+    public void setGoldTimer() {
         goldTimerDigitsLabel.setText(timers.getCurrentTimeGold().toString());
         goldTimerStatusPanel.setVisible(false);
     }
@@ -78,27 +69,27 @@ public class TimerPanel extends JPanel implements TimerEventListener {
     private void initialize() {
         silverTimerDigitsLabel = new JLabel(timers.getCurrentTimeSilver().toString());
         silverTimerDigitsLabel.setFont(silverTimerDigitsLabel.getFont().deriveFont(48f));
-        silverTimerDigitsPanel = new JPanel();
+        JPanel silverTimerDigitsPanel = new JPanel();
         silverTimerDigitsPanel.add(silverTimerDigitsLabel);
         silverTimerStatusPanel = new JPanel();
         silverTimerStatusPanel.setBackground(Color.GRAY);
-        silverTimerPanel = new JPanel(new BorderLayout());
+        JPanel silverTimerPanel = new JPanel(new BorderLayout());
         silverTimerPanel.add(silverTimerDigitsPanel, BorderLayout.LINE_START);
         silverTimerPanel.add(silverTimerStatusPanel, BorderLayout.CENTER);
         silverTimerPanel.setBorder(BorderFactory.createTitledBorder("Silver"));
 
         goldTimerDigitsLabel = new JLabel(timers.getCurrentTimeGold().toString());
         goldTimerDigitsLabel.setFont(goldTimerDigitsLabel.getFont().deriveFont(48f));
-        goldTimerDigitsPanel = new JPanel();
+        JPanel goldTimerDigitsPanel = new JPanel();
         goldTimerDigitsPanel.add(goldTimerDigitsLabel);
         goldTimerStatusPanel = new JPanel();
         goldTimerStatusPanel.setBackground(Color.YELLOW);
-        goldTimerPanel = new JPanel(new BorderLayout());
+        JPanel goldTimerPanel = new JPanel(new BorderLayout());
         goldTimerPanel.add(goldTimerDigitsPanel, BorderLayout.LINE_START);
         goldTimerPanel.add(goldTimerStatusPanel, BorderLayout.CENTER);
         goldTimerPanel.setBorder(BorderFactory.createTitledBorder("Gold"));
 
-        displayPanel = new JPanel(new GridLayout(2, 1));
+        JPanel displayPanel = new JPanel(new GridLayout(2, 1));
         displayPanel.add(silverTimerPanel);
         displayPanel.add(goldTimerPanel);
 

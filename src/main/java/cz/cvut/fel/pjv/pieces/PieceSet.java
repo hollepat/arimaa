@@ -6,8 +6,11 @@ public class PieceSet {
 
     private static Map<ColorPiece, Map<PieceType, List<Piece>>> pieces;
 
-    private static PieceSet pieceSetInstance = new PieceSet();
+    private static final PieceSet pieceSetInstance = new PieceSet();
 
+    /**
+     * Constructor for PieceSet, creating all Pieces.
+     */
     private PieceSet() {
         init();
     }
@@ -22,57 +25,60 @@ public class PieceSet {
         return pieces.get(color).get(pieceType);
     }
 
+    /**
+     * Get all pieces of color.
+     * @param color of pieces to get
+     * @return list of pieces
+     */
     public static List<Piece> getPieces(ColorPiece color) {
         List<Piece> list = new ArrayList<>();
         Map<PieceType, List<Piece>> tmp = pieces.get(color);
         for (Map.Entry<PieceType, List<Piece>> entry : tmp.entrySet()) {
-            for (Piece p : entry.getValue()) {
-                list.add(p);
-            }
+            list.addAll(entry.getValue());
         }
 
         return list;
     }
 
     private static void init() {
-        pieces = new LinkedHashMap<ColorPiece, Map<PieceType, List<Piece>>>();
+        pieces = new LinkedHashMap<>();
 
-        Map<PieceType, List<Piece>> goldPieces = new LinkedHashMap<PieceType, List<Piece>>();
-        Map<PieceType, List<Piece>> silverPieces = new LinkedHashMap<PieceType, List<Piece>>();
+        Map<PieceType, List<Piece>> goldPieces = new LinkedHashMap<>();
+        Map<PieceType, List<Piece>> silverPieces = new LinkedHashMap<>();
 
-        List<Piece> silverRabbits = new ArrayList<Piece>();
-        List<Piece> goldRabbits = new ArrayList<Piece>();
+        List<Piece> silverRabbits = new ArrayList<>();
+        List<Piece> goldRabbits = new ArrayList<>();
         for (int i = 0; i < 8; i++) {
             silverRabbits.add(new Rabbit(ColorPiece.SILVER));
             goldRabbits.add(new Rabbit(ColorPiece.GOLD));
         }
 
-        List<Piece> silverElephant = new ArrayList<Piece>();
-        List<Piece> goldElephant = new ArrayList<Piece>();
+        List<Piece> silverElephant = new ArrayList<>();
+        List<Piece> goldElephant = new ArrayList<>();
         silverElephant.add(new Elephant(ColorPiece.SILVER));
         goldElephant.add(new Elephant(ColorPiece.GOLD));
 
-        List<Piece> silverCamel = new ArrayList<Piece>();
-        List<Piece> goldCamel = new ArrayList<Piece>();
+        List<Piece> silverCamel = new ArrayList<>();
+        List<Piece> goldCamel = new ArrayList<>();
         silverCamel.add(new Camel(ColorPiece.SILVER));
         goldCamel.add(new Camel(ColorPiece.GOLD));
 
-        List<Piece> silverCat = new ArrayList<Piece>();
-        List<Piece> goldCat = new ArrayList<Piece>();
+        List<Piece> silverCat = new ArrayList<>();
+        List<Piece> goldCat = new ArrayList<>();
         for (int i = 0; i < 2; i++) {
             silverCat.add(new Cat(ColorPiece.SILVER));
             goldCat.add(new Cat(ColorPiece.GOLD));
         }
 
-        List<Piece> silverDog = new ArrayList<Piece>();
-        List<Piece> goldDog = new ArrayList<Piece>();
+        List<Piece> silverDog = new ArrayList<>();
+        List<Piece> goldDog = new ArrayList<>();
         for (int i = 0; i < 2; i++) {
             silverDog.add(new Dog(ColorPiece.SILVER));
             goldDog.add(new Dog(ColorPiece.GOLD));
         }
 
-        List<Piece> silverHorse = new ArrayList<Piece>();
-        List<Piece> goldHorse = new ArrayList<Piece>();
+        List<Piece> silverHorse = new ArrayList<>();
+        List<Piece> goldHorse = new ArrayList<>();
         for (int i = 0; i < 2; i++) {
             silverHorse.add(new Horse(ColorPiece.SILVER));
             goldHorse.add(new Horse(ColorPiece.GOLD));

@@ -17,23 +17,23 @@ public class BoardModel {
     private final Spot[][] arimaaBoardSpots = new Spot[8][8];
     private Game game = null;
 
-    private String defaultLayoutGold = "1g Ra1 Rb1 Rc1 Rd1 Re1 Rf1 Rg1 Rh1 Ma2 Eb2 Dc2 Dd2 Ce2 Cf2 Hg2 Hh2";
-    private String defaultLayoutSilver = "1s ra8 rb8 rc8 rd8 re8 rf8 rg8 rh8 ma7 eb7 dc7 dd7 ce7 cf7 hg7 hh7";
+    private final String defaultLayoutGold = "1g Ra1 Rb1 Rc1 Rd1 Re1 Rf1 Rg1 Rh1 Ma2 Eb2 Dc2 Dd2 Ce2 Cf2 Hg2 Hh2";
+    private final String defaultLayoutSilver = "1s ra8 rb8 rc8 rd8 re8 rf8 rg8 rh8 ma7 eb7 dc7 dd7 ce7 cf7 hg7 hh7";
 
     private String currentLayoutGold;
     private String currentLayoutSilver;
-    private Iterator<Piece> silverRabbitsIterator = PieceSet.getPieces(ColorPiece.SILVER, PieceType.RABBIT).iterator();
-    private Iterator<Piece> goldRabbitsIterator = PieceSet.getPieces(ColorPiece.GOLD, PieceType.RABBIT).iterator();
-    private Iterator<Piece> silverCatIterator = PieceSet.getPieces(ColorPiece.SILVER, PieceType.CAT).iterator();
-    private Iterator<Piece> goldCatIterator = PieceSet.getPieces(ColorPiece.GOLD, PieceType.CAT).iterator();
-    private Iterator<Piece> silverDogIterator = PieceSet.getPieces(ColorPiece.SILVER, PieceType.DOG).iterator();
-    private Iterator<Piece> goldDogIterator = PieceSet.getPieces(ColorPiece.GOLD, PieceType.DOG).iterator();
-    private Iterator<Piece> silverHorseIterator = PieceSet.getPieces(ColorPiece.SILVER, PieceType.HORSE).iterator();
-    private Iterator<Piece> goldHorseIterator = PieceSet.getPieces(ColorPiece.GOLD, PieceType.HORSE).iterator();
-    private Iterator<Piece> silverCamelIterator = PieceSet.getPieces(ColorPiece.SILVER, PieceType.CAMEL).iterator();
-    private Iterator<Piece> goldCamelIterator = PieceSet.getPieces(ColorPiece.GOLD, PieceType.CAMEL).iterator();
-    private Iterator<Piece> silverElephantIterator = PieceSet.getPieces(ColorPiece.SILVER, PieceType.ELEPHANT).iterator();
-    private Iterator<Piece> goldElephantIterator = PieceSet.getPieces(ColorPiece.GOLD, PieceType.ELEPHANT).iterator();
+    private final Iterator<Piece> silverRabbitsIterator = PieceSet.getPieces(ColorPiece.SILVER, PieceType.RABBIT).iterator();
+    private final Iterator<Piece> goldRabbitsIterator = PieceSet.getPieces(ColorPiece.GOLD, PieceType.RABBIT).iterator();
+    private final Iterator<Piece> silverCatIterator = PieceSet.getPieces(ColorPiece.SILVER, PieceType.CAT).iterator();
+    private final Iterator<Piece> goldCatIterator = PieceSet.getPieces(ColorPiece.GOLD, PieceType.CAT).iterator();
+    private final Iterator<Piece> silverDogIterator = PieceSet.getPieces(ColorPiece.SILVER, PieceType.DOG).iterator();
+    private final Iterator<Piece> goldDogIterator = PieceSet.getPieces(ColorPiece.GOLD, PieceType.DOG).iterator();
+    private final Iterator<Piece> silverHorseIterator = PieceSet.getPieces(ColorPiece.SILVER, PieceType.HORSE).iterator();
+    private final Iterator<Piece> goldHorseIterator = PieceSet.getPieces(ColorPiece.GOLD, PieceType.HORSE).iterator();
+    private final Iterator<Piece> silverCamelIterator = PieceSet.getPieces(ColorPiece.SILVER, PieceType.CAMEL).iterator();
+    private final Iterator<Piece> goldCamelIterator = PieceSet.getPieces(ColorPiece.GOLD, PieceType.CAMEL).iterator();
+    private final Iterator<Piece> silverElephantIterator = PieceSet.getPieces(ColorPiece.SILVER, PieceType.ELEPHANT).iterator();
+    private final Iterator<Piece> goldElephantIterator = PieceSet.getPieces(ColorPiece.GOLD, PieceType.ELEPHANT).iterator();
 
 
     /**
@@ -257,13 +257,16 @@ public class BoardModel {
         return currentLayoutSilver;
     }
 
+    /**
+     * Save starting layout of Pieces to variables currentLayoutSilver and currentLayoutGold.
+     */
     public void saveLayoutOfPieces() {
         if(game.getGameStatus() != GameStatus.SETUP_LAYOUT) {
             Game.logger.log(Level.WARNING,"Layout of Pieces can be save only in SETUP mode!");
             return;
         }
 
-        // TODO save current layout of pieces
+        // save current layout of pieces
         Game.logger.log(Level.INFO, "Save starting position of Pieces!");
         saveSilverLayout();
         saveGoldLayout();

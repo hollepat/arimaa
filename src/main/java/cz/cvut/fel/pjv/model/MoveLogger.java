@@ -2,7 +2,6 @@ package cz.cvut.fel.pjv.model;
 
 import cz.cvut.fel.pjv.controller.Game;
 
-import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.LinkedList;
@@ -11,7 +10,6 @@ import java.util.logging.Level;
 
 public class MoveLogger {
 
-    private Game game;
     private final Stack<Move> moveHistory;
     private final LinkedList<Turn> turnHistory;
 
@@ -19,8 +17,7 @@ public class MoveLogger {
     /**
      * Constructor.
      */
-    public MoveLogger(Game game) {
-        this.game = game;
+    public MoveLogger() {
         this.moveHistory = new Stack<>();
         this.turnHistory = new LinkedList<>();
     }
@@ -88,9 +85,9 @@ public class MoveLogger {
 
     /**
      * Write to file all Turns.
-     * @param file to write game history
+     * @param writer for file
      */
-    public void saveMovesToFile(File file, FileWriter writer) throws IOException {
+    public void saveMovesToFile(FileWriter writer) throws IOException {
         for (Turn t : turnHistory) {
             writer.write(t.getNotation() + "\n");
         }

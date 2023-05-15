@@ -229,16 +229,13 @@ public class MoveValidator {
         return alivePieces.isEmpty();
     }
 
-    private boolean isNextTo(char sx1, int sy1, char sx2, int sy2) {
-        int moveHorizontal = Math.abs(sx1 - sx2);
-        int moveVertical = Math.abs(sy1 - sy2);
-
-        if (moveHorizontal == 0 && moveVertical == 1) { return true; }
-        if (moveHorizontal == 1 && moveVertical == 0) { return true; }
-        return false;
-    }
 
 
+    /**
+     * Check if Piece that is weaker than Piece on spot is next.
+     * @param spot on which is Pieces to do check
+     * @return true if weaker Piece is around
+     */
     public Spot isWeakerAround(Spot spot) {
         try {
             if (isStronger(spot.getPiece(), boardModel.getSpot(spot.getX(), spot.getY()-1).getPiece())) {
@@ -383,14 +380,4 @@ public class MoveValidator {
     public char addX(char x, int d) {
         return (char)((int)x + d);
     }
-
-    /**
-     * Check if custom layout of Pieces is valid.
-     * @return boolean
-     */
-    public boolean checkValidLayout() {
-        // TODO implement
-        return true;
-    }
-
 }

@@ -5,8 +5,8 @@ public class Elephant extends Piece{
     private final String pathSilver = "/pieces/elephant-silver.png";
     private final String pathGold = "/pieces/elephant-gold.png";
 
-    private char silverCharName = 'e';
-    private char goldCharName = 'E';
+    private final char silverCharName = 'e';
+    private final char goldCharName = 'E';
 
     /**
      * Constructor for Piece

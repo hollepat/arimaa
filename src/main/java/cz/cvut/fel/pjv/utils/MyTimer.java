@@ -26,6 +26,12 @@ public class MyTimer implements Runnable {
     public static Logger logger = Logger.getLogger(MyTimer.class.getName());
     public static final Level level = Level.FINE;
 
+    /**
+     * Contructor for MyTimer.
+     * @param isLogging is boolean, true means print log messages
+     * @param timeLimit is limit for players
+     * @param game reference to instance of Game
+     */
     public MyTimer(Boolean isLogging, int timeLimit, Game game) {
         setUpLogger(isLogging);
         // set start time to 00:00:00
@@ -137,6 +143,10 @@ public class MyTimer implements Runnable {
         runningGold = false;
     }
 
+    /**
+     * Change game status in Game object.
+     * @param gameStatus is new status of Game
+     */
     private void updateGameStatusInGameControl(GameStatus gameStatus) {
         if (game != null) {
             synchronized (game) {

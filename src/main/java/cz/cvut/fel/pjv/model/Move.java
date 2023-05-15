@@ -19,6 +19,16 @@ public class Move {
     private Map<String, Piece> killedPieces;
     public boolean pushPromise = false;
 
+    /**
+     * Constructor for Move.
+     * @param piece being moved
+     * @param sx coordinates of piece being moved
+     * @param sy coordinates of piece being moved
+     * @param dx destination coordinates
+     * @param dy destination coordinates
+     * @param player player making this move
+     * @param moveNumInTurn is number of move in turn
+     */
     public Move(Piece piece, char sx, int sy, char dx, int dy, Player player, int moveNumInTurn) {
         this.piece = piece;
         this.sx = sx;
@@ -30,6 +40,15 @@ public class Move {
         killedPieces = new HashMap<>();
     }
 
+    /**
+     * Constructor for Move.
+     * @param piece being moved
+     * @param sx coordinates of piece being moved
+     * @param sy coordinates of piece being moved
+     * @param dx destination coordinates
+     * @param dy destination coordinates
+     * @param player player making this move
+     */
     public Move(Piece piece, char sx, int sy, char dx, int dy, Player player) {
         this.piece = piece;
         this.sx = sx;
@@ -39,6 +58,10 @@ public class Move {
         this.player = player;
     }
 
+    /**
+     * Get description of move in arimaa notation.
+     * @return arimaa notation of move
+     */
     public String getNotation() {
         try {
             return String.valueOf(piece.getNotationName()) + sx + sy + getDirection();

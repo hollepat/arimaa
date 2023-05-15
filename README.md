@@ -5,7 +5,7 @@ Game __arimaa__.
 
 ### Todo
 
-1. repair generating moves for npc
+1. fix log messages
 
 ### Rules
 

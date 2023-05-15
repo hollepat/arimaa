@@ -78,9 +78,7 @@ public class GameFrame extends JFrame {
             }
         });
         JButton undoButton = new JButton("Undo");
-        undoButton.addActionListener(actionEvent -> {
-            game.undoTurn();
-        });
+        undoButton.addActionListener(actionEvent -> game.undoTurn());
         JButton endTurn = new JButton("End Turn");
         endTurn.addActionListener(e -> {
 

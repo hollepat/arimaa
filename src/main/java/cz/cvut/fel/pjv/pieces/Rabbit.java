@@ -2,11 +2,11 @@ package cz.cvut.fel.pjv.pieces;
 
 public class Rabbit extends Piece{
 
-    private String pathSilver = "/pieces/rabbit-silver.png";
-    private String pathGold = "/pieces/rabbit-gold.png";
+    private final String pathSilver = "/pieces/rabbit-silver.png";
+    private final String pathGold = "/pieces/rabbit-gold.png";
 
-    private char silverCharName = 'r';
-    private char goldCharName = 'R';
+    private final char silverCharName = 'r';
+    private final char goldCharName = 'R';
 
     /**
      * Constructor for Piece

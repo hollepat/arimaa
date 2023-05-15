@@ -21,7 +21,7 @@ public class BoardPanel extends JPanel {
     private JLayeredPane boardLayeredPane;      // when we want to drag a Piece --> put Piece into boardLayerdPane --> move --> and put into boardPane again
     private JPanel boardPane;                   // panel that holds all static object
 
-    private JPanel[][] arimaaBoardPanels = new JPanel[8][8];
+    private final JPanel[][] arimaaBoardPanels = new JPanel[8][8];
     private final String[] COLS = new String[] {"a","b","c","d","e","f","g","h"};
     public final int SQUARE_DIMENSION = 60;
     private final int PANEL_DIMENSION = 600;
@@ -31,6 +31,10 @@ public class BoardPanel extends JPanel {
     private CharIntTuple switch1;
     private CharIntTuple switch2;
 
+    /**
+     * Constructor for BoardPanel.
+     * @param game is reference to Game object
+     */
     public BoardPanel(Game game) {
         super(new BorderLayout());
         this.game = game;
@@ -67,12 +71,6 @@ public class BoardPanel extends JPanel {
             return arimaaBoardPanels[y-1][x-'a'];
         }
     }
-
-    private void changePositionOfPieces() {
-        // TODO allow switching Pieces
-        // TODO on JButton check valid Layout and start normal game
-    }
-
 
     /**
      * Give JLabel as img of piece. JLabel represent actual Piece

@@ -9,8 +9,6 @@ import java.io.File;
 public class LaunchScreen extends JFrame {
 
     private JFileChooser fileChooser;
-    private JButton newGameButton;
-    private JButton loadGameButton;
 
     public LaunchScreen() {
         super("Arimaa");
@@ -26,7 +24,7 @@ public class LaunchScreen extends JFrame {
 
         JLabel gameName = new JLabel("Welcome to Arimaa!");
 
-        newGameButton = new JButton("New Game");
+        JButton newGameButton = new JButton("New Game");
         newGameButton.addActionListener(e -> {
             SetUpScreen setUpScreen = new SetUpScreen();
             setUpScreen.start();
@@ -34,7 +32,7 @@ public class LaunchScreen extends JFrame {
             dispose();
 
         });
-        loadGameButton = new JButton("Load Game");
+        JButton loadGameButton = new JButton("Load Game");
         fileChooser = new JFileChooser();
         // Set the default directory to open
         fileChooser.setCurrentDirectory(new File(System.getProperty("user.home")));

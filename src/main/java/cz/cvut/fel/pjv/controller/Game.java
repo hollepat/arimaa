@@ -35,8 +35,7 @@ public class Game {
     private MyTimer timers;
     private Thread timersThread;
     private GameFrame gameFrame;
-    private Boolean ownLayout;
-    private String nameOfFile = "recordArimaa.txt";
+    private final String nameOfFile = "recordArimaa.txt";
     private Boolean isLogging = true;
     public static Logger logger = Logger.getLogger(Game.class.getName());
     public static final Level level = Level.CONFIG;
@@ -52,7 +51,6 @@ public class Game {
         logger.log(Level.CONFIG, "log = " + log + ", timeLimit = " + timeLimit + "ownLayout = " + ownLayout);
 
         this.timeLimit = timeLimit;
-        this.ownLayout = ownLayout;
 
         setUpLogger();
         initPlayers();
@@ -80,7 +78,6 @@ public class Game {
                 ownLayout + ", NPCisGold = " + NPCisGold + ", NPCisSilver = " + NPCisSilver);
 
         this.timeLimit = timeLimit;
-        this.ownLayout = ownLayout;
         this.isLogging = log;
 
         setUpLogger();
@@ -125,7 +122,7 @@ public class Game {
         if (playerGold == null || playerSilver == null) { initPlayers(); }
 
         // set up move logger
-        moveLogger = new MoveLogger(this);
+        moveLogger = new MoveLogger();
 
         // set up model
         boardModel = new BoardModel(this, loadedGame.get(offset), loadedGame.get(offset+1));
@@ -185,7 +182,7 @@ public class Game {
 
     private void initModel() {
         boardModel = new BoardModel(this);
-        moveLogger = new MoveLogger(this);
+        moveLogger = new MoveLogger();
         moveValidator = new MoveValidator(boardModel, this);
         Game.logger.log(Level.INFO, boardModel.toString());
     }
@@ -407,10 +404,10 @@ public class Game {
         Random random = new Random();
         int numberOfMoves = random.nextInt(4) + 1;
         for (int i = 0; i < numberOfMoves; i++) {
-            // TODO choose Piece on board
+            // choose Piece on board
             Spot s = getRandomPiece(random);
             Game.logger.log(Level.FINE, s.toString() + " to be moved by NPC!");
-            // TODO push or pull move if can be apply
+            // push or pull move if could be applied
             Spot weaker = moveValidator.isWeakerAround(s);
             if (weaker != null && moveCnt < 2) {
                 Game.logger.log(Level.FINE, weaker + " to be moved by NPC!");
@@ -440,11 +437,11 @@ public class Game {
     private void executeRandomMove(Spot s) {
         Random rand = new Random();
         Game.logger.log(Level.FINE, "Execute random move for " + s.toString());
-        // TODO generate possible moves
+        // generate possible moves
         List<Move> validMoves = moveValidator.generateValidMoves(s, currentPlayer);
         try {
             Move m = validMoves.get(rand.nextInt(validMoves.size()));
-            // TODO execute randomlyGenerated move
+            // execute randomlyGenerated move
             moveRequest(m.getSx(), m.getSy(), m.getDx(), m.getDy());
         } catch (IndexOutOfBoundsException | IllegalArgumentException e) {
             Game.logger.log(Level.WARNING, s.getPiece().toString() + " has no Moves!");
@@ -535,6 +532,9 @@ public class Game {
         Game.logger.log(Level.INFO, boardModel.toString());
     }
 
+    /**
+     * Open window with message saying, who is winner.
+     */
     public void showWinnerDialog() {
         String s;
         switch (gameStatus) {
@@ -645,7 +645,7 @@ public class Game {
             writeToFileConfigData(writer);
             writer.write(boardModel.getCurrentLayoutGold() + "\n");
             writer.write(boardModel.getCurrentLayoutSilver() + "\n");
-            moveLogger.saveMovesToFile(file, writer);
+            moveLogger.saveMovesToFile(writer);
             writer.close();
             // show msg
             JOptionPane.showMessageDialog(null, "Game was saved!");

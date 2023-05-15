@@ -21,6 +21,9 @@ public class SetUpScreen extends JFrame {
 
     private JFrame launchFrame;
 
+    /**
+     * Constructor for SetUpScreen.
+     */
     public SetUpScreen() {
 
         setContentPane(contentPane);
@@ -63,14 +66,7 @@ public class SetUpScreen extends JFrame {
 
     private void setListeners() {
 
-        setTimeLimit.addActionListener(e -> {
-            if (setTimeLimit.isSelected()) {
-                spinnerTimer.setEnabled(true);
-            } else {
-                spinnerTimer.setEnabled(false);
-            }
-
-        });
+        setTimeLimit.addActionListener(e -> spinnerTimer.setEnabled(setTimeLimit.isSelected()));
         spinnerTimer.addChangeListener(e -> {
             try {
                 spinnerTimer.commitEdit();
@@ -79,23 +75,17 @@ public class SetUpScreen extends JFrame {
             }
         });
 
-        playerVsPCRadioButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (playerVsPCRadioButton.isSelected()) {
-                    NPCIsGOLDRadioButton.setEnabled(true);
-                    NPCIsSILVERRadioButton.setEnabled(true);
-                }
+        playerVsPCRadioButton.addActionListener(e -> {
+            if (playerVsPCRadioButton.isSelected()) {
+                NPCIsGOLDRadioButton.setEnabled(true);
+                NPCIsSILVERRadioButton.setEnabled(true);
             }
         });
 
-        playerVsPlayerRadioButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (playerVsPlayerRadioButton.isSelected()) {
-                    NPCIsGOLDRadioButton.setEnabled(false);
-                    NPCIsSILVERRadioButton.setEnabled(false);
-                }
+        playerVsPlayerRadioButton.addActionListener(e -> {
+            if (playerVsPlayerRadioButton.isSelected()) {
+                NPCIsGOLDRadioButton.setEnabled(false);
+                NPCIsSILVERRadioButton.setEnabled(false);
             }
         });
 
