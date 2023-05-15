@@ -132,7 +132,7 @@ public class MyTimer implements Runnable {
     /**
      * Finish Timer.
      */
-    public void stop() {
+    synchronized public void stop() {
         runningGold = false;
         runningSilver = false;
     }
@@ -199,15 +199,23 @@ public class MyTimer implements Runnable {
         return currentTimeSilver;
     }
 
+    /**
+     * Get current Time of Golf Player.
+     * @return always in format "HH:mm:ss"
+     */
     public String getCurrentTimeGoldString() {
         return currentTimeGold.format(DateTimeFormatter.ofPattern("HH:mm:ss"));
     }
 
-    public String getCurrentTimeSilverString() {
+    /**
+     * Get current Time of Silver Player.
+     * @return always in format "HH:mm:ss"
+     */
+    synchronized public String getCurrentTimeSilverString() {
         return currentTimeSilver.format(DateTimeFormatter.ofPattern("HH:mm:ss"));
     }
 
-    public void setCurrentTimeGold(LocalTime currentTimeGold) {
+    synchronized public void setCurrentTimeGold(LocalTime currentTimeGold) {
         this.currentTimeGold = currentTimeGold;
         logger.log(Level.INFO, "Gold's time set to " + currentTimeGold.format(DateTimeFormatter.ofPattern("HH:mm:ss")));
     }

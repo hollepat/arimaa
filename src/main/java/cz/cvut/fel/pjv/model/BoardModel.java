@@ -109,13 +109,14 @@ public class BoardModel {
         destinationSpot.setPiece(null);
 
         // bring back killed pieces
-        for (Map.Entry<String, Piece> entry : move.getKilledPieces().entrySet()) {
-            if (entry.getValue() != move.getPiece()) {
-                Spot square = getSpot(entry.getKey().charAt(0), Integer.parseInt(String.valueOf(entry.getKey().charAt(1))));
-                square.setPiece(entry.getValue());
+        if (move.getKilledPieces() != null) {
+            for (Map.Entry<String, Piece> entry : move.getKilledPieces().entrySet()) {
+                if (entry.getValue() != move.getPiece()) {
+                    Spot square = getSpot(entry.getKey().charAt(0), Integer.parseInt(String.valueOf(entry.getKey().charAt(1))));
+                    square.setPiece(entry.getValue());
+                }
             }
         }
-
     }
 
     /**

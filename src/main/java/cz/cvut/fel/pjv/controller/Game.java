@@ -36,7 +36,7 @@ public class Game {
     private Thread timersThread;
     private GameFrame gameFrame;
     private final String nameOfFile = "recordArimaa.txt";
-    private Boolean isLogging = true;
+    private Boolean isLogging = false;
     public static Logger logger = Logger.getLogger(Game.class.getName());
     public static final Level level = Level.CONFIG;
 
@@ -48,9 +48,9 @@ public class Game {
      * @param ownLayout boolean to indicated if Players want their own layout or preset
      */
     public Game(Boolean log, int timeLimit, Boolean ownLayout) {
-        logger.log(Level.CONFIG, "log = " + log + ", timeLimit = " + timeLimit + "ownLayout = " + ownLayout);
 
         this.timeLimit = timeLimit;
+        this.isLogging = log;
 
         setUpLogger();
         initPlayers();
@@ -58,6 +58,7 @@ public class Game {
         initModel();
         initGUI();
 
+        logger.log(Level.CONFIG, "log = " + log + ", timeLimit = " + timeLimit + "ownLayout = " + ownLayout);
 
         if (ownLayout) {
             // set SETUP mode
@@ -74,8 +75,6 @@ public class Game {
      * @param ownLayout boolean to indicated if Players want their own layout or preset
      */
     public Game(Boolean log, int timeLimit, Boolean ownLayout, Boolean NPCisGold, Boolean NPCisSilver) {
-        logger.log(Level.CONFIG, "log = " + log + ", timeLimit = " + timeLimit + ", ownLayout = " +
-                ownLayout + ", NPCisGold = " + NPCisGold + ", NPCisSilver = " + NPCisSilver);
 
         this.timeLimit = timeLimit;
         this.isLogging = log;
@@ -85,6 +84,9 @@ public class Game {
         initTimer(timeLimit);
         initModel();
         initGUI();
+
+        logger.log(Level.CONFIG, "log = " + log + ", timeLimit = " + timeLimit + ", ownLayout = " +
+                ownLayout + ", NPCisGold = " + NPCisGold + ", NPCisSilver = " + NPCisSilver);
 
         // set own layout
         if (ownLayout) {

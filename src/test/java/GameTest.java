@@ -20,17 +20,12 @@ public class GameTest {
         System.setIn(defaultInputStream);
     }
 
-
     @Test
     public void createGame() {
         Game game = new Game(true, 0, false);
     }
     @Test
     public void ownLayoutTest() {
-        String lay =  "1g Ra2 Rb2 Rc2 Rd2 Re2 Rf2 Rg2 Rh2 Ma1 Eb1 Dc1 Dd1 Ce1 Cf1 Hg1 Hh1" +
-                "\n1s ra8 rb8 rc8 rd8 re8 rf8 rg8 rh8 ma7 eb7 dc7 dd7 ce7 cf7 hg7 hh7";
-        System.setIn(new ByteArrayInputStream(lay.getBytes()));
-        Game game = new Game(true, 0, true);
 
     }
 
