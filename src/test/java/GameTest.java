@@ -1,47 +1,32 @@
 import cz.cvut.fel.pjv.controller.Game;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
+import cz.cvut.fel.pjv.controller.GameStatus;
 import org.junit.jupiter.api.Test;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 
 public class GameTest {
-
-    private InputStream defaultInputStream;
-
-    @BeforeEach
-    public void setUp() {
-        defaultInputStream = System.in;
-    }
-
-    @AfterEach
-    public void tearDown() {
-        System.setIn(defaultInputStream);
-    }
 
     @Test
     public void createGame() {
         Game game = new Game(true, 0, false);
     }
-    @Test
-    public void ownLayoutTest() {
-
-    }
 
     @Test
-    public void moveWrongPlayerTest() {
+    public void moveFailTooManyMovesTest() {
         Game game = new Game(true, 0, false);
         game.moveRequest('d', 2, 'd', 3);
         game.moveRequest('d', 3, 'd', 4);
         game.moveRequest('d', 4, 'd', 5);
         game.moveRequest('d', 5, 'e', 5);
         game.moveRequest('a', 2, 'a', 3); // fail
+
+        assert game.getBoardModel().getSpot('a', 3).getPiece() == null;
     }
 
     @Test
     public void moveTurnTest() {
         Game game = new Game(true, 0, false);
+        // ACTIVATE GAME
+        game.setGameStatus(GameStatus.ACTIVE);
         // GOLD
         game.moveRequest('d', 2, 'd', 3);
         game.moveRequest('d', 3, 'd', 4);
@@ -72,6 +57,8 @@ public class GameTest {
     @Test
     public void undoTurnTest() {
         Game game = new Game(true, 0, false);
+        // ACTIVATE GAME
+        game.setGameStatus(GameStatus.ACTIVE);
         // GOLD
         game.moveRequest('d', 2, 'd', 3);
         game.moveRequest('d', 3, 'd', 4);
@@ -89,7 +76,7 @@ public class GameTest {
     }
 
     @Test
-    public void trapTest() {
+    public void trapSpotTest() {
         Game game = new Game(true, 0, false);
         game.moveRequest('c', 2, 'c', 3);
         assert game.getBoardModel().getSpot('c', 3).getPiece() == null;
