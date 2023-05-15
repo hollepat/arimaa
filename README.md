@@ -2,11 +2,6 @@
 
 Game __arimaa__.
 
-
-### Todo
-
-1. fix log messages
-
 ### Rules
 
 Pravidla:
