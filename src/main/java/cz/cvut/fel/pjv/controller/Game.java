@@ -36,9 +36,10 @@ public class Game {
     private Thread timersThread;
     private GameFrame gameFrame;
     private Boolean ownLayout;
+    private String nameOfFile = "recordArimaa.txt";
     private Boolean isLogging = true;
     public static Logger logger = Logger.getLogger(Game.class.getName());
-    public static final Level level = Level.FINER;
+    public static final Level level = Level.CONFIG;
 
     /**
      * Constructor for new Game.
@@ -62,7 +63,7 @@ public class Game {
 
         if (ownLayout) {
             // set SETUP mode
-            gameStatus = GameStatus.SETUP;
+            gameStatus = GameStatus.SETUP_LAYOUT;
         }
     }
 
@@ -91,7 +92,7 @@ public class Game {
         // set own layout
         if (ownLayout) {
             // set SETUP mode
-            gameStatus = GameStatus.SETUP;
+            gameStatus = GameStatus.SETUP_LAYOUT;
         }
     }
 
@@ -139,12 +140,11 @@ public class Game {
 
         try {
             // recreate game
-            setGameStatus(GameStatus.ACTIVE);
+            setGameStatus(GameStatus.SETUP_HISTORY);
             for (int i = offset + 2; i < loadedGame.size(); i++) {
+                Game.logger.log(Level.INFO, loadedGame.get(i));
                 parseTurn(loadedGame.get(i).split(" "));
             }
-            // set current player to be the next one
-            switchCurrentPlayer();
             // set IDLE state --> wait for play button
             setIdleState();
         } catch (Exception e) {
@@ -247,7 +247,7 @@ public class Game {
         }
     }
 
-    private boolean isGameStatusActive() {
+    private void isEndState() {
         // if game is in end state because of special rules
         switch (gameStatus) {
             case GOLD_WIN, SILVER_WIN -> {
@@ -255,8 +255,6 @@ public class Game {
                 showWinnerDialog();
             }
         }
-
-        return gameStatus == GameStatus.ACTIVE;
     }
 
     /**
@@ -272,7 +270,7 @@ public class Game {
         Game.logger.log(Level.INFO, "Requesting Controller to switch Pieces!");
 
         // game is in setup mode
-        if (gameStatus != GameStatus.SETUP) {
+        if (gameStatus != GameStatus.SETUP_LAYOUT) {
             Game.logger.log(Level.WARNING, "Cannot switch Pieces Game is not in SETUP mode!");
             return;
         }
@@ -319,16 +317,20 @@ public class Game {
      */
     public void moveRequest(char sx, int sy, char dx, int dy) {
 
-       if (!isGameStatusActive()) {
-           return;
-       }
+        // check if game is in one of END STATES
+        isEndState();
+
+        // game has to be in ACTIVE or SETUP_HISTORY mode
+        if (gameStatus != GameStatus.ACTIVE && gameStatus != GameStatus.SETUP_HISTORY) {
+            return;
+        }
 
         // create new Move
         Move move = new Move(boardModel.getSpot(sx, sy).getPiece(), sx, sy, dx, dy, currentPlayer, moveCnt);
         Game.logger.log(Level.CONFIG, "Request to move from " + sx + " " + sy + " to " + dx + " " + dy);
 
         // generate all possible Moves for Piece requested to move
-        List<Move> validMoves = moveValidator.generateValidMoves(boardModel.getSpot(sx, sy).getPiece(), boardModel.getSpot(sx, sy), currentPlayer);
+        List<Move> validMoves = moveValidator.generateValidMoves(boardModel.getSpot(sx, sy), currentPlayer);
 
         // check if Move is in valid Moves
         validMoves = validMoves.stream().filter(move1 -> move.getDy() == move1.getDy() && move.getDx() == move1.getDx()).collect(Collectors.toList());
@@ -372,6 +374,8 @@ public class Game {
      * @param move in Turn
      */
     private void updateTurn(Move move) {
+
+        // create first turn
         if (currentTurn == null) {
             currentPlayer.increaseTurn();
             currentTurn = new Turn(currentPlayer);
@@ -388,38 +392,46 @@ public class Game {
 
 
     /**
-     * Generate moves for PC player. Then switch current Player.
+     * Generate moves for PC player. Then switch current Player. Only in ACTIVE mode.
      */
     public void moveRequestPC() {
 
-        if (!isGameStatusActive()) {
+        isEndState();
+
+        if (gameStatus != GameStatus.ACTIVE) {
             return;
         }
 
+        // random move by NPC
         Game.logger.log(Level.INFO, "NPC is making Turn!");
         Random random = new Random();
-        while (moveCnt == 0) {
-            int numberOfMoves = random.nextInt(4) + 1;
-            for (int i = 0; i < numberOfMoves; i++) {
-                // TODO choose Piece on board
-                Spot s = getRandomPiece();
-                Game.logger.log(Level.FINE, s.toString() + " to be moved by NPC!");
-                // TODO push or pull move if can be apply
-                Spot weaker = moveValidator.isWeakerAround(s);
-                if (weaker != null && moveCnt < 2) {
-                    Game.logger.log(Level.FINE, weaker + " to be moved by NPC!");
-                    int pushOrPull = random.nextInt(2);
-                    switch (pushOrPull) {
-                        case 0 -> doPushPC(weaker, s);
-                        case 1 -> doPullPC(weaker, s);
-                    }
-                } else {
-                    executeRandomMove(s);
+        int numberOfMoves = random.nextInt(4) + 1;
+        for (int i = 0; i < numberOfMoves; i++) {
+            // TODO choose Piece on board
+            Spot s = getRandomPiece(random);
+            Game.logger.log(Level.FINE, s.toString() + " to be moved by NPC!");
+            // TODO push or pull move if can be apply
+            Spot weaker = moveValidator.isWeakerAround(s);
+            if (weaker != null && moveCnt < 2) {
+                Game.logger.log(Level.FINE, weaker + " to be moved by NPC!");
+                int pushOrPull = random.nextInt(2);
+                switch (pushOrPull) {
+                    case 0 -> doPushPC(weaker, s);
+                    case 1 -> doPullPC(weaker, s);
                 }
+            } else {
+                executeRandomMove(s);
             }
         }
 
-        if (currentPlayer == npcPlayer) {
+        // in case no valid moves been made find some single move to be made
+        while (moveCnt == 0) {
+            Spot s = getRandomPiece(random);
+            executeRandomMove(s);
+        }
+
+        // in case turn was not switched
+        if (currentPlayer == npcPlayer && moveCnt <= MAX_MOVES) {
             nextTurn();
         }
 
@@ -429,7 +441,7 @@ public class Game {
         Random rand = new Random();
         Game.logger.log(Level.FINE, "Execute random move for " + s.toString());
         // TODO generate possible moves
-        List<Move> validMoves = moveValidator.generateValidMoves(s.getPiece(), s, currentPlayer);
+        List<Move> validMoves = moveValidator.generateValidMoves(s, currentPlayer);
         try {
             Move m = validMoves.get(rand.nextInt(validMoves.size()));
             // TODO execute randomlyGenerated move
@@ -449,9 +461,8 @@ public class Game {
         moveRequest(weaker.getX(), weaker.getY(), s.getX(), s.getY());
     }
 
-    private Spot getRandomPiece() {
+    private Spot getRandomPiece(Random random) {
         List<Spot> list = boardModel.getPieces(npcPlayer.getColor());
-        Random random = new Random();
         return list.get(random.nextInt(list.size()));
 
     }
@@ -534,7 +545,11 @@ public class Game {
         JOptionPane.showMessageDialog(null, s);
     }
 
+    /**
+     * Save current Turn. Create new turn for opponent player. If gameStatus is ACTIVE than play NPC turn.
+     */
     private void nextTurn() {
+
         // old Turn
         moveLogger.saveTurn(currentTurn);
         Game.logger.log(Level.INFO, currentTurn.getNotation());
@@ -546,10 +561,11 @@ public class Game {
         moveCnt = ZERO_MOVES;
 
         // NPC will make its turn
-        if (npcPlayer != null && currentPlayer == npcPlayer) {
+        if (npcPlayer != null && currentPlayer == npcPlayer && gameStatus == GameStatus.ACTIVE) {
             moveRequestPC();
         }
     }
+
 
     /**
      * End current turn change players!
@@ -615,7 +631,7 @@ public class Game {
     public void saveToFile() throws IOException {
         Game.logger.log(Level.INFO, "Saving current Game!");
         String fileSeparator = System.getProperty("file.separator");
-        String fileName = "saved_games" + fileSeparator + "recordArimaa.txt";
+        String fileName = "saved_games" + fileSeparator + nameOfFile;
         try {
             // create File
             File file = new File(fileName); // create a new File object with the desired filename
@@ -681,6 +697,10 @@ public class Game {
         }
     }
 
+    /**
+     * Take array of moves in one Turn
+     * @param s is array of Moves, e.g. 7s rb8w rf8s ma5e rg8w
+     */
     private void parseTurn(String[] s) {
         char offset = '0';
         for (int i = 1; i < s.length; i++) {
@@ -688,6 +708,12 @@ public class Game {
                     getDxFromDirection(s[i].charAt(1), s[i].charAt(3)),
                     getDyFromDirection(s[i].charAt(2)-offset, s[i].charAt(3)));
         }
+
+        // change turn
+        if (s.length < 5) {
+            nextTurn();
+        }
+
     }
 
     private int getDyFromDirection(int y, char dir) {

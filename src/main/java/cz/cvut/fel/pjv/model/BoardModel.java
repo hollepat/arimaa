@@ -258,7 +258,7 @@ public class BoardModel {
     }
 
     public void saveLayoutOfPieces() {
-        if(game.getGameStatus() != GameStatus.SETUP) {
+        if(game.getGameStatus() != GameStatus.SETUP_LAYOUT) {
             Game.logger.log(Level.WARNING,"Layout of Pieces can be save only in SETUP mode!");
             return;
         }

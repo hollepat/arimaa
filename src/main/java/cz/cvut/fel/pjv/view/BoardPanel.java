@@ -204,7 +204,7 @@ public class BoardPanel extends JPanel {
      */
     public void submitSwitchRequest(char x, int y) {
 
-        if (game.getGameStatus() != GameStatus.SETUP) {
+        if (game.getGameStatus() != GameStatus.SETUP_LAYOUT) {
             Game.logger.log(Level.WARNING, "To change position of Pieces set Game to SETUP mode!");
             return;
         }

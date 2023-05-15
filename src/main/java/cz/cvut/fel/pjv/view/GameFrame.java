@@ -97,12 +97,12 @@ public class GameFrame extends JFrame {
         play.addActionListener(e -> {
 
             // save current setup of Pieces
-            if (game.getGameStatus() == GameStatus.SETUP) {
+            if (game.getGameStatus() == GameStatus.SETUP_LAYOUT) {
                 game.getBoardModel().saveLayoutOfPieces();
             }
 
             // start timer
-            if (game.getGameStatus() == GameStatus.IDLE || game.getGameStatus() == GameStatus.SETUP) {
+            if (game.getGameStatus() == GameStatus.IDLE || game.getGameStatus() == GameStatus.SETUP_LAYOUT) {
                 game.getTimers().playGold();
             }
 

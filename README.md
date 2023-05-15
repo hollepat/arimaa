@@ -6,7 +6,6 @@ Game __arimaa__.
 ### Todo
 
 1. repair generating moves for npc
-2. do changing of layout in gui
 
 ### Rules
 

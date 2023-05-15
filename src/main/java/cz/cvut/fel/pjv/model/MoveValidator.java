@@ -34,32 +34,31 @@ public class MoveValidator {
 
     /**
      * Generate all valid moves for pctbm by current player
-     * @param pctbm pieceToBeMoved
      * @param player player moving piece
      * @return List of valid moves for Piece
      */
-    public List<Move> generateValidMoves(Piece pctbm, Spot spot, Player player) {
+    public List<Move> generateValidMoves(Spot spot, Player player) {
         Game.logger.log(Level.INFO, "Generating moves for piece on " + spot.getX() + " " + spot.getY());
 
         List<Move> moves = new ArrayList<>();
         if (spot.getX() != 'h') {
-            Move moveUp = new Move(pctbm, spot.getX(), spot.getY(), addX(spot.getX(), 1), spot.getY(), player);
+            Move moveUp = new Move(spot.getPiece(), spot.getX(), spot.getY(), addX(spot.getX(), 1), spot.getY(), player);
             moves.add(moveUp);
         }
         if (spot.getX() != 'a') {
-            Move moveDown = new Move(pctbm, spot.getX(), spot.getY(), addX(spot.getX(), -1), spot.getY(), player);
+            Move moveDown = new Move(spot.getPiece(), spot.getX(), spot.getY(), addX(spot.getX(), -1), spot.getY(), player);
             moves.add(moveDown);
         }
         if (spot.getY() < 8) {
-            Move moveLeft = new Move(pctbm, spot.getX(), spot.getY(), spot.getX(), spot.getY() + 1, player);
+            Move moveLeft = new Move(spot.getPiece(), spot.getX(), spot.getY(), spot.getX(), spot.getY() + 1, player);
             moves.add(moveLeft);
         }
         if (spot.getY() > 1) {
-            Move moveRight = new Move(pctbm, spot.getX(), spot.getY(), spot.getX(), spot.getY() - 1, player);
+            Move moveRight = new Move(spot.getPiece(), spot.getX(), spot.getY(), spot.getX(), spot.getY() - 1, player);
             moves.add(moveRight);
         }
         Game.logger.log(Level.CONFIG, "Filtering valid moves: " + moves);
-        List<Move> validMoves = moves.stream().filter(this::isValid).collect(Collectors.toList());
+        List<Move> validMoves = moves.stream().filter(move -> isValid(move, player)).collect(Collectors.toList());
         Game.logger.log(Level.CONFIG,"Valid moves: " + validMoves);
         return validMoves;
     }
@@ -69,7 +68,7 @@ public class MoveValidator {
      * @param move which has been just played
      * @return true == valid
      */
-    public boolean isValid(Move move) {
+    public boolean isValid(Move move, Player currentPlayer) {
 
         if (move.getPiece() == null) {
             Game.logger.log(Level.WARNING, "No piece found on " + move.getSx() + " " + move.getSy() +" !");
@@ -91,7 +90,7 @@ public class MoveValidator {
         }
 
         // check if move is push or drag
-        if (move.getPiece().getColor() != game.getCurrentPlayer().getColor()) {
+        if (move.getPiece().getColor() != currentPlayer.getColor()) {
             if (!isDraggedByPiece(move)) {
                 return isPushedByPiece(move);
             }
@@ -180,17 +179,49 @@ public class MoveValidator {
 
         if (hasDeadPieces(GOLD)) {
             game.setGameStatus(GameStatus.SILVER_WIN);
-            Game.logger.log(Level.INFO, "All " + SILVER + " pieces are dead!");
+            Game.logger.log(Level.INFO, "All " + GOLD + " pieces are dead!");
             return true;
         }
         if (hasDeadPieces(SILVER)) {
             game.setGameStatus(GameStatus.GOLD_WIN);
-            Game.logger.log(Level.INFO, "All " + GOLD + " pieces are dead!");
+            Game.logger.log(Level.INFO, "All " + SILVER + " pieces are dead!");
             return true;
         }
 
+        if (!hasMoves(GOLD)) {
+            game.setGameStatus(GameStatus.SILVER_WIN);
+            Game.logger.log(Level.INFO, "No moves for " + GOLD + "!");
+            return true;
+        }
+
+        if (!hasMoves(SILVER)) {
+            game.setGameStatus(GameStatus.GOLD_WIN);
+            Game.logger.log(Level.INFO, "No moves for " + SILVER + "!");
+            return true;
+        }
+
+
         return false;
     }
+
+    private boolean hasMoves(ColorPiece colorPiece) {
+        Player p = null;
+        switch (colorPiece) {
+            case GOLD -> p = game.getPlayerGold();
+            case SILVER -> p = game.getPlayerSilver();
+        }
+
+        List<Spot> spots = boardModel.getPieces(colorPiece);
+        List<Move> moves = new ArrayList<>();
+        for (Spot s : spots) {
+            List<Move> moveList = generateValidMoves(s, p);
+            moves.addAll(moveList);
+        }
+
+        return !moves.isEmpty();
+
+    }
+
 
     private boolean hasDeadPieces(ColorPiece colorPiece) {
         List<Piece> alivePieces = PieceSet.getPieces(colorPiece).stream()
