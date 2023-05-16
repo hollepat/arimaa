@@ -419,14 +419,17 @@ public class Game {
                     case 1 -> doPullPC(weaker, s);
                 }
             } else {
-                executeRandomMove(s);
+                List<Move> randomMoves = moveValidator.generatePossibleMoves(currentPlayer.getColor());
+                Move m = randomMoves.get(random.nextInt(randomMoves.size()-1));
+                moveRequest(m.getSx(), m.getSy(), m.getDx(), m.getDy());
             }
         }
 
         // in case no valid moves been made find some single move to be made
         while (moveCnt == 0) {
-            Spot s = getRandomPiece(random);
-            executeRandomMove(s);
+            List<Move> randomMoves = moveValidator.generatePossibleMoves(currentPlayer.getColor());
+            Move m = randomMoves.get(random.nextInt(randomMoves.size()-1));
+            moveRequest(m.getSx(), m.getSy(), m.getDx(), m.getDy());
         }
 
         // in case turn was not switched
@@ -804,5 +807,9 @@ public class Game {
 
     public GameFrame getGameFrame() {
         return gameFrame;
+    }
+
+    public MoveValidator getMoveValidator() {
+        return moveValidator;
     }
 }

@@ -205,6 +205,17 @@ public class MoveValidator {
     }
 
     private boolean hasMoves(ColorPiece colorPiece) {
+        List<Move> moves = generatePossibleMoves(colorPiece);
+        return !moves.isEmpty();
+
+    }
+
+    /**
+     * Generate all possible moves for player of certain color.
+     * @param colorPiece is color of player
+     * @return List of all possible valid moves
+     */
+    public List<Move> generatePossibleMoves(ColorPiece colorPiece) {
         Player p = null;
         switch (colorPiece) {
             case GOLD -> p = game.getPlayerGold();
@@ -218,8 +229,7 @@ public class MoveValidator {
             moves.addAll(moveList);
         }
 
-        return !moves.isEmpty();
-
+        return moves;
     }
 
 

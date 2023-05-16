@@ -1,6 +1,11 @@
 import cz.cvut.fel.pjv.controller.Game;
 import cz.cvut.fel.pjv.controller.GameStatus;
+import cz.cvut.fel.pjv.model.Move;
+import cz.cvut.fel.pjv.pieces.ColorPiece;
 import org.junit.jupiter.api.Test;
+
+import java.util.List;
+import java.util.Random;
 
 
 public class GameTest {
@@ -82,4 +87,25 @@ public class GameTest {
         assert game.getBoardModel().getSpot('c', 3).getPiece() == null;
     }
 
+    @Test
+    public void generateMovesNPCTest() {
+        Game game = new Game(true, 0, false);
+        List<Move> moves = game.getMoveValidator().generatePossibleMoves(ColorPiece.GOLD);
+        System.out.println(moves);
+        assert !moves.isEmpty();
+    }
+
+    @Test
+    public void npcPlayingTest() {
+        Game game = new Game(true, 0, false, false,  true);
+        Random random = new Random();
+        for(int i = 0; i<1000; i++) {
+            // player make one move
+            List<Move> randomMoves = game.getMoveValidator().generatePossibleMoves(game.getCurrentPlayer().getColor());
+            Move m = randomMoves.get(random.nextInt(randomMoves.size()-1));
+            game.moveRequest(m.getSx(), m.getSy(), m.getDx(), m.getDy());
+            // npc player make some moves
+            game.moveRequestPC();
+        }
+    }
 }
