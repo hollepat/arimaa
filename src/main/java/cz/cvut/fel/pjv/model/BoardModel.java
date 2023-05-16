@@ -270,7 +270,9 @@ public class BoardModel {
         // save current layout of pieces
         Game.logger.log(Level.INFO, "Save starting position of Pieces!");
         saveSilverLayout();
+        Game.logger.log(Level.INFO, "Silver layout saved: " + currentLayoutSilver);
         saveGoldLayout();
+        Game.logger.log(Level.INFO, "Gold layout saved: " + currentLayoutGold);
 
 
     }
@@ -288,7 +290,9 @@ public class BoardModel {
                 s.append(" ");
             }
         }
-        s.deleteCharAt(s.length());
+        // delete last whitespace
+        s.deleteCharAt(s.length()-1);
+        // save layout
         currentLayoutSilver = s.toString();
     }
 
@@ -305,7 +309,9 @@ public class BoardModel {
                 s.append(" ");
             }
         }
-        s.deleteCharAt(s.length());
+        // delete last whitespace
+        s.deleteCharAt(s.length()-1);
+        // save layout
         currentLayoutGold = s.toString();
     }
 
