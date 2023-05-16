@@ -48,7 +48,7 @@ public class BoardPanel extends JPanel {
     private void initBoardPanel() {
         boardPane = new JPanel(new GridLayout(10, 10));
         boardPane.setBounds(0, 0, PANEL_DIMENSION, PANEL_DIMENSION);
-        boardPane.setBorder(new LineBorder(Color.BLACK));
+        boardPane.setBorder(BorderFactory.createTitledBorder("Board"));
 
         // layer for drag action
         boardLayeredPane = new JLayeredPane();
