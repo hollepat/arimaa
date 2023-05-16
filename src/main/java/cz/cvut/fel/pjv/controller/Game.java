@@ -35,7 +35,6 @@ public class Game {
     private MyTimer timers;
     private Thread timersThread;
     private GameFrame gameFrame;
-    private final String nameOfFile = "recordArimaa.txt";
     private Boolean isLogging = false;
     public static Logger logger = Logger.getLogger(Game.class.getName());
     public static final Level level = Level.CONFIG;
@@ -58,7 +57,7 @@ public class Game {
         initModel();
         initGUI();
 
-        logger.log(Level.CONFIG, "log = " + log + ", timeLimit = " + timeLimit + "ownLayout = " + ownLayout);
+        logger.log(Level.CONFIG, "log = " + log + ", timeLimit = " + timeLimit + ", ownLayout = " + ownLayout);
 
         if (ownLayout) {
             // set SETUP mode
@@ -632,14 +631,20 @@ public class Game {
 
     /**
      * Save history of moves into file.
+     * @param fileName name of file to save game
      */
-    public void saveToFile() throws IOException {
-        Game.logger.log(Level.INFO, "Saving current Game!");
+    public void saveToFile(String fileName) throws IOException {
+        // if no file name typed --> choose default name
+        String defaultFileName = "recordArimaa.txt";
+        fileName = Objects.equals(fileName, "") ? defaultFileName : fileName + ".txt";
+        Game.logger.log(Level.INFO, "Saving current Game to " + fileName + "!");
+        // get path separator for OS
         String fileSeparator = System.getProperty("file.separator");
-        String fileName = "saved_games" + fileSeparator + nameOfFile;
+        // crate relative file path
+        String filePath = "saved_games" + fileSeparator + fileName;
         try {
             // create File
-            File file = new File(fileName); // create a new File object with the desired filename
+            File file = new File(filePath); // create a new File object with the desired filename
             if (file.createNewFile()) { // create a new file with the specified name
                 Game.logger.log(Level.FINE, "File created: " + file.getName()); // print the filename of the newly created file
             } else {

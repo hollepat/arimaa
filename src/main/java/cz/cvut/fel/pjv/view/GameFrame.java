@@ -72,9 +72,10 @@ public class GameFrame extends JFrame {
         JButton save = new JButton("Save");
         save.addActionListener(e -> {
             try {
-                game.saveToFile();
+                String input = JOptionPane.showInputDialog("Entre file name:");
+                game.saveToFile(input);
             } catch (IOException ex) {
-                ex.printStackTrace();
+                Game.logger.log(Level.WARNING,"Couldn't process saving of Game!");
             }
         });
         JButton undoButton = new JButton("Undo");
