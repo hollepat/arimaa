@@ -1,20 +1,23 @@
-# Arimaa
+# Description
 
-Game __arimaa__.
+This project implements a game called Arimaa (https://en.wikipedia.org/wiki/Arimaa). The game is a chess variant that is
+designed to be difficult for computers to play well. The game is played on an 8x8 board with 6 types of pieces: elephant,
+camel, horse, dog, cat, and rabbit. The goal of the game is to get the rabbit to the other side of the board. The game
+is played in turns, with each player making 1-4 moves per turn. The game is won by either getting the rabbit to the
+other side of the board or by blocking the opponent from making a move.
 
-### Rules
+## Pieces Constellation
 
-Pravidla:
-- [x] Hrací deska 8x8
-- [x] 6 typu figurek - elephant 1x, camel 1x, horse 2x, dog 2x, cat 2x, rabbit 8x
-- [x] figurky se pohybují forward, backwards, right, left až na rabbit ten nesmí backwards
-- [x] Je možné použít 1 až 4 tahy za kolo (mohu pohnout více figurkami -> celkem 4 posuny), alespoň jeden krok
-- [x] Silnější figurky mohou tlačit figurky protivníka (počítá se jako jeden tah) a jít na jejich políčko
-- [x] Silnější figurky mohou táhnout figurky protivníka (počítá se jako jeden tah) na políčko, kde byli
-- [x] Mizení figurek na polích “past” - ty jsou 4, figurka na něm zmizí pokud se na něm nachází a nemá kolem sebe
-  přátelskou figurku
-- [x] Zmražení figurky (v závislosti na síle figurky), figurka zlata je blízko silnější figurky stříbrné, tak je frozen
-  pokud vedle sebe nemá přátelskou figurku
-- [x] Ukončení hry při přechodu králíka přes celé pole
-- [x] Ukončení hry při zablokování jednoho hráče
+At the beginning of the game, the pieces are arranged by player in first two rows as they want.
+
+## Rules
+The rules of the game are as follows:
+1. The game is played on an 8x8 board with 6 types of pieces: elephant, camel, horse, dog, cat, and rabbit.
+2. The game is played in turns, with each player making 1-4 moves per turn.
+3. The game is won by either getting the rabbit to the other side of the board or by blocking the opponent from making a move.
+4. The pieces move forward, backward, left, or right, but not diagonally. Except for the rabbit which cannot move backward.
+5. Stronger pieces can push or pull weaker pieces. "rabbit < cat < dog < horse < camel < elephant"
+6. Pieces can be killed on 4 squared on the board called "traps". If Piece is pushed/pulled this spot and NO FRIEND piece
+is next -> Piece is killed.
+7. If piece has no friend piece next to itself, and it stays next to stronger enemy piece it is "frozen" and cannot move.
 
