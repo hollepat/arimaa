@@ -21,3 +21,9 @@ The rules of the game are as follows:
 is next -> Piece is killed.
 7. If piece has no friend piece next to itself, and it stays next to stronger enemy piece it is "frozen" and cannot move.
 
+## How to Play
+
+Choose 'new game' or 'load game'. 
+
+If you are creating a new game choose options of the game. Once you start game follow instructions in the top bar.
+To move Pieces on the bar use drag & drop mechanism.

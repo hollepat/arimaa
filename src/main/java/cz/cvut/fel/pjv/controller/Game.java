@@ -61,6 +61,10 @@ public class Game {
 
         if (ownLayout) {
             // set SETUP mode
+            JOptionPane.showMessageDialog(null,
+                    "Please set up your own layout. " +
+                            "if you want to change position of two pieces click on first one then on second one and " +
+                            "they will swap!");
             gameStatus = GameStatus.SETUP_LAYOUT;
         }
     }
